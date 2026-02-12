@@ -66,8 +66,6 @@ const fetchGKEVersions = async (): Promise<GKEChannelInfo[]> => {
         
         if (lowerContent.includes('security patch') || lowerContent.includes('vulnerability') || lowerContent.includes('cve')) {
           status = 'Security Patch';
-        } else if (lowerContent.includes('deprecation') || lowerContent.includes('deprecated') || lowerContent.includes('removal')) {
-          status = 'Deprecated';
         }
 
         return {
