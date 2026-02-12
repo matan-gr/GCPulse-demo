@@ -13,7 +13,7 @@ interface GeminiAssistantViewProps {
   userProfile?: { name: string; role: string };
 }
 
-export const GeminiAssistantView: React.FC<GeminiAssistantViewProps> = ({ items, userProfile = { name: 'Partner', role: 'TAM' } }) => {
+export const GeminiAssistantView: React.FC<GeminiAssistantViewProps> = ({ items, userProfile = { name: 'Partner', role: 'Personal Assistant' } }) => {
   const {
     messages,
     input,
@@ -40,7 +40,7 @@ export const GeminiAssistantView: React.FC<GeminiAssistantViewProps> = ({ items,
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `tam-assistant-export-${new Date().toISOString().split('T')[0]}.md`;
+    a.download = `personal-assistant-export-${new Date().toISOString().split('T')[0]}.md`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -130,7 +130,7 @@ export const GeminiAssistantView: React.FC<GeminiAssistantViewProps> = ({ items,
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
             <Sparkles className="mr-3 text-purple-600 dark:text-purple-400" size={32} />
-            TAM Assistant
+            Personal Assistant
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">
             Your personal AI analyst for Google Cloud strategy and operations.

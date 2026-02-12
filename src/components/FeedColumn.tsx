@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FeedItem } from '../types';
 import { FeedCard } from './FeedCard';
 import { SkeletonCard } from './SkeletonCard';
-import { DeprecationLoader } from './DeprecationLoader';
+import { EndOfSupportLoader } from './EndOfSupportLoader';
 import { Check, ChevronDown, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AnalysisResult } from '../types';
@@ -86,7 +86,7 @@ export const FeedColumn: React.FC<FeedColumnProps> = ({
       badgeColor = 'bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-300';
       barColor = 'bg-rose-600 dark:bg-rose-500';
       break;
-    case 'Deprecations':
+    case 'End of Support':
       headerColor = 'text-amber-800 dark:text-amber-400';
       badgeColor = 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300';
       barColor = 'bg-amber-500';
@@ -109,8 +109,8 @@ export const FeedColumn: React.FC<FeedColumnProps> = ({
       
       <div className="space-y-6">
         {isLoading ? (
-          source === 'Deprecations' ? (
-            <DeprecationLoader />
+          source === 'End of Support' ? (
+            <EndOfSupportLoader />
           ) : (
             Array.from({ length: 3 }).map((_, i) => (
               <SkeletonCard key={i} viewMode="grid" />

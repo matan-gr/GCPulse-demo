@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo, Suspense, lazy, useRef } from 'react';
+
+import { useState, useEffect, useMemo, Suspense, lazy, useRef, useCallback } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
-import { useFeed, useDeprecations, useSecurityBulletins, useArchitectureUpdates, useIncidents } from './hooks/useFeed';
+import { useFeed, useEndOfSupport, useSecurityBulletins, useArchitectureUpdates, useIncidents } from './hooks/useFeed';
 import { Toaster } from './components/ui/Toaster';
 import { FeedItem } from './types';
 import { GoogleGenAI } from "@google/genai";
@@ -22,7 +23,7 @@ import { TabNavigation } from './components/TabNavigation';
 
 // Lazy Loaded Views
 const DiscoverView = lazy(() => import('./views/DiscoverView').then(module => ({ default: module.DiscoverView })));
-const DeprecationsView = lazy(() => import('./views/DeprecationsView').then(module => ({ default: module.DeprecationsView })));
+const EndOfSupportView = lazy(() => import('./views/EndOfSupportView').then(module => ({ default: module.EndOfSupportView })));
 const ArchitectureView = lazy(() => import('./views/ArchitectureView').then(module => ({ default: module.ArchitectureView })));
 const StandardFeedView = lazy(() => import('./views/StandardFeedView').then(module => ({ default: module.StandardFeedView })));
 const SavedView = lazy(() => import('./views/SavedView').then(module => ({ default: module.SavedView })));
@@ -38,18 +39,18 @@ const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 function AppContent() {
   // UI State
-  const [activeTab, setActiveTab] = useState<'all' | 'saved' | 'incidents' | 'deprecations' | 'security' | 'architecture' | 'tools' | 'dashboard' | 'assistant'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'saved' | 'incidents' | 'eos' | 'security' | 'architecture' | 'tools' | 'dashboard' | 'assistant'>('all');
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Data Fetching with React Query
   const { data: feed, isLoading: feedLoading, error: queryError, refetch: refetchFeed, isRefetching: feedRefetching } = useFeed();
-  const { data: deprecations, isLoading: deprecationsLoading, error: deprecationsError } = useDeprecations();
+  const { data: eosItems, isLoading: eosLoading, error: eosError } = useEndOfSupport();
   const { data: securityBulletins, isLoading: securityLoading, error: securityError } = useSecurityBulletins();
   const { data: architectureUpdates, isLoading: architectureLoading, error: architectureError } = useArchitectureUpdates();
   const { data: incidents, isLoading: incidentsLoading, error: incidentsError } = useIncidents();
   
-  const loading = feedLoading || (activeTab === 'architecture' && architectureLoading) || (activeTab === 'incidents' && incidentsLoading); // Main loading state
+  const loading = feedLoading || (activeTab === 'architecture' && architectureLoading) || (activeTab === 'incidents' && incidentsLoading) || (activeTab === 'eos' && eosLoading); // Main loading state
 
   // Custom Hooks
   const { prefs, updatePrefs, toggleCategorySubscription, toggleSavedPost, clearSavedPosts } = useUserPreferences();
@@ -67,13 +68,13 @@ function AppContent() {
   // Error Handling
   useEffect(() => {
     if (queryError) toast.error("Failed to load feed updates.");
-    if (deprecationsError) toast.error("Failed to load deprecation notices.");
+    if (eosError) toast.error("Failed to load end of support info.");
     if (architectureError) toast.error("Failed to load architecture updates.");
     if (incidentsError) toast.error("Failed to load incidents.");
-    if (deprecations && !deprecationsLoading && activeTab === 'deprecations') {
-      toast.success("Deprecation roadmap updated", { icon: <Check size={16} />, duration: 3000 });
+    if (eosItems && !eosLoading && activeTab === 'eos') {
+      toast.success("End of Support roadmap updated", { icon: <Check size={16} />, duration: 3000 });
     }
-  }, [queryError, deprecationsError, architectureError, incidentsError, deprecations, deprecationsLoading, activeTab]);
+  }, [queryError, eosError, architectureError, incidentsError, eosItems, eosLoading, activeTab]);
 
   // Search & Filter State
   const [search, setSearch] = useState('');
@@ -85,45 +86,15 @@ function AppContent() {
   const selectedCategory = prefs.filterCategory;
   const dateRange = prefs.filterDateRange;
   
-  const handleCategoryChange = (category: string | null) => {
+  const handleCategoryChange = useCallback((category: string | null) => {
     updatePrefs({ filterCategory: category });
-  };
+  }, [updatePrefs]);
 
-  const handleDateRangeChange = (range: { start: string; end: string } | null) => {
+  const handleDateRangeChange = useCallback((range: { start: string; end: string } | null) => {
     updatePrefs({ filterDateRange: range });
     if (range) toast.success("Date filter applied");
     else toast.info("Date filter cleared");
-  };
-
-  const handleExportCSV = () => {
-    if (filteredItems.length === 0) {
-      toast.error("No items to export.");
-      return;
-    }
-
-    const headers = ["Date", "Title", "Category", "Link", "Source"];
-    const csvContent = [
-      headers.join(","),
-      ...filteredItems.map(item => {
-        const date = new Date(item.isoDate).toLocaleDateString();
-        const title = `"${item.title.replace(/"/g, '""')}"`;
-        const category = `"${(item.categories || []).join("; ")}"`;
-        return [date, title, category, item.link, item.source].join(",");
-      })
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `gcp_pulse_export_${new Date().toISOString().slice(0, 10)}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast.success(`Exported ${filteredItems.length} items to CSV`);
-  };
+  }, [updatePrefs]);
 
   const debouncedSearch = useDebounce(search, 800);
 
@@ -135,7 +106,7 @@ function AppContent() {
     (feed?.items || []).forEach(item => itemMap.set(item.id, item));
 
     // 2. Overlay specialized items (they have enhanced metadata/categories)
-    (deprecations || []).forEach(item => itemMap.set(item.id, item));
+    (eosItems || []).forEach(item => itemMap.set(item.id, item));
     (securityBulletins || []).forEach(item => itemMap.set(item.id, item));
     (architectureUpdates || []).forEach(item => itemMap.set(item.id, item));
 
@@ -143,9 +114,16 @@ function AppContent() {
     (incidents || []).forEach(item => itemMap.set(item.id, item));
 
     return Array.from(itemMap.values()).sort((a, b) => {
+      // Prioritize active incidents
+      const aActive = !!a.isActive;
+      const bActive = !!b.isActive;
+      
+      if (aActive && !bActive) return -1;
+      if (!aActive && bActive) return 1;
+
       return new Date(b.isoDate).getTime() - new Date(a.isoDate).getTime();
     });
-  }, [feed, deprecations, securityBulletins, architectureUpdates, incidents]);
+  }, [feed, eosItems, securityBulletins, architectureUpdates, incidents]);
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -203,7 +181,7 @@ function AppContent() {
 
     if (activeTab === 'saved') items = items.filter(item => prefs.savedPosts.includes(item.link));
     else if (activeTab === 'incidents') items = items.filter(item => item.source === 'Service Health');
-    else if (activeTab === 'deprecations') items = items.filter(item => item.source === 'Deprecations');
+    else if (activeTab === 'eos') items = items.filter(item => item.source === 'End of Support');
     else if (activeTab === 'security') items = items.filter(item => item.source === 'Security Bulletins');
     else if (activeTab === 'architecture') items = items.filter(item => item.source === 'Architecture Center');
 
@@ -236,9 +214,69 @@ function AppContent() {
     return items;
   }, [allItems, search, isSmartFilter, smartIndices, selectedCategory, dateRange, activeTab, prefs.savedPosts]);
 
-  const handleSave = (item: FeedItem) => {
+  const handleExportCSV = useCallback(() => {
+    if (filteredItems.length === 0) {
+      toast.error("No items to export.");
+      return;
+    }
+
+    const headers = ["Date", "Title", "Category", "Link", "Source"];
+    const csvContent = [
+      headers.join(","),
+      ...filteredItems.map(item => {
+        const date = new Date(item.isoDate).toLocaleDateString();
+        const title = `"${item.title.replace(/"/g, '""')}"`;
+        const category = `"${(item.categories || []).join("; ")}"`;
+        return [date, title, category, item.link, item.source].join(",");
+      })
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `gcp_pulse_export_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success(`Exported ${filteredItems.length} items to CSV`);
+  }, [filteredItems]);
+
+  const handleSave = useCallback((item: FeedItem) => {
     toggleSavedPost(item.link);
-  };
+  }, [toggleSavedPost]);
+
+  // Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      if (e.key === '/') {
+        e.preventDefault();
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.focus();
+      }
+      
+      // Tab switching with Cmd/Ctrl + Number
+      if (e.metaKey || e.ctrlKey) {
+        if (e.key === '1') setActiveTab('dashboard');
+        if (e.key === '2') setActiveTab('assistant');
+        if (e.key === '3') setActiveTab('all');
+        if (e.key === '4') setActiveTab('incidents');
+        if (e.key === '5') setActiveTab('security');
+        if (e.key === '6') setActiveTab('eos');
+        if (e.key === '7') setActiveTab('architecture');
+        if (e.key === '8') setActiveTab('saved');
+        if (e.key === '9') setActiveTab('tools');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   if (queryError) {
     return (
@@ -304,8 +342,8 @@ function AppContent() {
                 items={filteredItems} 
                 loading={loading}
               />
-            ) : activeTab === 'deprecations' ? (
-              <DeprecationsView items={filteredItems} loading={deprecationsLoading} />
+            ) : activeTab === 'eos' ? (
+              <EndOfSupportView items={filteredItems} loading={eosLoading} />
             ) : activeTab === 'architecture' ? (
               <ArchitectureView 
                 items={filteredItems} 

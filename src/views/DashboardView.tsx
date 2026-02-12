@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, 
@@ -5,9 +6,10 @@ import {
 } from 'recharts';
 import { FeedItem } from '../types';
 import { motion } from 'motion/react';
-import { TrendingUp, ShieldAlert, Activity, Info, CalendarClock, Zap, Rocket, CheckCircle2, Globe, Layers, Lock, AlertTriangle, ArrowUpRight, Server } from 'lucide-react';
+import { TrendingUp, ShieldAlert, Activity, Info, CalendarClock, Zap, Rocket, CheckCircle2, Globe, Layers, Lock, AlertTriangle, ArrowUpRight, Server, RefreshCw, Clock } from 'lucide-react';
 import { Tooltip } from '../components/ui/Tooltip';
 import { useDashboardStats } from '../hooks/useDashboardStats';
+import { toast } from 'sonner';
 
 interface DashboardViewProps {
   items: FeedItem[];
@@ -20,6 +22,24 @@ const SEVERITY_COLORS = {
   High: '#f97316',     // Orange
   Medium: '#eab308',   // Yellow
   Low: '#3b82f6'       // Blue
+};
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700 p-3 rounded-lg shadow-xl text-xs text-white">
+        <p className="font-bold mb-1 border-b border-slate-700 pb-1">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center space-x-2 py-0.5">
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+            <span className="opacity-80">{entry.name}:</span>
+            <span className="font-mono font-bold">{entry.value}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
 };
 
 export const DashboardView: React.FC<DashboardViewProps> = ({ items, onNavigateToIncidents }) => {
@@ -37,42 +57,56 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ items, onNavigateT
     recentIncidents
   } = useDashboardStats(items);
 
-  const lastUpdated = items.length > 0 ? new Date(items[0].isoDate).toLocaleDateString() : 'N/A';
+  const lastUpdated = items.length > 0 ? new Date(items[0].isoDate).toLocaleDateString(undefined, { 
+    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+  }) : 'N/A';
+
+  const handleRefresh = () => {
+    toast.success("Dashboard data refreshed");
+  };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-8 max-w-7xl mx-auto pb-12">
       {/* Executive Summary Header */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-xl">
-        <div className="absolute top-0 right-0 p-8 opacity-10">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-xl border border-slate-700/50">
+        <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
           <Globe size={200} />
         </div>
         <div className="relative p-8 md:p-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-              <div className="flex items-center space-x-2 mb-2">
-                <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-bold uppercase tracking-wider">
+              <div className="flex items-center space-x-3 mb-3">
+                <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold uppercase tracking-wider shadow-sm backdrop-blur-sm">
                   Executive Briefing
                 </span>
-                <span className="text-slate-400 text-xs font-mono">
+                <span className="text-slate-400 text-[10px] font-mono flex items-center bg-slate-800/50 px-2 py-1 rounded-md border border-slate-700/50">
+                  <Clock size={10} className="mr-1.5" />
                   Last Updated: {lastUpdated}
                 </span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2 text-gradient">Google Cloud Landscape</h1>
-              <p className="text-slate-300 max-w-2xl text-lg">
+              <h1 className="text-3xl md:text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-white via-blue-100 to-slate-300 tracking-tight">Google Cloud Landscape</h1>
+              <p className="text-slate-300 max-w-2xl text-lg font-light leading-relaxed">
                 Real-time intelligence on platform stability, security posture, and strategic product velocity.
               </p>
             </div>
             
             <div className="flex items-center gap-4">
-               <div className={`px-5 py-3 rounded-xl border backdrop-blur-md flex items-center ${
+               <button 
+                 onClick={handleRefresh}
+                 className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/70 hover:text-white transition-colors border border-white/10"
+                 title="Refresh Data"
+               >
+                 <RefreshCw size={18} />
+               </button>
+               <div className={`px-5 py-3 rounded-xl border backdrop-blur-md flex items-center shadow-lg ${
                  stats.healthStatus === 'Optimal' 
                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
                    : 'bg-red-500/10 border-red-500/30 text-red-400'
                }`}>
                  <Activity size={24} className="mr-3" />
                  <div>
-                   <p className="text-xs font-bold uppercase opacity-80">Platform Status</p>
-                   <p className="text-lg font-bold">{stats.healthStatus}</p>
+                   <p className="text-[10px] font-bold uppercase opacity-80 tracking-wider">Platform Status</p>
+                   <p className="text-lg font-bold tracking-tight">{stats.healthStatus}</p>
                  </div>
                </div>
             </div>

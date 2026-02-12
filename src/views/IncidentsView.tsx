@@ -37,7 +37,6 @@ const FormattedUpdateText = ({ text }: { text: string }) => {
 export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) => {
   const {
     currentYear,
-    isJanuary,
     activeIncidents,
     historyIncidents,
     getDuration,
@@ -98,7 +97,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
             <div className="w-px bg-white/20"></div>
             <div className="text-center px-4">
               <div className="text-2xl font-bold">{historyIncidents.length}</div>
-              <div className="text-xs font-medium opacity-80 uppercase">Resolved ({currentYear})</div>
+              <div className="text-xs font-medium opacity-80 uppercase">Resolved</div>
             </div>
           </div>
         </div>
@@ -239,7 +238,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
           <div className="flex items-center space-x-2">
             <History className="text-slate-400" size={20} />
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              Incident History <span className="text-slate-400 font-normal text-base ml-1">({isJanuary ? `${currentYear - 1}-${currentYear}` : currentYear})</span>
+              Incident History <span className="text-slate-400 font-normal text-base ml-1">({currentYear - 1}-{currentYear})</span>
             </h2>
           </div>
           

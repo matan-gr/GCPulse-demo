@@ -60,6 +60,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
         </div>
         <input
           ref={inputRef}
+          id="search-input"
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}

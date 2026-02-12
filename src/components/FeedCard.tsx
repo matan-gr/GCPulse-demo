@@ -9,7 +9,6 @@ import ReactMarkdown from 'react-markdown';
 
 import { AnalysisResult } from '../types';
 import { Tooltip } from './ui/Tooltip';
-import { FeedItemDetailModal } from './FeedItemDetailModal';
 
 interface FeedCardProps {
   item: FeedItem;
@@ -29,6 +28,10 @@ interface FeedCardProps {
 }
 
 import { ErrorBoundary } from './ErrorBoundary';
+
+const markdownComponents = {
+  a: ({node, ...props}: any) => <a {...props} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} />
+};
 
 export const FeedCard = React.memo<FeedCardProps>((props) => {
   const { item } = props;
@@ -78,7 +81,6 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
   showImages = true
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   
   const image = item.enclosure?.url || extractImage(item.content);
   const date = new Date(item.isoDate).toLocaleDateString(undefined, {
@@ -285,17 +287,20 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
       
         <div className={`${isCompact ? 'p-3' : 'p-6'} flex-1 flex flex-col ${isListView ? 'justify-between' : ''}`}>
         <div>
-          <div className={`flex items-center justify-between ${isCompact ? 'mb-1' : 'mb-3'}`}>
+          <div className={`flex items-center justify-between ${isCompact ? 'mb-2' : 'mb-4'}`}>
              <div className="flex items-center space-x-2">
-                <span className={`badge ${
-                  item.source === 'Release Notes' ? 'badge-orange' :
-                  item.source === 'Product Updates' ? 'badge-green' :
-                  'badge-blue'
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${
+                  item.source === 'Release Notes' ? 'bg-violet-50 text-violet-700 border-violet-100 dark:bg-violet-900/20 dark:text-violet-300 dark:border-violet-800' :
+                  item.source === 'Product Updates' ? 'bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 dark:border-emerald-800' :
+                  item.source === 'End of Support' ? 'bg-amber-50 text-amber-700 border-amber-100 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800' :
+                  item.source === 'Security Bulletins' ? 'bg-red-50 text-red-700 border-red-100 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800' :
+                  'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800'
                 }`}>
                   {item.source}
                 </span>
              </div>
-             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium flex items-center">
+             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium flex items-center tabular-nums">
+                <Clock size={10} className="mr-1" />
                 {date}
              </span>
           </div>
@@ -309,9 +314,7 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
           <div className={`relative ${isCompact ? 'mb-2' : 'mb-4'}`}>
             <div className={`text-slate-600 dark:text-slate-300 ${isCompact ? 'text-xs leading-snug line-clamp-2' : 'text-sm leading-relaxed line-clamp-3'} ${isExpanded || isPresentationMode ? '' : ''} prose dark:prose-invert max-w-none prose-sm prose-p:my-0`}>
                 <ReactMarkdown 
-                  components={{
-                    a: ({node, ...props}) => <a {...props} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} />
-                  }}
+                  components={markdownComponents}
                 >
                   {item.contentSnippet || ''}
                 </ReactMarkdown>
@@ -427,17 +430,6 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
             </div>
         </div>
       </div>
-      
-      <FeedItemDetailModal
-        isOpen={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
-        item={item}
-        analysis={analysis}
-        onSave={onSave}
-        isSaved={isSaved}
-        onSummarize={onSummarize}
-        isSummarizing={isSummarizing}
-      />
     </motion.div>
   );
 };

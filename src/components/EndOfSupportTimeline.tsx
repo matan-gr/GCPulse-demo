@@ -1,12 +1,12 @@
+
 import React, { useMemo } from 'react';
 import { FeedItem } from '../types';
-import { extractEOLDate } from '../utils';
 import { Calendar, AlertTriangle, ArrowRight, CheckCircle2, AlertOctagon, Clock, CalendarDays, Filter, Hourglass, Download } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ErrorBoundary } from './ErrorBoundary';
 import { toast } from 'sonner';
 
-interface DeprecationTimelineProps {
+interface EndOfSupportTimelineProps {
   items: FeedItem[];
 }
 
@@ -15,18 +15,19 @@ interface TimelineItem extends FeedItem {
   daysUntil: number | null;
 }
 
-export const DeprecationTimeline: React.FC<DeprecationTimelineProps> = ({ items }) => {
+export const EndOfSupportTimeline: React.FC<EndOfSupportTimelineProps> = ({ items }) => {
   return (
-    <ErrorBoundary componentName="DeprecationTimeline">
-      <DeprecationTimelineContent items={items} />
+    <ErrorBoundary componentName="EndOfSupportTimeline">
+      <EndOfSupportTimelineContent items={items} />
     </ErrorBoundary>
   );
 };
 
-const DeprecationTimelineContent: React.FC<DeprecationTimelineProps> = ({ items }) => {
+const EndOfSupportTimelineContent: React.FC<EndOfSupportTimelineProps> = ({ items }) => {
   const { sortedItems, stats, groups } = useMemo(() => {
     const processed = items.map(item => {
-      const eolDate = extractEOLDate(item.contentSnippet || item.content || item.title);
+      // For End of Support items, isoDate IS the EOL date
+      const eolDate = item.isoDate ? new Date(item.isoDate) : null;
       let daysUntil = null;
       if (eolDate) {
         const now = new Date();
@@ -58,7 +59,7 @@ const DeprecationTimelineContent: React.FC<DeprecationTimelineProps> = ({ items 
   const handleExportCalendar = () => {
     if (sortedItems.length === 0) return;
     
-    let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//GCP Pulse//Deprecations//EN\n";
+    let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//GCP Pulse//End of Support//EN\n";
     
     sortedItems.forEach(item => {
       if (item.eolDate) {
@@ -78,7 +79,7 @@ const DeprecationTimelineContent: React.FC<DeprecationTimelineProps> = ({ items 
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', 'gcp-deprecations.ics');
+    link.setAttribute('download', 'gcp-eos.ics');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -91,9 +92,9 @@ const DeprecationTimelineContent: React.FC<DeprecationTimelineProps> = ({ items 
         <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
           <CheckCircle2 size={40} className="text-emerald-500" />
         </div>
-        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">No Active Deprecations</h3>
+        <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">No Active End of Support Notices</h3>
         <p className="text-slate-500 dark:text-slate-400 max-w-md">
-          Great news! There are no known deprecations or end-of-life notices in the current feed.
+          Great news! There are no known end-of-support notices in the current feed.
         </p>
       </div>
     );
@@ -107,7 +108,7 @@ const DeprecationTimelineContent: React.FC<DeprecationTimelineProps> = ({ items 
           <div>
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 flex items-center">
               <CalendarDays className="mr-3 text-blue-600" size={32} />
-              Deprecation Roadmap
+              End of Support Roadmap
             </h2>
             <p className="text-slate-600 dark:text-slate-400 text-lg">
               Timeline of upcoming service retirements.

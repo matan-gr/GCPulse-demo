@@ -79,7 +79,7 @@ export const ToolsView: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Sidebar Navigation */}
-        <div className="lg:col-span-3 space-y-3">
+        <div className="lg:col-span-3 space-y-3 sticky top-24 self-start">
           {TOOLS.map((tool) => (
             <button
               key={tool.id}

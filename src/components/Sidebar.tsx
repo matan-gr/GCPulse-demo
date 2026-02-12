@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 interface SidebarProps {
   activeTab: string;
-  setActiveTab: (tab: 'all' | 'saved' | 'incidents' | 'deprecations' | 'security' | 'architecture' | 'tools' | 'dashboard' | 'assistant') => void;
+  setActiveTab: (tab: 'all' | 'saved' | 'incidents' | 'eos' | 'security' | 'architecture' | 'tools' | 'dashboard' | 'assistant') => void;
   isPresentationMode: boolean;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -73,7 +73,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   title: 'Overview',
                   items: [
                     { id: 'dashboard', label: 'Executive Dashboard', icon: LayoutDashboard },
-                    { id: 'assistant', label: 'TAM Assistant', icon: Sparkles },
+                    { id: 'assistant', label: 'Personal Assistant', icon: Sparkles },
                   ]
                 },
                 {
@@ -82,7 +82,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     { id: 'all', label: 'Discover Feed', icon: Rss },
                     { id: 'incidents', label: 'Incidents', icon: AlertOctagon },
                     { id: 'security', label: 'Security Bulletins', icon: ShieldAlert },
-                    { id: 'deprecations', label: 'Deprecations', icon: CalendarClock },
+                    { id: 'eos', label: 'End of Support', icon: CalendarClock },
                     { id: 'architecture', label: 'Architecture', icon: Layers },
                   ]
                 },
@@ -153,19 +153,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
               ))}
             </nav>
-
-            {/* User/Footer Area */}
-            {/* <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-              <div className="flex items-center space-x-3 px-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-white text-xs font-bold shadow-md">
-                  JD
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-900 dark:text-white truncate">Jane Doe</p>
-                  <p className="text-xs text-slate-500 truncate">Technical Account Manager</p>
-                </div>
-              </div>
-            </div> */}
           </motion.div>
         )}
       </AnimatePresence>

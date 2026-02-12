@@ -3,15 +3,15 @@ import { Loader2, Sparkles, BrainCircuit } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 const LOADING_MESSAGES = [
-  "Scanning Google Cloud release notes...",
-  "Identifying deprecated APIs and services...",
+  "Scanning Google Cloud support lifecycle...",
+  "Identifying End of Support timelines...",
   "Analyzing impact timelines...",
   "Calculating days to End of Life...",
   "Cross-referencing with migration guides...",
   "Generating actionable insights..."
 ];
 
-export const DeprecationLoader: React.FC = () => {
+export const EndOfSupportLoader: React.FC = () => {
   const [messageIndex, setMessageIndex] = useState(0);
 
   useEffect(() => {

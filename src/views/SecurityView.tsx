@@ -5,6 +5,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useSecurityView } from '../hooks/useSecurityView';
 import DOMPurify from 'dompurify';
 
+// Configure DOMPurify to open links in new tab
+DOMPurify.addHook('afterSanitizeAttributes', function (node) {
+  if ('target' in node) {
+    node.setAttribute('target', '_blank');
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
+
 interface SecurityViewProps {
   items: FeedItem[];
   loading: boolean;
@@ -157,7 +165,8 @@ const SecurityItemCard = ({ item, index, onSummarize, summarizingId }: { item: F
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ delay: index * 0.05 }}
-      className={`group relative rounded-2xl border shadow-sm overflow-hidden transition-all hover:shadow-lg bg-white dark:bg-slate-900 ${
+      onClick={() => window.open(item.link, '_blank')}
+      className={`group relative rounded-2xl border shadow-sm overflow-hidden transition-all hover:shadow-lg bg-white dark:bg-slate-900 cursor-pointer ${
         item.severity === 'Critical' ? 'border-l-[6px] border-l-red-500 border-slate-200 dark:border-slate-800' :
         item.severity === 'High' ? 'border-l-[6px] border-l-orange-500 border-slate-200 dark:border-slate-800' :
         item.severity === 'Medium' ? 'border-l-[6px] border-l-yellow-500 border-slate-200 dark:border-slate-800' :
@@ -174,7 +183,7 @@ const SecurityItemCard = ({ item, index, onSummarize, summarizingId }: { item: F
               </span>
             </div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-              <a href={item.link} target="_blank" rel="noopener noreferrer">
+              <a href={item.link} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                 {item.title}
               </a>
             </h3>
@@ -182,7 +191,7 @@ const SecurityItemCard = ({ item, index, onSummarize, summarizingId }: { item: F
           
           <div className="flex items-center gap-2 flex-shrink-0 self-start">
             <button 
-              onClick={() => onSummarize(item)}
+              onClick={(e) => { e.stopPropagation(); onSummarize(item); }}
               disabled={summarizingId === item.link}
               className="flex items-center px-4 py-2 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 hover:from-purple-100 hover:to-indigo-100 dark:hover:from-purple-900/30 dark:hover:to-indigo-900/30 text-purple-700 dark:text-purple-300 rounded-xl text-xs font-bold transition-all disabled:opacity-50 border border-purple-100 dark:border-purple-800/50 shadow-sm hover:shadow"
             >
@@ -193,6 +202,7 @@ const SecurityItemCard = ({ item, index, onSummarize, summarizingId }: { item: F
               href={item.link} 
               target="_blank" 
               rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
               className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
               title="View Official Bulletin"
             >
@@ -209,7 +219,7 @@ const SecurityItemCard = ({ item, index, onSummarize, summarizingId }: { item: F
         </div>
         
         <button 
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
           className="mt-4 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center uppercase tracking-wide transition-colors focus:outline-none"
         >
           {isExpanded ? (

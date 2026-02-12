@@ -6,7 +6,6 @@ export const useIncidentsView = (items: FeedItem[]) => {
   const [expandedIncidentId, setExpandedIncidentId] = useState<string | null>(null);
   const now = new Date();
   const currentYear = now.getFullYear();
-  const isJanuary = now.getMonth() === 0; // 0 is January
 
   const toggleExpand = (id: string) => {
     setExpandedIncidentId(prev => prev === id ? null : id);
@@ -14,21 +13,20 @@ export const useIncidentsView = (items: FeedItem[]) => {
 
   // Filter Logic
   const activeIncidents = useMemo(() => 
-    items.filter(item => item.isActive), 
+    items.filter(item => item.isActive)
+         .sort((a, b) => new Date(b.isoDate).getTime() - new Date(a.isoDate).getTime()), 
   [items]);
   
-  // Filter history based on month
+  // Filter history based on year (current and previous year)
   const historyIncidents = useMemo(() => items
     .filter(item => {
       if (item.isActive) return false;
       const itemYear = new Date(item.isoDate).getFullYear();
-      if (isJanuary) {
-        return itemYear === currentYear || itemYear === currentYear - 1;
-      }
-      return itemYear === currentYear;
+      // Show incidents from current year and previous year
+      return itemYear === currentYear || itemYear === currentYear - 1;
     })
     .sort((a, b) => new Date(b.isoDate).getTime() - new Date(a.isoDate).getTime()),
-  [items, isJanuary, currentYear]);
+  [items, currentYear]);
 
   // Helper: Duration Calculator
   const getDuration = (start: string, end?: string) => {
@@ -54,7 +52,6 @@ export const useIncidentsView = (items: FeedItem[]) => {
 
   return {
     currentYear,
-    isJanuary,
     activeIncidents,
     historyIncidents,
     getDuration,

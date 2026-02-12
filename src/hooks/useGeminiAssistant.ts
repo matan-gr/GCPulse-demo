@@ -93,7 +93,7 @@ export const useGeminiAssistant = (items: FeedItem[]) => {
   }))), [criticalContext, manualContextIds]);
 
   const SYSTEM_INSTRUCTION = `
-    You are an expert Senior Technical Account Manager (TAM), Site Reliability Engineer (SRE), and Cloud Architect at Google Cloud.
+    You are an expert Personal Cloud Assistant, Site Reliability Engineer (SRE), and Cloud Architect at Google Cloud.
     Your role is to advise enterprise customers based **STRICTLY** on the provided official Google Cloud feed data.
 
     **CORE DIRECTIVES:**
@@ -206,10 +206,10 @@ export const useGeminiAssistant = (items: FeedItem[]) => {
         ${weeklyContext}
 
         **Task:**
-        Generate a **Weekly TAM Briefing** for my enterprise customers.
+        Generate a **Weekly Cloud Briefing** for my enterprise customers.
         
         **Persona:** 
-        You are a **Customer-Obsessed Senior GCP Technical Account Manager**. You are proactive, strategic, and focused on business value and risk mitigation.
+        You are a **Customer-Obsessed Personal Cloud Assistant**. You are proactive, strategic, and focused on business value and risk mitigation.
 
         **Required Output Format (Markdown):**
         
@@ -283,7 +283,7 @@ export const useGeminiAssistant = (items: FeedItem[]) => {
         ${text}
 
         **Task:**
-        Answer the user's question acting as a Senior TAM. Refer to the Data Context and Conversation History.
+        Answer the user's question acting as a Personal Cloud Assistant. Refer to the Data Context and Conversation History.
       `;
 
       const response = await generateWithRetry(() => ai.models.generateContent({

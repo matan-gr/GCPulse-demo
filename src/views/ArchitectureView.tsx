@@ -63,8 +63,16 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({
             <Box className="mr-3 text-indigo-600 dark:text-indigo-400" size={32} />
             Architecture Center
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-slate-600 dark:text-slate-400 mt-1 flex items-center">
             Reference architectures, design patterns, and best practices.
+            <a 
+              href="https://docs.cloud.google.com/architecture/release-notes" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-indigo-600 dark:text-indigo-400 hover:underline ml-2 text-sm flex items-center"
+            >
+              Source <ExternalLink size={12} className="ml-1" />
+            </a>
           </p>
         </div>
 

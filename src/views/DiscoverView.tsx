@@ -95,7 +95,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
                 Let's try to use a Portal for the dropdown content. 
                 I'll implement a simple Portal for the dropdown menu.
             */}
-             <div className="relative">
+            <div className="relative">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -110,6 +110,58 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
                 <span className="hidden sm:inline">Customize Columns</span>
                 <span className="inline sm:hidden">Cols</span>
               </motion.button>
+
+              <AnimatePresence>
+                {showColumnMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute left-0 top-full mt-2 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 z-50"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Columns</h3>
+                      <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full text-slate-500">{visibleColumns.length} Visible</span>
+                    </div>
+                    
+                    <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+                      {prefs.columnOrder.map((column) => {
+                        const isVisible = !prefs.hiddenColumns.includes(column);
+                        return (
+                          <motion.div 
+                            key={column} 
+                            layout
+                            className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${
+                              isVisible 
+                                ? 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700' 
+                                : 'bg-transparent border-transparent opacity-50 hover:opacity-100'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-1.5 h-1.5 rounded-full ${isVisible ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'}`} />
+                              <span className={`text-sm font-medium ${isVisible ? 'text-slate-700 dark:text-slate-200' : 'text-slate-500'}`}>{column}</span>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onToggleColumnVisibility(column);
+                              }}
+                              className={`p-1.5 rounded-lg transition-colors ${
+                                isVisible 
+                                  ? 'text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30' 
+                                  : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                              }`}
+                              title={isVisible ? "Hide Column" : "Show Column"}
+                            >
+                              {isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+                            </button>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="w-px h-8 bg-slate-200 dark:bg-slate-800 mx-1" />
@@ -162,59 +214,6 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
           </div>
         </div>
         
-        {/* Dropdown Portal or Absolute Positioned outside overflow container */}
-        <AnimatePresence>
-            {showColumnMenu && (
-                <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                className="absolute left-4 top-full mt-2 w-72 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-4 z-50"
-                style={{ marginLeft: '170px' }} // Approximate position adjustment or use a ref-based calculation
-                >
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Active Columns</h3>
-                    <span className="text-[10px] bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full text-slate-500">{visibleColumns.length} Visible</span>
-                </div>
-                
-                <div className="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
-                    {prefs.columnOrder.map((column) => {
-                    const isVisible = !prefs.hiddenColumns.includes(column);
-                    return (
-                        <motion.div 
-                        key={column} 
-                        layout
-                        className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${
-                            isVisible 
-                            ? 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700' 
-                            : 'bg-transparent border-transparent opacity-50 hover:opacity-100'
-                        }`}
-                        >
-                        <div className="flex items-center space-x-3">
-                            <div className={`w-1.5 h-1.5 rounded-full ${isVisible ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'}`} />
-                            <span className={`text-sm font-medium ${isVisible ? 'text-slate-700 dark:text-slate-200' : 'text-slate-500'}`}>{column}</span>
-                        </div>
-                        <button
-                            onClick={(e) => {
-                            e.stopPropagation();
-                            onToggleColumnVisibility(column);
-                            }}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                            isVisible 
-                                ? 'text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-900/30' 
-                                : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                            }`}
-                            title={isVisible ? "Hide Column" : "Show Column"}
-                        >
-                            {isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
-                        </button>
-                        </motion.div>
-                    );
-                    })}
-                </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
       </motion.div>
 
       {/* Column Layout */}
