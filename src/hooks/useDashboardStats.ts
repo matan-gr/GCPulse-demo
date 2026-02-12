@@ -20,7 +20,10 @@ export const useDashboardStats = (items: FeedItem[]) => {
     ).length;
 
     const securityBulletins = recentItems.filter(i => i.source === 'Security Bulletins').length;
-    const deprecations = recentItems.filter(i => i.source === 'Deprecations').length;
+    const deprecations = recentItems.filter(i => 
+      (i.source === 'Release Notes' || i.source === 'Product Updates') && 
+      (i.title.toLowerCase().includes('deprecation') || i.title.toLowerCase().includes('removal') || i.title.toLowerCase().includes('discontinued'))
+    ).length;
     const productUpdates = recentItems.filter(i => i.source === 'Product Updates' || i.source === 'Release Notes').length;
 
     const innovationScore = totalUpdates > 0 ? Math.round((productUpdates / totalUpdates) * 100) : 0;
@@ -80,7 +83,10 @@ export const useDashboardStats = (items: FeedItem[]) => {
 
   // 2.2 Deprecation Timeline Stats
   const deprecationTimelineStats = useMemo(() => {
-    const depItems = items.filter(i => i.source === 'Deprecations');
+    const depItems = items.filter(i => 
+      (i.source === 'Release Notes' || i.source === 'Product Updates') && 
+      (i.title.toLowerCase().includes('deprecation') || i.title.toLowerCase().includes('removal') || i.title.toLowerCase().includes('discontinued'))
+    );
     const now = new Date();
     const stats = { next30: 0, next60: 0, next90: 0, total: depItems.length };
 
@@ -133,7 +139,10 @@ export const useDashboardStats = (items: FeedItem[]) => {
 
   // 4. Deprecation Impact by Service (Bar)
   const deprecationData = useMemo(() => {
-    const depItems = items.filter(i => i.source === 'Deprecations');
+    const depItems = items.filter(i => 
+      (i.source === 'Release Notes' || i.source === 'Product Updates') && 
+      (i.title.toLowerCase().includes('deprecation') || i.title.toLowerCase().includes('removal') || i.title.toLowerCase().includes('discontinued'))
+    );
     const counts: Record<string, number> = {};
     
     depItems.forEach(item => {
