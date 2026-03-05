@@ -11,6 +11,7 @@ const GCP_PRODUCTS = [
   "VPC", "Cloud Load Balancing", "Cloud CDN", "Cloud DNS",
   "Anthos", "Apigee",
   "Vertex AI", "AutoML", "Dialogflow", "Vision API", "Translation API", "Natural Language API",
+  "Gemini", "Duet AI", "GenAI", "Generative AI", "PaLM", "Bard", "Imagen", "Codey",
   "Pub/Sub", "Dataflow", "Dataproc", "Looker",
   "Cloud Build", "Artifact Registry", "Container Registry",
   "IAM", "Cloud Armor", "Secret Manager", "KMS",

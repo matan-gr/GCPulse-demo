@@ -17,9 +17,21 @@ const FEEDS = [
   { url: "https://blog.google/products/google-cloud/rss/", name: "Product Updates" },
   { url: "https://cloud.google.com/feeds/gcp-release-notes.xml", name: "Release Notes" },
   { url: "https://docs.cloud.google.com/feeds/google-cloud-security-bulletins.xml", name: "Security Bulletins" },
-  { url: "https://cloud.google.com/feeds/architecture-center-release-notes.xml", name: "Architecture Center" }
+  { url: "https://cloud.google.com/feeds/architecture-center-release-notes.xml", name: "Architecture Center" },
+  { url: "http://googleaiblog.blogspot.com/atom.xml", name: "Google AI Research" },
+  { url: "https://docs.cloud.google.com/feeds/gemini-enterprise-release-notes.xml", name: "Gemini Enterprise" },
+  { url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCJS9pqu9BzkAMNTmzNMNhvg", name: "Google Cloud YouTube" }
 ];
-const parser = new Parser();
+const parser = new Parser({
+  customFields: {
+    item: [
+      ['media:group', 'mediaGroup'],
+      ['yt:videoId', 'videoId'],
+      ['yt:channelId', 'channelId'],
+      ['author', 'author'],
+    ]
+  }
+});
 
 // Middleware to parse JSON
 app.use(express.json());

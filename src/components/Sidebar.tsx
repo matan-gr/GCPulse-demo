@@ -1,10 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { LayoutDashboard, Rss, AlertOctagon, Bookmark, Wrench, ChevronRight, Menu, X, ShieldAlert, Layers, Sparkles, CalendarClock, Zap } from 'lucide-react';
+import { 
+  Compass, 
+  Rocket, 
+  BookOpen, 
+  FileText, 
+  CalendarOff, 
+  Youtube, 
+  Activity, 
+  ShieldAlert, 
+  Layers, 
+  Bookmark, 
+  Wrench, 
+  Menu, 
+  X, 
+  Zap,
+  ChevronRight,
+  Sparkles
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface SidebarProps {
   activeTab: string;
-  setActiveTab: (tab: 'all' | 'saved' | 'incidents' | 'eos' | 'security' | 'architecture' | 'tools' | 'dashboard' | 'assistant') => void;
+  setActiveTab: (tab: 'all' | 'saved' | 'incidents' | 'deprecations' | 'security' | 'architecture' | 'tools' | 'assistant' | 'youtube' | 'cloud-blog' | 'release-notes' | 'updates') => void;
   isPresentationMode: boolean;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -32,6 +49,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [setIsOpen]);
 
+  const menuItems = [
+    { id: 'all', label: 'Discover Feed', icon: Compass, highlighted: true },
+    { id: 'updates', label: 'Updates & Innovation', icon: Rocket },
+    { id: 'cloud-blog', label: 'Cloud Blog', icon: BookOpen },
+    { id: 'release-notes', label: 'Release Notes', icon: FileText },
+    { id: 'deprecations', label: 'Product Deprecations', icon: CalendarOff },
+    { id: 'youtube', label: 'GCP YouTube Channel', icon: Youtube },
+    { id: 'incidents', label: 'Cloud Incidents', icon: Activity },
+    { id: 'security', label: 'Security Bulletins', icon: ShieldAlert },
+    { id: 'architecture', label: 'Architecture', icon: Layers },
+  ];
+
+  const personalItems = [
+    { id: 'saved', label: 'Read Later', icon: Bookmark },
+    { id: 'tools', label: 'Tools', icon: Wrench },
+  ];
+
   return (
     <>
       {/* Mobile Menu Button */}
@@ -50,109 +84,134 @@ export const Sidebar: React.FC<SidebarProps> = ({
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -280, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`fixed top-0 left-0 h-full w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-r border-slate-200 dark:border-slate-800 z-[50] shadow-2xl lg:shadow-none flex flex-col`}
+            className={`fixed top-0 left-0 h-full w-72 bg-white dark:bg-[#0f1115] border-r border-slate-200 dark:border-slate-800 z-[50] shadow-xl lg:shadow-none flex flex-col`}
           >
             {/* Logo Area */}
-            <div className="h-20 flex items-center px-6 border-b border-slate-100 dark:border-slate-800/50 relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-transparent dark:from-blue-900/10 pointer-events-none" />
+            <div className="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-800/50 relative overflow-hidden bg-slate-50/50 dark:bg-slate-900/20">
               <div className="flex items-center space-x-3 relative z-10">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 text-white">
-                  <Zap size={20} className="fill-current" />
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm text-white">
+                  <Zap size={18} className="fill-current" />
                 </div>
                 <div>
-                  <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight leading-none">GCP Pulse</h1>
-                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Intelligence</span>
+                  <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight leading-none">GCP Pulse</h1>
+                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Enterprise</span>
                 </div>
               </div>
             </div>
 
             {/* Navigation */}
             <nav className="flex-1 px-4 py-6 space-y-8 overflow-y-auto custom-scrollbar">
-              {[
-                {
-                  title: 'Overview',
-                  items: [
-                    { id: 'dashboard', label: 'Executive Dashboard', icon: LayoutDashboard },
-                    { id: 'assistant', label: 'Personal Assistant', icon: Sparkles },
-                  ]
-                },
-                {
-                  title: 'Intelligence Feeds',
-                  items: [
-                    { id: 'all', label: 'Discover Feed', icon: Rss },
-                    { id: 'incidents', label: 'Incidents', icon: AlertOctagon },
-                    { id: 'security', label: 'Security Bulletins', icon: ShieldAlert },
-                    { id: 'eos', label: 'End of Support', icon: CalendarClock },
-                    { id: 'architecture', label: 'Architecture', icon: Layers },
-                  ]
-                },
-                {
-                  title: 'Personal',
-                  items: [
-                    { id: 'saved', label: 'Read Later', icon: Bookmark },
-                    { id: 'tools', label: 'Tools', icon: Wrench },
-                  ]
-                }
-              ].map((section, idx) => (
-                <div key={idx}>
-                  <div className="flex items-center px-4 mb-3">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{section.title}</span>
-                    <div className="flex-1 h-px bg-slate-100 dark:bg-slate-800 ml-3" />
-                  </div>
-                  <div className="space-y-1">
-                    {section.items.map((item) => {
-                      const isActive = activeTab === item.id;
-                      const Icon = item.icon;
-                      
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => {
-                            setActiveTab(item.id as any);
-                            if (!isDesktop) setIsOpen(false);
-                          }}
-                          className={`relative w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group overflow-hidden ${
-                            isActive 
-                              ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 shadow-sm' 
-                              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
-                          }`}
-                        >
-                          {isActive && (
-                            <motion.div
-                              layoutId="activeTabBackground"
-                              className="absolute inset-0 bg-blue-50 dark:bg-blue-900/20 rounded-xl"
-                              initial={false}
-                              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                            />
-                          )}
-                          
-                          <div className="relative flex items-center space-x-3 z-10">
-                            <div className={`p-1.5 rounded-lg transition-colors ${
-                              isActive 
-                                ? 'bg-blue-100 dark:bg-blue-800/50 text-blue-600 dark:text-blue-300' 
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-300'
-                            }`}>
-                              <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
-                            </div>
-                            <span className={`font-medium text-sm ${isActive ? 'font-bold' : ''}`}>{item.label}</span>
-                          </div>
-                          
-                          {isActive && (
-                            <motion.div
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              className="relative z-10"
-                            >
-                              <ChevronRight size={16} className="text-blue-500" />
-                            </motion.div>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
+              
+              {/* Main Menu */}
+              <div>
+                <div className="flex items-center px-3 mb-3">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Platform Intelligence</span>
                 </div>
-              ))}
+                <div className="space-y-1">
+                  {menuItems.map((item) => {
+                    const isActive = activeTab === item.id;
+                    const Icon = item.icon;
+                    const isHighlighted = item.highlighted;
+                    
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          setActiveTab(item.id as any);
+                          if (!isDesktop) setIsOpen(false);
+                        }}
+                        className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+                          isActive 
+                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 shadow-sm ring-1 ring-blue-200 dark:ring-blue-800' 
+                            : isHighlighted
+                              ? 'bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800'
+                              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
+                        }`}
+                      >
+                        <div className="relative flex items-center space-x-3 z-10">
+                          <Icon 
+                            size={isHighlighted ? 20 : 18} 
+                            strokeWidth={isActive || isHighlighted ? 2.5 : 2} 
+                            className={`transition-colors ${
+                              isActive 
+                                ? 'text-blue-600 dark:text-blue-400' 
+                                : isHighlighted
+                                  ? 'text-slate-900 dark:text-white'
+                                  : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300'
+                            }`} 
+                          />
+                          <span className={`text-sm ${isActive || isHighlighted ? 'font-semibold' : 'font-medium'}`}>
+                            {item.label}
+                          </span>
+                        </div>
+                        
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeTabIndicator"
+                            className="absolute right-2 w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400"
+                          />
+                        )}
+                        
+                        {isHighlighted && !isActive && (
+                           <ChevronRight size={14} className="text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Personal Section */}
+              <div>
+                <div className="flex items-center px-3 mb-3">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">My Workspace</span>
+                </div>
+                <div className="space-y-1">
+                  {[
+                    { id: 'weekly-brief', label: 'Weekly Brief', icon: Sparkles },
+                    ...personalItems
+                  ].map((item) => {
+                    const isActive = activeTab === item.id;
+                    const Icon = item.icon;
+                    
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          setActiveTab(item.id as any);
+                          if (!isDesktop) setIsOpen(false);
+                        }}
+                        className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+                          isActive 
+                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 shadow-sm ring-1 ring-blue-200 dark:ring-blue-800' 
+                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
+                        }`}
+                      >
+                        <div className="relative flex items-center space-x-3 z-10">
+                          <Icon size={18} strokeWidth={isActive ? 2.5 : 2} className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300'} />
+                          <span className={`text-sm ${isActive ? 'font-semibold' : 'font-medium'}`}>{item.label}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
             </nav>
+            
+            {/* Footer / User Info could go here */}
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-900/20">
+               <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-violet-500 flex items-center justify-center text-white font-bold text-xs">
+                    G
+                  </div>
+                  <div className="flex flex-col">
+                     <span className="text-xs font-bold text-slate-900 dark:text-white">Google Cloud User</span>
+                     <span className="text-[10px] text-slate-500 dark:text-slate-400">Enterprise Edition</span>
+                  </div>
+               </div>
+            </div>
+
           </motion.div>
         )}
       </AnimatePresence>

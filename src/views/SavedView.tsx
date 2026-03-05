@@ -17,7 +17,7 @@ interface SavedViewProps {
   savedPosts: string[];
   subscribedCategories: string[];
   toggleCategorySubscription: (category: string) => void;
-  handleCategoryChange: (category: string | null) => void;
+  handleCategoryChange: (category: string) => void;
   analyses: Record<string, AnalysisResult>;
   isPresentationMode: boolean;
   onClearAll: () => void;
@@ -55,13 +55,13 @@ export const SavedView: React.FC<SavedViewProps> = ({
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
-        <div className="w-24 h-24 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-6">
-          <Bookmark size={48} className="text-blue-500 dark:text-blue-400" />
+        <div className="w-24 h-24 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mb-6">
+          <Bookmark size={48} className="text-indigo-500 dark:text-indigo-400" />
         </div>
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+        <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
           Your reading list is empty
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 max-w-md mb-8">
+        <p className="text-zinc-500 dark:text-zinc-400 max-w-md mb-8">
           Save interesting updates, tutorials, and announcements here to read them later when you have more time.
         </p>
         <button 
@@ -76,20 +76,20 @@ export const SavedView: React.FC<SavedViewProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between pb-6 border-b border-slate-200 dark:border-slate-800">
+      <div className="flex items-center justify-between pb-6 border-b border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+          <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
             <BookOpen size={24} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Reading List</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{items.length} articles saved</p>
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Reading List</h2>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">{items.length} articles saved</p>
           </div>
         </div>
         
         <button 
           onClick={handleClearAll}
-          className="btn btn-ghost text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+          className="btn btn-ghost text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20"
         >
           <Trash2 size={16} className="mr-2" />
           Clear List

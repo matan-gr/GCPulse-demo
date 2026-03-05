@@ -5,8 +5,11 @@ export interface UserPreferences {
   viewMode: 'grid' | 'list';
   subscribedCategories: string[];
   savedPosts: string[]; // Array of link IDs
-  filterCategory: string | null;
+  filterCategories: string[];
+  filterType: 'include' | 'exclude';
   filterDateRange: { start: string; end: string } | null;
+  sortBy: 'date' | 'category';
+  sortDirection: 'asc' | 'desc';
   columnOrder: string[];
   hiddenColumns: string[];
 }
@@ -15,9 +18,12 @@ const DEFAULT_PREFS: UserPreferences = {
   viewMode: 'grid',
   subscribedCategories: [],
   savedPosts: [],
-  filterCategory: null,
+  filterCategories: [],
+  filterType: 'include',
   filterDateRange: null,
-  columnOrder: ['Cloud Blog', 'Product Updates', 'Release Notes'],
+  sortBy: 'date',
+  sortDirection: 'desc',
+  columnOrder: ['Product Updates', 'Release Notes', 'Google AI Research', 'Gemini Enterprise'],
   hiddenColumns: []
 };
 
@@ -25,7 +31,24 @@ export function useUserPreferences() {
   const [prefs, setPrefs] = useState<UserPreferences>(() => {
     const saved = localStorage.getItem('user_prefs');
     if (saved) {
-      return { ...DEFAULT_PREFS, ...JSON.parse(saved) };
+      const parsed = JSON.parse(saved);
+      // Ensure new columns are added to the end if missing
+      const currentDefaults = ['Product Updates', 'Release Notes', 'Google AI Research', 'Gemini Enterprise'];
+      const savedOrder = parsed.columnOrder || [];
+      const missingColumns = currentDefaults.filter(col => !savedOrder.includes(col));
+      
+      // Migration: Handle old filterCategory (string) -> filterCategories (string[])
+      let categories = parsed.filterCategories || [];
+      if (parsed.filterCategory && typeof parsed.filterCategory === 'string') {
+        categories = [parsed.filterCategory];
+      }
+
+      return { 
+        ...DEFAULT_PREFS, 
+        ...parsed,
+        filterCategories: categories,
+        columnOrder: [...savedOrder, ...missingColumns]
+      };
     }
     
     return DEFAULT_PREFS;

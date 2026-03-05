@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo, Suspense, lazy, useRef, useCallback } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
-import { useFeed, useEndOfSupport, useSecurityBulletins, useArchitectureUpdates, useIncidents } from './hooks/useFeed';
+import { useFeed, useProductDeprecations, useSecurityBulletins, useArchitectureUpdates, useIncidents, useYouTubeFeed } from './hooks/useFeed';
 import { Toaster } from './components/ui/Toaster';
 import { FeedItem } from './types';
 import { GoogleGenAI } from "@google/genai";
@@ -19,19 +19,18 @@ import { PageLoader } from './components/ui/PageLoader';
 
 // Layout & Navigation
 import { AppLayout } from './components/layout/AppLayout';
-import { TabNavigation } from './components/TabNavigation';
 
 // Lazy Loaded Views
 const DiscoverView = lazy(() => import('./views/DiscoverView').then(module => ({ default: module.DiscoverView })));
-const EndOfSupportView = lazy(() => import('./views/EndOfSupportView').then(module => ({ default: module.EndOfSupportView })));
+const ProductDeprecationsView = lazy(() => import('./views/ProductDeprecationsView').then(module => ({ default: module.ProductDeprecationsView })));
 const ArchitectureView = lazy(() => import('./views/ArchitectureView').then(module => ({ default: module.ArchitectureView })));
 const StandardFeedView = lazy(() => import('./views/StandardFeedView').then(module => ({ default: module.StandardFeedView })));
 const SavedView = lazy(() => import('./views/SavedView').then(module => ({ default: module.SavedView })));
 const IncidentsView = lazy(() => import('./views/IncidentsView').then(module => ({ default: module.IncidentsView })));
 const SecurityView = lazy(() => import('./views/SecurityView').then(module => ({ default: module.SecurityView })));
-const GeminiAssistantView = lazy(() => import('./views/GeminiAssistantView').then(module => ({ default: module.GeminiAssistantView })));
-const DashboardView = lazy(() => import('./views/DashboardView').then(module => ({ default: module.DashboardView })));
+const WeeklyBriefView = lazy(() => import('./views/WeeklyBriefView').then(module => ({ default: module.WeeklyBriefView })));
 const ToolsView = lazy(() => import('./views/ToolsView').then(module => ({ default: module.ToolsView })));
+const YouTubeView = lazy(() => import('./views/YouTubeView').then(module => ({ default: module.YouTubeView })));
 
 // Initialize Gemini
 const apiKey = window.ENV?.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
@@ -39,18 +38,19 @@ const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 function AppContent() {
   // UI State
-  const [activeTab, setActiveTab] = useState<'all' | 'saved' | 'incidents' | 'eos' | 'security' | 'architecture' | 'tools' | 'dashboard' | 'assistant'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'saved' | 'incidents' | 'deprecations' | 'security' | 'architecture' | 'tools' | 'weekly-brief' | 'youtube' | 'cloud-blog' | 'release-notes' | 'updates'>('all');
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Data Fetching with React Query
   const { data: feed, isLoading: feedLoading, error: queryError, refetch: refetchFeed, isRefetching: feedRefetching } = useFeed();
-  const { data: eosItems, isLoading: eosLoading, error: eosError } = useEndOfSupport();
+  const { data: deprecations, isLoading: deprecationsLoading, error: deprecationsError } = useProductDeprecations();
   const { data: securityBulletins, isLoading: securityLoading, error: securityError } = useSecurityBulletins();
   const { data: architectureUpdates, isLoading: architectureLoading, error: architectureError } = useArchitectureUpdates();
   const { data: incidents, isLoading: incidentsLoading, error: incidentsError } = useIncidents();
+  const { data: youtubeFeed, isLoading: youtubeLoading, error: youtubeError } = useYouTubeFeed();
   
-  const loading = feedLoading || (activeTab === 'architecture' && architectureLoading) || (activeTab === 'incidents' && incidentsLoading) || (activeTab === 'eos' && eosLoading); // Main loading state
+  const loading = feedLoading || (activeTab === 'architecture' && architectureLoading) || (activeTab === 'incidents' && incidentsLoading) || (activeTab === 'deprecations' && deprecationsLoading) || (activeTab === 'youtube' && youtubeLoading); // Main loading state
 
   // Custom Hooks
   const { prefs, updatePrefs, toggleCategorySubscription, toggleSavedPost, clearSavedPosts } = useUserPreferences();
@@ -68,13 +68,13 @@ function AppContent() {
   // Error Handling
   useEffect(() => {
     if (queryError) toast.error("Failed to load feed updates.");
-    if (eosError) toast.error("Failed to load end of support info.");
+    if (deprecationsError) toast.error("Failed to load product deprecations.");
     if (architectureError) toast.error("Failed to load architecture updates.");
     if (incidentsError) toast.error("Failed to load incidents.");
-    if (eosItems && !eosLoading && activeTab === 'eos') {
-      toast.success("End of Support roadmap updated", { icon: <Check size={16} />, duration: 3000 });
+    if (deprecations && !deprecationsLoading && activeTab === 'deprecations') {
+      toast.success("Product deprecations updated", { icon: <Check size={16} />, duration: 3000 });
     }
-  }, [queryError, eosError, architectureError, incidentsError, eosItems, eosLoading, activeTab]);
+  }, [queryError, deprecationsError, architectureError, incidentsError, deprecations, deprecationsLoading, activeTab]);
 
   // Search & Filter State
   const [search, setSearch] = useState('');
@@ -83,17 +83,32 @@ function AppContent() {
   const [isAiLoading, setIsAiLoading] = useState(false);
   
   // Use prefs for persistence
-  const selectedCategory = prefs.filterCategory;
+  const selectedCategories = prefs.filterCategories;
+  const filterType = prefs.filterType;
   const dateRange = prefs.filterDateRange;
+  const sortBy = prefs.sortBy;
+  const sortDirection = prefs.sortDirection;
   
-  const handleCategoryChange = useCallback((category: string | null) => {
-    updatePrefs({ filterCategory: category });
+  const handleCategoryChange = useCallback((category: string) => {
+    const current = prefs.filterCategories;
+    const updated = current.includes(category)
+      ? current.filter(c => c !== category)
+      : [...current, category];
+    updatePrefs({ filterCategories: updated });
+  }, [prefs.filterCategories, updatePrefs]);
+
+  const handleFilterTypeChange = useCallback((type: 'include' | 'exclude') => {
+    updatePrefs({ filterType: type });
   }, [updatePrefs]);
 
   const handleDateRangeChange = useCallback((range: { start: string; end: string } | null) => {
     updatePrefs({ filterDateRange: range });
     if (range) toast.success("Date filter applied");
     else toast.info("Date filter cleared");
+  }, [updatePrefs]);
+
+  const handleSortChange = useCallback((sortBy: 'date' | 'category', sortDirection: 'asc' | 'desc') => {
+    updatePrefs({ sortBy, sortDirection });
   }, [updatePrefs]);
 
   const debouncedSearch = useDebounce(search, 800);
@@ -106,9 +121,10 @@ function AppContent() {
     (feed?.items || []).forEach(item => itemMap.set(item.id, item));
 
     // 2. Overlay specialized items (they have enhanced metadata/categories)
-    (eosItems || []).forEach(item => itemMap.set(item.id, item));
+    (deprecations || []).forEach(item => itemMap.set(item.id, item));
     (securityBulletins || []).forEach(item => itemMap.set(item.id, item));
     (architectureUpdates || []).forEach(item => itemMap.set(item.id, item));
+    (youtubeFeed || []).forEach(item => itemMap.set(item.id, item));
 
     // 3. Add incidents (distinct source)
     (incidents || []).forEach(item => itemMap.set(item.id, item));
@@ -123,7 +139,7 @@ function AppContent() {
 
       return new Date(b.isoDate).getTime() - new Date(a.isoDate).getTime();
     });
-  }, [feed, eosItems, securityBulletins, architectureUpdates, incidents]);
+  }, [feed, deprecations, securityBulletins, architectureUpdates, incidents, youtubeFeed]);
 
   // Extract unique categories
   const categories = useMemo(() => {
@@ -181,9 +197,13 @@ function AppContent() {
 
     if (activeTab === 'saved') items = items.filter(item => prefs.savedPosts.includes(item.link));
     else if (activeTab === 'incidents') items = items.filter(item => item.source === 'Service Health');
-    else if (activeTab === 'eos') items = items.filter(item => item.source === 'End of Support');
+    else if (activeTab === 'deprecations') items = items.filter(item => item.source === 'Product Deprecations');
     else if (activeTab === 'security') items = items.filter(item => item.source === 'Security Bulletins');
     else if (activeTab === 'architecture') items = items.filter(item => item.source === 'Architecture Center');
+    else if (activeTab === 'youtube') items = items.filter(item => item.source === 'Google Cloud YouTube');
+    else if (activeTab === 'cloud-blog') items = items.filter(item => item.source === 'Cloud Blog');
+    else if (activeTab === 'release-notes') items = items.filter(item => item.source === 'Release Notes' || item.source === 'Gemini Enterprise');
+    else if (activeTab === 'updates') items = items.filter(item => item.source === 'Product Updates' || item.source === 'Google AI Research');
 
     if (isSmartFilter && smartIndices !== null) {
       const smartItems = smartIndices.map(i => allItems[i]).filter(Boolean);
@@ -198,7 +218,17 @@ function AppContent() {
       );
     }
 
-    if (selectedCategory) items = items.filter(item => item.categories?.includes(selectedCategory));
+    if (selectedCategories.length > 0) {
+      if (filterType === 'exclude') {
+        items = items.filter(item => 
+          !item.categories?.some(cat => selectedCategories.includes(cat))
+        );
+      } else {
+        items = items.filter(item => 
+          item.categories?.some(cat => selectedCategories.includes(cat))
+        );
+      }
+    }
 
     if (dateRange?.start) {
       const start = new Date(dateRange.start).getTime();
@@ -211,8 +241,23 @@ function AppContent() {
       items = items.filter(item => new Date(item.isoDate).getTime() < endDate.getTime());
     }
 
+    // Sorting
+    if (sortBy === 'date') {
+      items.sort((a, b) => {
+        const dateA = new Date(a.isoDate).getTime();
+        const dateB = new Date(b.isoDate).getTime();
+        return sortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+    } else if (sortBy === 'category') {
+      items.sort((a, b) => {
+        const catA = a.categories?.[0] || '';
+        const catB = b.categories?.[0] || '';
+        return sortDirection === 'asc' ? catA.localeCompare(catB) : catB.localeCompare(catA);
+      });
+    }
+
     return items;
-  }, [allItems, search, isSmartFilter, smartIndices, selectedCategory, dateRange, activeTab, prefs.savedPosts]);
+  }, [allItems, search, isSmartFilter, smartIndices, selectedCategories, filterType, dateRange, activeTab, prefs.savedPosts, sortBy, sortDirection]);
 
   const handleExportCSV = useCallback(() => {
     if (filteredItems.length === 0) {
@@ -262,13 +307,13 @@ function AppContent() {
       
       // Tab switching with Cmd/Ctrl + Number
       if (e.metaKey || e.ctrlKey) {
-        if (e.key === '1') setActiveTab('dashboard');
-        if (e.key === '2') setActiveTab('assistant');
-        if (e.key === '3') setActiveTab('all');
-        if (e.key === '4') setActiveTab('incidents');
-        if (e.key === '5') setActiveTab('security');
-        if (e.key === '6') setActiveTab('eos');
-        if (e.key === '7') setActiveTab('architecture');
+        if (e.key === '1') setActiveTab('weekly-brief');
+        if (e.key === '2') setActiveTab('all');
+        if (e.key === '3') setActiveTab('incidents');
+        if (e.key === '4') setActiveTab('security');
+        if (e.key === '5') setActiveTab('deprecations');
+        if (e.key === '6') setActiveTab('architecture');
+        if (e.key === '7') setActiveTab('youtube');
         if (e.key === '8') setActiveTab('saved');
         if (e.key === '9') setActiveTab('tools');
       }
@@ -286,7 +331,7 @@ function AppContent() {
     );
   }
 
-  return (
+    return (
     <AppLayout
       activeTab={activeTab}
       setActiveTab={setActiveTab}
@@ -300,25 +345,19 @@ function AppContent() {
       setIsSmartFilter={setIsSmartFilter}
       isAiLoading={isAiLoading}
       categories={categories}
-      selectedCategory={selectedCategory}
+      selectedCategories={selectedCategories}
+      filterType={filterType}
       handleCategoryChange={handleCategoryChange}
+      handleFilterTypeChange={handleFilterTypeChange}
       dateRange={dateRange}
       handleDateRangeChange={handleDateRangeChange}
+      sortBy={sortBy}
+      sortDirection={sortDirection}
+      handleSortChange={handleSortChange}
       viewMode={prefs.viewMode}
       onViewModeChange={(mode) => updatePrefs({ viewMode: mode })}
       onExportCSV={handleExportCSV}
     >
-      <TabNavigation
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        setSearch={setSearch}
-        setIsSmartFilter={setIsSmartFilter}
-        handleCategoryChange={handleCategoryChange}
-        handleDateRangeChange={handleDateRangeChange}
-        savedCount={prefs.savedPosts.length}
-        isPresentationMode={isPresentationMode}
-      />
-
       <Suspense fallback={<PageLoader />}>
         <AnimatePresence mode="wait">
           <motion.div
@@ -330,20 +369,32 @@ function AppContent() {
           >
             {activeTab === 'tools' ? (
               <ToolsView />
-            ) : activeTab === 'dashboard' ? (
-              <DashboardView 
-                items={allItems} 
-                onNavigateToIncidents={() => setActiveTab('incidents')}
+            ) : activeTab === 'weekly-brief' ? (
+              <WeeklyBriefView items={allItems} />
+            ) : activeTab === 'youtube' ? (
+              <YouTubeView items={filteredItems} loading={youtubeLoading} />
+            ) : activeTab === 'cloud-blog' ? (
+              <StandardFeedView
+                items={filteredItems}
+                loading={loading}
+                viewMode={prefs.viewMode}
+                onSummarize={handleSummarize}
+                summarizingId={summarizingId}
+                onSave={handleSave}
+                savedPosts={prefs.savedPosts}
+                subscribedCategories={prefs.subscribedCategories}
+                toggleCategorySubscription={toggleCategorySubscription}
+                handleCategoryChange={handleCategoryChange}
+                analyses={analyses}
+                isPresentationMode={isPresentationMode}
               />
-            ) : activeTab === 'assistant' ? (
-              <GeminiAssistantView items={allItems} />
             ) : activeTab === 'incidents' ? (
               <IncidentsView 
                 items={filteredItems} 
                 loading={loading}
               />
-            ) : activeTab === 'eos' ? (
-              <EndOfSupportView items={filteredItems} loading={eosLoading} />
+            ) : activeTab === 'deprecations' ? (
+              <ProductDeprecationsView items={filteredItems} loading={deprecationsLoading} />
             ) : activeTab === 'architecture' ? (
               <ArchitectureView 
                 items={filteredItems} 

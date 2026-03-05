@@ -26,81 +26,66 @@ export const useFeed = () => {
   });
 };
 
-export const useEndOfSupport = () => {
+export const useProductDeprecations = () => {
   return useQuery({
-    queryKey: ['end-of-support'],
-    queryFn: async (): Promise<FeedItem[]> => {
-      const apiKey = (window as any).ENV?.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-      if (!apiKey) {
-        console.warn("No Gemini API key found for EOS search");
-        return [];
-      }
+    queryKey: ['feed'], // Share cache with useFeed
+    queryFn: fetchFeed,
+    staleTime: 1000 * 60 * 5,
+    select: (data: Feed) => {
+      return data.items.filter(item => {
+        // We are looking for items from "Release Notes" that are about deprecations.
+        // The user provided source is a filter on Release Notes for "Type: Deprecation".
+        // We simulate this by filtering the canonical Release Notes feed.
+        if (item.source !== 'Release Notes') return false;
 
-      const ai = new GoogleGenAI({ apiKey });
-      
-      const prompt = `
-        Find official Google Cloud Platform (GCP) products, features, and versions that are scheduled for End of Support (EOS), End of Life (EOL), or deprecation.
-        Prioritize finding items with EOS dates in 2026.
-        Also include items for 2025 and 2027.
-        
-        Search for "Google Cloud release notes deprecations 2026", "GCP end of support schedule 2026", "GKE version end of life 2026".
-        
-        Return a JSON array with the following fields for each item:
-        - title: The name of the feature/product and version.
-        - date: The EOS/EOL date in YYYY-MM-DD format.
-        - description: A brief description of the impact and what to do (e.g. upgrade to version X).
-        - link: A link to the official documentation or release note.
-        - service: The GCP service name (e.g. GKE, Compute Engine).
-        
-        Sort by date ascending (soonest first).
-        Limit to 20 items.
-        
-        IMPORTANT: Return ONLY the JSON array. Do not include any other text or markdown formatting.
-      `;
+        const text = (item.title + " " + (item.content || "") + " " + (item.contentSnippet || "")).toLowerCase();
+        const categories = (item.categories || []).map(c => c.toLowerCase());
 
-      try {
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-          config: {
-            tools: [{ googleSearch: {} }],
-            // responseMimeType: 'application/json' is not supported with tools
-          }
-        });
+        const isDeprecation = 
+          text.includes('deprecation') || 
+          text.includes('deprecated') || 
+          text.includes('end of support') || 
+          text.includes('end of life') ||
+          text.includes('turn down') ||
+          text.includes('shut down') ||
+          text.includes('discontinued') ||
+          categories.includes('deprecation') ||
+          categories.includes('security bulletin'); // Sometimes security bulletins are related to EOL
+
+        return isDeprecation;
+      }).map(item => {
+        // Extract a potential date from the content if possible
+        let eolDate = item.isoDate;
         
-        let text = response.text;
-        if (!text) return [];
+        // Look for dates in format YYYY-MM-DD or Month DD, YYYY
+        const dateRegex = /(\d{4}-\d{2}-\d{2})|([A-Z][a-z]+ \d{1,2}, \d{4})/g;
+        const matches = (item.contentSnippet || item.content || "").match(dateRegex);
         
-        // Extract JSON array robustly
-        const start = text.indexOf('[');
-        const end = text.lastIndexOf(']');
-        if (start !== -1 && end !== -1) {
-            text = text.substring(start, end + 1);
+        if (matches) {
+            // Parse dates and find the one furthest in the future relative to publication date
+            const pubDate = new Date(item.isoDate).getTime();
+            let maxDate = pubDate;
+            
+            matches.forEach(dateStr => {
+                const d = new Date(dateStr).getTime();
+                if (!isNaN(d) && d > maxDate) {
+                    maxDate = d;
+                }
+            });
+            
+            if (maxDate > pubDate) {
+                eolDate = new Date(maxDate).toISOString();
+            }
         }
-        
-        const data = JSON.parse(text);
-        
-        // Map to FeedItem format
-        return data.map((item: any, index: number) => ({
-            id: `eos-${index}-${Date.now()}`,
-            title: item.title,
-            link: item.link || 'https://cloud.google.com/terms/deprecations',
-            isoDate: item.date, // This might be a future date
-            contentSnippet: item.description,
-            content: item.description,
-            source: 'End of Support',
-            categories: ['End of Support', item.service],
-            serviceName: item.service,
-            isActive: new Date(item.date).getTime() > Date.now() // Active if date is in future
-        }));
 
-      } catch (e) {
-        console.error("Gemini EOS Search Error:", e);
-        return [];
-      }
-    },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    gcTime: 1000 * 60 * 10, // Keep in cache for 10 minutes
+        return {
+          ...item,
+          source: 'Product Deprecations',
+          categories: Array.from(new Set(['Deprecation', ...(item.categories || [])])),
+          eolDate: eolDate
+        };
+      });
+    }
   });
 };
 
@@ -205,6 +190,62 @@ export const useArchitectureUpdates = () => {
           link,
           contentSnippet: description,
           categories: Array.from(new Set([category, ...products, ...(item.categories || [])]))
+        };
+      });
+    }
+  });
+};
+
+export const useYouTubeFeed = () => {
+  return useQuery({
+    queryKey: ['feed'], // Share cache with useFeed
+    queryFn: fetchFeed,
+    staleTime: 1000 * 60 * 5,
+    select: (data: Feed) => {
+      return data.items.filter(item => item.source === 'Google Cloud YouTube').map(item => {
+        // Extract video ID from link or id
+        let videoId = (item as any).videoId || '';
+        
+        // Try to extract from yt:video:ID format which might be in the baseId before we appended -index
+        if (!videoId && item.id && item.id.includes('yt:video:')) {
+          const match = item.id.match(/yt:video:([a-zA-Z0-9_-]{11})/);
+          if (match) {
+            videoId = match[1];
+          }
+        }
+        
+        // Fallback to link extraction
+        if (!videoId && item.link) {
+          const match = item.link.match(/(?:v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+          if (match) {
+            videoId = match[1];
+          }
+        }
+
+        const anyItem = item as any;
+        const thumbnailUrl = anyItem.mediaGroup?.['media:thumbnail']?.[0]?.$?.url;
+        const channelName = anyItem.author;
+        
+        let duration = '';
+        // Try to get duration from media:content
+        // Sometimes it's in seconds, sometimes formatted
+        const durationSeconds = anyItem.mediaGroup?.['media:content']?.[0]?.$?.duration;
+        if (durationSeconds) {
+          const totalSeconds = parseInt(durationSeconds, 10);
+          if (!isNaN(totalSeconds)) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+          }
+        }
+
+        return {
+          ...item,
+          categories: Array.from(new Set(['Video', 'YouTube', ...(item.categories || [])])),
+          videoId,
+          thumbnailUrl,
+          channelName,
+          duration,
         };
       });
     }

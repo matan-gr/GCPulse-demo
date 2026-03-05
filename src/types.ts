@@ -19,6 +19,12 @@ export interface FeedItem {
   description?: string;
   updates?: Array<{ created: string; text: string }>;
   products?: string[];
+  eolDate?: string;
+  videoId?: string;
+  thumbnailUrl?: string;
+  channelName?: string;
+  duration?: string;
+  durationSeconds?: number;
 }
 
 export interface Feed {

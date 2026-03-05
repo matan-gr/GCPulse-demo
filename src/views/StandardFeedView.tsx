@@ -16,7 +16,7 @@ interface StandardFeedViewProps {
   savedPosts: string[];
   subscribedCategories: string[];
   toggleCategorySubscription: (category: string) => void;
-  handleCategoryChange: (category: string | null) => void;
+  handleCategoryChange: (category: string) => void;
   analyses: Record<string, AnalysisResult>;
   isPresentationMode: boolean;
 }

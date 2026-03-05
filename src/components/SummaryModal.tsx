@@ -126,16 +126,19 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, tit
                         </div>
                       </section>
 
-                      {/* Target Audience */}
+                      {/* Role-Based Insights */}
                       <section className="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-2xl border border-blue-100 dark:border-blue-900/30">
                         <h3 className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-4 flex items-center">
-                          <Target size={14} className="mr-2" /> Target Audience
+                          <Target size={14} className="mr-2" /> Role-Based Insights
                         </h3>
                         <div className="text-gray-800 dark:text-gray-200 leading-relaxed">
                           <ReactMarkdown
                             components={{
-                              strong: ({node, ...props}) => <strong className="font-bold text-blue-900 dark:text-blue-300" {...props} />,
-                              code: ({node, ...props}) => <code className="bg-white dark:bg-gray-800 text-pink-600 dark:text-pink-400 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />,
+                              strong: ({node, ...props}) => <strong className="font-bold text-blue-900 dark:text-blue-300 block mt-3 mb-1 text-sm uppercase tracking-wide" {...props} />,
+                              ul: ({node, ...props}) => <ul className="list-none space-y-1 pl-0" {...props} />,
+                              li: ({node, ...props}) => <li className="text-sm" {...props} />,
+                              p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                              code: ({node, ...props}) => <code className="bg-white dark:bg-gray-800 text-pink-600 dark:text-pink-400 px-1.5 py-0.5 rounded text-xs font-mono" {...props} />,
                             }}
                           >
                             {analysis.targetAudience}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { GoogleGenAI } from "@google/genai";
 import { toast } from 'sonner';
 import { FeedItem, AnalysisResult } from '../types';
+import { extractGCPProducts } from '../utils';
 
 const apiKey = window.ENV?.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 const ai = new GoogleGenAI({ apiKey: apiKey || '' });
@@ -43,9 +44,15 @@ export const useSummarizer = () => {
     try {
       const contentToSummarize = item.content || item.contentSnippet || item.title;
       const isIncident = item.source === 'Service Health';
+      const extractedProducts = extractGCPProducts(item.title + " " + (item.contentSnippet || ""));
+      const productsContext = extractedProducts.length > 0 
+        ? `The following products were detected in the text: ${extractedProducts.join(', ')}. Please focus on these.` 
+        : '';
       
       const prompt = `
         Analyze the following Google Cloud ${isIncident ? 'Service Health incident' : 'blog post/update'}.
+        ${productsContext}
+        
         Provide a structured summary in Markdown format.
         
         Use rich formatting to make it engaging and easy to read:
@@ -61,14 +68,18 @@ export const useSummarizer = () => {
         ## Impact
         (Business value or technical impact. Use a blockquote for the primary impact statement.)
         
+        ## Role-Based Insights
+        Provide specific takeaways for the following roles where applicable:
+        - **SRE / DevOps**: Operational impact, reliability concerns, actions needed.
+        - **Developer**: API changes, new features, code required.
+        - **Architect**: Design patterns, integration strategies, trade-offs.
+        - **CxO / Leadership**: Business value, cost implications, strategic alignment.
+        
         ## Key Takeaways
         (Bulleted list of 3-5 key points)
         
-        ## Target Audience
-        (Who should care? e.g., Developers, DevOps, CTOs)
-        
         ## Related Products
-        (List of specific Google Cloud products mentioned, e.g., "Compute Engine", "BigQuery", "Cloud Run". Do not include generic terms like "Cloud" or "AI".)
+        (List of specific Google Cloud products mentioned, e.g., "Compute Engine", "BigQuery", "Cloud Run". If multiple products are mentioned, list them clearly. Do not include generic terms like "Cloud" or "AI".)
 
         ---
         
@@ -119,7 +130,7 @@ export const useSummarizer = () => {
       // Parse markdown sections
       const summaryMatch = fullText.match(/## Executive Summary\n([\s\S]*?)(?=\n##|$)/);
       const impactMatch = fullText.match(/## Impact\n([\s\S]*?)(?=\n##|$)/);
-      const audienceMatch = fullText.match(/## Target Audience\n([\s\S]*?)(?=\n##|$)/);
+      const audienceMatch = fullText.match(/## Role-Based Insights\n([\s\S]*?)(?=\n##|$)/);
       const productsMatch = fullText.match(/## Related Products\n([\s\S]*?)(?=\n##|---|$)/);
 
       const analysis: AnalysisResult = {

@@ -1,9 +1,8 @@
 import React from 'react';
 import { FeedItem } from '../types';
-import { Activity, TrendingUp, Zap, Server, ShieldCheck, AlertTriangle, ArrowRight, Maximize2, Minimize2, Clock, CheckCircle } from 'lucide-react';
+import { Activity, TrendingUp, ShieldCheck, Clock, CheckCircle, Minimize2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ActivityChart } from './dashboard/ActivityChart';
-import { CategoryDistribution } from './dashboard/CategoryDistribution';
 
 interface StatusDashboardProps {
   items: FeedItem[];
@@ -38,7 +37,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
 
   // 4. Action Items Logic
   const criticalUpdates = items
-    .filter(i => i.source === 'Deprecations')
+    .filter(i => i.source === 'Product Deprecations')
     .slice(0, 5);
 
   return (
@@ -48,17 +47,17 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
       {isPresentationMode && (
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">GCP Executive Briefing</h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">Real-time landscape analysis and critical updates</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">GCP Executive Briefing</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">Real-time landscape analysis and critical updates</p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="text-right">
-              <p className="text-sm font-bold text-gray-900 dark:text-white">{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Live Data</p>
+              <p className="text-sm font-bold text-slate-900 dark:text-white">{new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Live Data</p>
             </div>
             <button 
               onClick={onTogglePresentationMode}
-              className="p-2 bg-white dark:bg-gray-800 rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 transition-colors"
+              className="p-2 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 transition-colors"
               title="Exit Presentation Mode"
             >
               <Minimize2 size={20} />
@@ -74,17 +73,17 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
         <motion.div 
           layout
           className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 ${
-            hasActiveIncidents ? 'border-l-red-500 bg-red-50/50 dark:bg-red-900/10' : 'border-l-emerald-500 bg-white dark:bg-slate-900'
+            hasActiveIncidents ? 'border-l-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-l-emerald-500 bg-white dark:bg-[#15171c]'
           } ${isPresentationMode ? 'h-64' : 'h-60'}`}
         >
           <div className="flex justify-between items-start z-10">
             <div>
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">System Health</p>
-              <h3 className={`text-2xl font-bold ${hasActiveIncidents ? 'text-red-700 dark:text-red-400' : 'text-slate-900 dark:text-white'}`}>
+              <h3 className={`text-2xl font-bold ${hasActiveIncidents ? 'text-rose-700 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
                 {hasActiveIncidents ? 'Service Disruption' : 'Fully Operational'}
               </h3>
             </div>
-            <div className={`p-2 rounded-lg ${hasActiveIncidents ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600'}`}>
+            <div className={`p-2 rounded-lg ${hasActiveIncidents ? 'bg-rose-100 text-rose-600' : 'bg-emerald-100 text-emerald-600'}`}>
               <Activity size={24} />
             </div>
           </div>
@@ -92,11 +91,11 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
           <div className="z-10 mt-4">
             {hasActiveIncidents ? (
               <div className="space-y-2">
-                <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                <p className="text-sm font-medium text-rose-800 dark:text-rose-300">
                   {activeIncidents.length} active incident{activeIncidents.length > 1 ? 's' : ''} reported.
                 </p>
                 {activeIncidents.slice(0, 2).map((inc, idx) => (
-                  <a key={idx} href={inc.link} target="_blank" rel="noopener noreferrer" className="block text-xs text-red-600 hover:underline truncate">
+                  <a key={idx} href={inc.link} target="_blank" rel="noopener noreferrer" className="block text-xs text-rose-600 hover:underline truncate">
                     • {inc.serviceName}: {inc.title}
                   </a>
                 ))}
@@ -110,7 +109,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
 
           <div className="mt-auto pt-4 z-10">
              <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full ${hasActiveIncidents ? 'bg-red-500' : 'bg-emerald-500'}`} style={{ width: hasActiveIncidents ? '60%' : '100%' }}></div>
+                <div className={`h-full rounded-full ${hasActiveIncidents ? 'bg-rose-500' : 'bg-emerald-500'}`} style={{ width: hasActiveIncidents ? '60%' : '100%' }}></div>
              </div>
           </div>
         </motion.div>
@@ -118,7 +117,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
         {/* 2. Security Posture Card */}
         <motion.div 
           layout
-          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-purple-500 bg-white dark:bg-slate-900 ${isPresentationMode ? 'h-64' : 'h-60'}`}
+          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-violet-500 bg-white dark:bg-[#15171c] ${isPresentationMode ? 'h-64' : 'h-60'}`}
         >
           <div className="flex justify-between items-start z-10">
             <div>
@@ -127,7 +126,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
                 {newSecurityCount} New Alerts
               </h3>
             </div>
-            <div className="p-2 rounded-lg bg-purple-100 text-purple-600">
+            <div className="p-2 rounded-lg bg-violet-100 text-violet-600">
               <ShieldCheck size={24} />
             </div>
           </div>
@@ -138,8 +137,8 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
              </p>
              <div className="space-y-2">
                {securityBulletins.slice(0, 2).map((item, idx) => (
-                 <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs text-slate-700 dark:text-slate-300 hover:text-purple-600 transition-colors">
-                   <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2 flex-shrink-0" />
+                 <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer" className="flex items-center text-xs text-slate-700 dark:text-slate-300 hover:text-violet-600 transition-colors">
+                   <div className="w-1.5 h-1.5 rounded-full bg-violet-500 mr-2 flex-shrink-0" />
                    <span className="truncate">{item.title}</span>
                  </a>
                ))}
@@ -150,7 +149,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
         {/* 3. Velocity Card */}
         <motion.div 
           layout
-          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-blue-500 bg-white dark:bg-slate-900 ${isPresentationMode ? 'h-64' : 'h-60'}`}
+          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-blue-500 bg-white dark:bg-[#15171c] ${isPresentationMode ? 'h-64' : 'h-60'}`}
         >
           <div className="flex justify-between items-start z-10">
             <div>
@@ -167,7 +166,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
           <div className="z-10 mt-4 flex-1 flex flex-col justify-end">
              <div className="h-24 w-full -ml-2">
                 <ActivityChart items={items} />
-             </div>
+              </div>
              <p className="text-xs text-slate-400 text-center mt-2">7-Day Activity Trend</p>
           </div>
         </motion.div>
@@ -175,7 +174,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
         {/* 4. Action Items Card */}
         <motion.div 
           layout
-          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-amber-500 bg-white dark:bg-slate-900 ${isPresentationMode ? 'h-64' : 'h-60'}`}
+          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-amber-500 bg-white dark:bg-[#15171c] ${isPresentationMode ? 'h-64' : 'h-60'}`}
         >
           <div className="flex justify-between items-start z-10">
             <div>
