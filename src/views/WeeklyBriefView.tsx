@@ -6,6 +6,7 @@ import { motion } from 'motion/react';
 import { useWeeklyBrief } from '../hooks/useWeeklyBrief';
 import { toast } from 'sonner';
 import { marked } from 'marked';
+import { AILoading } from '../components/ui/AILoading';
 
 interface WeeklyBriefViewProps {
   items: FeedItem[];
@@ -278,17 +279,13 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
              </button>
           </div>
         ) : loading && !brief ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-slate-900/80 z-10 backdrop-blur-sm">
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-500/30 blur-2xl rounded-full animate-pulse"></div>
-              <div className="bg-white dark:bg-slate-800 p-4 rounded-full shadow-lg relative z-10">
-                <Sparkles size={48} className="text-blue-600 dark:text-blue-400 animate-bounce" />
-              </div>
-            </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6">Generating Weekly Brief</h3>
-            <p className="text-slate-500 dark:text-slate-400 mt-2 max-w-md text-center">
-              Analyzing the latest updates, security bulletins, and architecture changes from the last 7 days...
-            </p>
+          <div className="absolute inset-0 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm flex items-center justify-center">
+            <AILoading 
+              variant="card" 
+              title="Generating Weekly Brief" 
+              subtitle="Analyzing the latest updates, security bulletins, and architecture changes from the last 7 days..." 
+              icon={Sparkles}
+            />
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full p-12 text-center">

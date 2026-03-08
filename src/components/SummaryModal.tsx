@@ -5,6 +5,7 @@ import ReactMarkdown from 'react-markdown';
 
 import { InsightCharts } from './InsightCharts';
 import { AnalysisResult } from '../types';
+import { AILoading } from './ui/AILoading';
 
 interface SummaryModalProps {
   isOpen: boolean;
@@ -183,14 +184,12 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, tit
                 ) : (
                   <div className="flex flex-col items-center justify-center py-20 text-slate-400 dark:text-slate-600">
                     {isStreaming ? (
-                        <div className="flex flex-col items-center">
-                            <div className="relative">
-                                <div className="absolute inset-0 bg-blue-500 blur-xl opacity-20 rounded-full animate-pulse"></div>
-                                <Loader2 className="animate-spin mb-6 text-blue-600 dark:text-blue-400 relative z-10" size={48} />
-                            </div>
-                            <p className="font-medium text-lg text-slate-600 dark:text-slate-300">Initializing AI Analysis...</p>
-                            <p className="text-sm mt-2">Connecting to Gemini 2.5 Flash</p>
-                        </div>
+                        <AILoading 
+                          variant="inline" 
+                          title="Initializing AI Analysis..." 
+                          subtitle="Connecting to Gemini 2.5 Flash" 
+                          icon={Sparkles}
+                        />
                     ) : (
                         <div className="text-center">
                             <Sparkles size={48} className="mx-auto mb-4 opacity-20" />

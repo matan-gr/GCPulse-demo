@@ -55,12 +55,16 @@ The `Dockerfile` uses a **multi-stage build**:
 
 ### Step 1: Prepare Docker Files
 
-Rename `Dockerfile.txt` to `Dockerfile` and `dockerignore.txt` to `.dockerignore`:
+Ensure the following files exist in your root directory:
 
-```bash
-mv Dockerfile.txt Dockerfile
-mv dockerignore.txt .dockerignore
-```
+1.  **Dockerfile**: Rename `Dockerfile.txt` to `Dockerfile` if needed:
+    ```bash
+    mv Dockerfile.txt Dockerfile
+    ```
+2.  **.dockerignore**: Rename `dockerignore.txt` to `.dockerignore` if needed:
+    ```bash
+    mv dockerignore.txt .dockerignore
+    ```
 
 ### Step 2: Build and Push the Image
 
@@ -83,12 +87,12 @@ gcloud run deploy gcp-pulse-service \
   --platform managed \
   --region us-central1 \
   --allow-unauthenticated \
-  --set-env-vars GEMINI_API_KEY="your_actual_gemini_api_key_here"
+  --set-env-vars GEMINI_API_KEY="your_gemini_api_key",YOUTUBE_API_KEY="your_youtube_api_key"
 ```
 
 **Configuration Flags:**
 *   `--allow-unauthenticated`: Makes the app public. Remove for internal-only apps.
-*   `--set-env-vars`: **Required**. The app needs `GEMINI_API_KEY` to function.
+*   `--set-env-vars`: **Required**. The app needs `GEMINI_API_KEY` for AI features and `YOUTUBE_API_KEY` for video enrichment.
 *   *Note*: Cloud Run automatically injects the `PORT` environment variable (default 8080), and our container dynamically configures Nginx to listen on it. No manual port flag is needed.
 
 ### Step 4: Verify
@@ -111,11 +115,18 @@ You will see a URL like: `https://gcp-pulse-service-uc.a.run.app`. Click it to v
 *   Check Cloud Run logs: `gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=gcp-pulse-service" --limit 20`
 *   Common cause: Missing `GEMINI_API_KEY` environment variable.
 
+**4. YouTube Data Missing**
+*   Ensure `YOUTUBE_API_KEY` is set correctly. The app will log errors if enrichment fails.
+
 ---
 
 ## 💻 Local Development
 
 1.  **Install**: `npm install`
-2.  **Env**: Set `GEMINI_API_KEY` in your terminal.
+2.  **Env**: Create a `.env` file with:
+    ```env
+    GEMINI_API_KEY=your_key
+    YOUTUBE_API_KEY=your_key
+    ```
 3.  **Run**: `npm run dev` (Access at `http://localhost:3000`)
 

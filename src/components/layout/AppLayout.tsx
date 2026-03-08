@@ -81,6 +81,14 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 }) => {
   const { theme, toggleTheme } = useTheme();
   const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-app)] dark:bg-[var(--color-bg-app-dark)] font-sans text-slate-950 dark:text-slate-50 flex">
@@ -274,12 +282,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               <div className="w-px h-3 bg-slate-200 dark:bg-slate-800" />
               <div className="flex items-center space-x-2 text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                 <Database size={12} />
-                <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
               </div>
-            </div>
-            
-            <div className="text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-              GCP Pulse Intelligence &copy; {new Date().getFullYear()}
             </div>
           </div>
         </footer>

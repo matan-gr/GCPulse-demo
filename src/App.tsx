@@ -37,7 +37,7 @@ const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 function AppContent() {
   // UI State
-  const [activeTab, setActiveTab] = useState<'all' | 'saved' | 'incidents' | 'deprecations' | 'security' | 'architecture' | 'tools' | 'weekly-brief' | 'youtube' | 'cloud-blog' | 'release-notes' | 'updates'>('weekly-brief');
+  const [activeTab, setActiveTab] = useState<'all' | 'saved' | 'incidents' | 'deprecations' | 'security' | 'architecture' | 'tools' | 'weekly-brief' | 'youtube' | 'cloud-blog' | 'release-notes' | 'updates'>('all');
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 

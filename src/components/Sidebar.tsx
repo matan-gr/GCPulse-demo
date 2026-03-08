@@ -49,8 +49,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }, [setIsOpen]);
 
   const menuItems = [
-    { id: 'weekly-brief', label: 'Weekly Brief', icon: Sparkles, badge: 'AI Generated' },
     { id: 'all', label: 'Discover Feed', icon: Compass },
+    { id: 'weekly-brief', label: 'Weekly Brief', icon: Sparkles, badge: 'AI Generated' },
     { id: 'updates', label: 'Updates & Innovation', icon: Rocket },
     { id: 'cloud-blog', label: 'Cloud Blog', icon: BookOpen },
     { id: 'release-notes', label: 'Release Notes', icon: FileText },
@@ -170,7 +170,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="p-4 border-t border-slate-100 dark:border-slate-900">
                <div className="flex items-center justify-between px-2">
                   <div className="flex items-center space-x-2 text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                    <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span>Live</span>
                   </div>
                   <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">v2.6.0</span>

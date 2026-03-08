@@ -4,10 +4,17 @@ import fs from 'fs';
 import path from 'path';
 import { GoogleGenAI } from "@google/genai";
 import 'dotenv/config';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
 
 const app = express();
 const PORT = 3000;
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Trust Proxy for Cloud Run / Nginx
+app.set('trust proxy', 1);
+
 // Initialize Gemini AI client lazily
 let aiInstance: GoogleGenAI | null = null;
 
@@ -36,7 +43,9 @@ const FEEDS = [
   { url: "https://docs.cloud.google.com/feeds/gemini-enterprise-release-notes.xml", name: "Gemini Enterprise" },
   { url: "https://corsproxy.io/?https://www.youtube.com/feeds/videos.xml?channel_id=UCJS9pqu9BzkAMNTmzNMNhvg", name: "Google Cloud YouTube" }
 ];
+
 const parser = new Parser({
+  timeout: 5000, // 5 seconds timeout for RSS feeds
   customFields: {
     item: [
       ['media:group', 'mediaGroup'],
@@ -50,17 +59,24 @@ const parser = new Parser({
 // Middleware to parse JSON
 app.use(express.json());
 
-// Security Headers
-app.use((req, res, next) => {
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-  next();
+// Compression Middleware
+app.use(compression());
+
+// Security Headers with Helmet
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for now to avoid issues with external scripts/images if any
+  crossOriginEmbedderPolicy: false,
+}));
+
+// Rate Limiting Middleware
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: 'Too many requests from this IP, please try again later.'
 });
+app.use('/api/', limiter);
 
 // Helper to clean text
 const cleanText = (text: string | undefined) => {
@@ -84,28 +100,6 @@ const formatDuration = (isoDuration: string) => {
   if (hours) result += `${hours}:`;
   result += `${minutes || '0'}:${seconds.padStart(2, '0') || '00'}`;
   return result;
-};
-
-// Helper to generate accurate labels using Gemini
-const generateLabels = async (title: string, description: string) => {
-  try {
-    const response = await getAiInstance().models.generateContent({
-      model: "gemini-3.1-flash-lite-preview",
-      contents: `Analyze this YouTube video title and description and provide 3-5 highly relevant, accurate, and concise labels (tags) for this video.
-      
-      Return the result as a JSON array of strings: ["label1", "label2", "label3"]
-      
-      Title: ${title}
-      Description: ${description}`,
-      config: {
-        responseMimeType: "application/json",
-      }
-    });
-    return JSON.parse(response.text || '[]');
-  } catch (error) {
-    console.error("Error generating labels:", error);
-    return [];
-  }
 };
 
 // In-memory cache
@@ -154,9 +148,27 @@ const enrichYouTubeItems = async (items: any[]) => {
     const allDetails = [];
     for (let i = 0; i < videoIds.length; i += 50) {
       const batchIds = videoIds.slice(i, i + 50).join(',');
-      const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${batchIds}&key=${apiKey}`);
-      const data = await response.json();
-      if (data.items) allDetails.push(...data.items);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+      try {
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${batchIds}&key=${apiKey}`, {
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+           console.warn(`YouTube API error: ${response.statusText}`);
+           continue; 
+        }
+
+        const data = await response.json();
+        if (data.items) allDetails.push(...data.items);
+      } catch (err) {
+        clearTimeout(timeoutId);
+        console.error("Error fetching YouTube batch:", err);
+        // Continue to next batch even if one fails
+      }
     }
 
     // Map details back to items
@@ -238,8 +250,15 @@ let cache: {
 const CACHE_DURATION = 1000 * 60 * 5; // 5 minutes cache
 
 // API Routes
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.get("/api/feed", async (req, res) => {
   try {
+    // Set Cache-Control header for API response
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600'); // Cache for 5 mins (browser), 10 mins (CDN)
+
     // Check cache
     if (cache && (Date.now() - cache.timestamp < CACHE_DURATION)) {
       return res.json(cache.data);
@@ -275,11 +294,19 @@ app.get("/api/debug-key", (req, res) => {
 
 app.get("/api/incidents", async (req, res) => {
   try {
+    res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
     const response = await fetch("https://status.cloud.google.com/incidents.json", {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-      }
+      },
+      signal: controller.signal
     });
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
       throw new Error(`Failed to fetch incidents: ${response.statusText}`);
     }
@@ -336,7 +363,16 @@ app.get("/api/incidents", async (req, res) => {
 
 app.get("/api/ip-ranges", async (req, res) => {
   try {
-    const response = await fetch("https://www.gstatic.com/ipranges/cloud.json");
+    res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200'); // Cache for 1 hour
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+    const response = await fetch("https://www.gstatic.com/ipranges/cloud.json", {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
       throw new Error(`Failed to fetch IP ranges: ${response.statusText}`);
     }
@@ -362,7 +398,16 @@ app.get("/api/gke-feed", async (req, res) => {
   }
 
   try {
-    const response = await fetch(url);
+    res.set('Cache-Control', 'public, max-age=3600, s-maxage=7200'); // Cache for 1 hour
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+    const response = await fetch(url, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
     if (!response.ok) {
       throw new Error(`Failed to fetch GKE feed: ${response.statusText}`);
     }

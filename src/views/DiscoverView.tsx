@@ -10,6 +10,7 @@ import { UserPreferences } from '../hooks/useUserPreferences';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import { useStandardFeedView } from '../hooks/useStandardFeedView';
+import { AILoading } from '../components/ui/AILoading';
 
 import { getCategoryColor } from '../utils';
 
@@ -165,10 +166,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
 
       {isAiLoading && (
           <div className="flex justify-center mb-8">
-              <div className="flex items-center space-x-2 text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-full border border-blue-100 dark:border-blue-800/30 shadow-sm animate-pulse">
-                  <Loader2 className="animate-spin" size={14} />
-                  <span className="text-xs font-bold uppercase tracking-widest">AI Analysis in progress...</span>
-              </div>
+            <AILoading variant="minimal" title="AI Analysis in progress..." />
           </div>
       )}
 
