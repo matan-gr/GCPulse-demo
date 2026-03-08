@@ -435,7 +435,7 @@ if (!isProduction) {
   app.use(express.static('dist', { index: false }));
   
   // SPA fallback with runtime env injection
-  app.get('*', (req, res) => {
+  app.get('(.*)', (req, res) => {
     const indexPath = path.resolve('dist', 'index.html');
     fs.readFile(indexPath, 'utf8', (err, html) => {
       if (err) {
