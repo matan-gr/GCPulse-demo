@@ -1,11 +1,7 @@
 import { useState } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import { toast } from 'sonner';
 import { FeedItem, AnalysisResult } from '../types';
 import { extractGCPProducts } from '../utils';
-
-const apiKey = window.ENV?.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 export const useSummarizer = () => {
   const [summarizingId, setSummarizingId] = useState<string | null>(null);
@@ -104,20 +100,34 @@ export const useSummarizer = () => {
         Content: ${contentToSummarize.slice(0, 8000)}
       `;
 
-      const result = await ai.models.generateContentStream({
-        model: 'gemini-3.1-flash-lite-preview',
-        contents: prompt,
+      const response = await fetch('/api/summarize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
       });
 
+      if (!response.ok) {
+        throw new Error(`Summarization failed: ${response.statusText}`);
+      }
+
+      if (!response.body) {
+        throw new Error('No response body');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
       let fullText = '';
-      for await (const chunk of result) {
-        const chunkText = chunk.text;
-        if (chunkText) {
-          fullText += chunkText;
-          // Only show the markdown part in the stream (hide the JSON block if it starts appearing)
-          const cleanText = fullText.split('```json')[0];
-          setSummaryModal(prev => prev ? { ...prev, streamContent: cleanText } : null);
-        }
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunkText = decoder.decode(value, { stream: true });
+        fullText += chunkText;
+        
+        // Only show the markdown part in the stream (hide the JSON block if it starts appearing)
+        const cleanText = fullText.split('```json')[0];
+        setSummaryModal(prev => prev ? { ...prev, streamContent: cleanText } : null);
       }
 
       // Parse the final result to extract JSON
@@ -161,7 +171,7 @@ export const useSummarizer = () => {
       console.error("Summarization failed:", e);
       
       if (e.message?.includes('429') || e.message?.includes('RESOURCE_EXHAUSTED')) {
-        toast.error("Daily AI quota exceeded. Please try again later or check your API key plan.");
+        toast.error("Daily AI quota exceeded. Please try again later.");
       } else {
         toast.error("Failed to analyze article. Please try again.");
       }

@@ -2,7 +2,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Feed, FeedItem } from '../types';
 import { extractGCPProducts, cleanText } from '../utils';
-import { GoogleGenAI } from "@google/genai";
 
 const fetchFeed = async (): Promise<Feed> => {
   try {

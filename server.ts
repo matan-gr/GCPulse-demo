@@ -1,3 +1,4 @@
+// ... imports
 import express from "express";
 import Parser from "rss-parser";
 import fs from 'fs';
@@ -9,7 +10,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Trust Proxy for Cloud Run / Nginx
@@ -57,7 +58,7 @@ const parser = new Parser({
 });
 
 // Middleware to parse JSON
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // Increased limit for large payloads
 
 // Compression Middleware
 app.use(compression());
@@ -420,6 +421,87 @@ app.get("/api/gke-feed", async (req, res) => {
   }
 });
 
+// --- AI Endpoints ---
+
+app.post("/api/smart-filter", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required" });
+    }
+
+    const ai = getAiInstance();
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.1-flash-lite-preview',
+      contents: prompt,
+      config: { responseMimeType: 'application/json' }
+    });
+
+    res.json({ text: response.text });
+  } catch (error: any) {
+    console.error("AI Smart Filter Error:", error);
+    res.status(500).json({ error: error.message || "AI processing failed" });
+  }
+});
+
+app.post("/api/summarize", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required" });
+    }
+
+    const ai = getAiInstance();
+    const result = await ai.models.generateContentStream({
+      model: 'gemini-3.1-flash-lite-preview',
+      contents: prompt,
+    });
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+
+    for await (const chunk of result) {
+      const text = chunk.text;
+      if (text) {
+        res.write(text);
+      }
+    }
+    res.end();
+  } catch (error: any) {
+    console.error("AI Summarize Error:", error);
+    // If headers haven't been sent, send JSON error
+    if (!res.headersSent) {
+      res.status(500).json({ error: error.message || "AI processing failed" });
+    } else {
+      // If stream started, we can't send JSON, just end it
+      res.end();
+    }
+  }
+});
+
+app.post("/api/weekly-brief", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required" });
+    }
+
+    const ai = getAiInstance();
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.1-flash-lite-preview',
+      contents: prompt,
+      config: {
+        tools: [{ googleSearch: {} }],
+      }
+    });
+
+    res.json({ text: response.text });
+  } catch (error: any) {
+    console.error("AI Weekly Brief Error:", error);
+    res.status(500).json({ error: error.message || "AI processing failed" });
+  }
+});
+
 // Vite middleware for development
 if (!isProduction) {
   const { createServer: createViteServer } = await import('vite');
@@ -435,7 +517,8 @@ if (!isProduction) {
   app.use(express.static('dist', { index: false }));
   
   // SPA fallback with runtime env injection
-  app.get('/:pathMatch(.*)', (req, res) => {
+  // FIXED: Use standard wildcard route instead of path-to-regexp syntax
+  app.get('*', (req, res) => {
     const indexPath = path.resolve('dist', 'index.html');
     fs.readFile(indexPath, 'utf8', (err, html) => {
       if (err) {
@@ -443,13 +526,10 @@ if (!isProduction) {
         return res.status(500).send('Internal Server Error');
       }
       
-      // Inject env vars
-      const injectedHtml = html.replace(
-        '<head>',
-        `<head><script>window.ENV = { GEMINI_API_KEY: "${process.env.GEMINI_API_KEY || ''}" };</script>`
-      );
+      // REMOVED: Insecure injection of GEMINI_API_KEY
+      // The client now uses server-side endpoints for AI operations.
       
-      res.send(injectedHtml);
+      res.send(html);
     });
   });
 }

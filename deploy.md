@@ -6,12 +6,11 @@ This guide provides step-by-step instructions for deploying the GCP Pulse applic
 
 ```
 .
-├── Dockerfile.txt       # Docker build instructions (rename to Dockerfile)
-├── dockerignore.txt     # Files to ignore during Docker build (rename to .dockerignore)
+├── Dockerfile.txt       # Docker build instructions
+├── dockerignore.txt     # Files to ignore during Docker build
 ├── deploy.md            # This guide
 ├── index.html           # Entry HTML
 ├── metadata.json        # App metadata
-├── nginx.txt            # Nginx configuration (copied to /etc/nginx/nginx.conf)
 ├── package.json         # Dependencies and scripts
 ├── server.ts            # Express server entry point
 ├── tsconfig.json        # TypeScript config
@@ -32,14 +31,14 @@ This guide provides step-by-step instructions for deploying the GCP Pulse applic
 
 ## 🐳 Dockerization Strategy
 
-The application uses a **hybrid architecture** inside a single container:
+The application uses a **Node.js runtime** container:
 
-1.  **Nginx (Port 80)**: Acts as the reverse proxy and entry point. It handles incoming traffic, SSL termination (via Cloud Run), and forwards requests to the Node.js backend.
-2.  **Node.js Server (Port 3000)**: Runs the Express/Vite application to serve the frontend and API.
+1.  **Node.js Server (Port 3000)**: Runs the Express application which serves both the API endpoints and the static frontend files.
+2.  **No Nginx Required**: The Express server handles static file serving in production, simplifying the architecture.
 
-The `Dockerfile` uses a **multi-stage build**:
+The `Dockerfile.txt` uses a **multi-stage build**:
 *   **Builder Stage**: Compiles the React frontend using Vite.
-*   **Runner Stage**: A lightweight Alpine image running both Nginx and Node.js via a startup script.
+*   **Runner Stage**: A lightweight Node.js Alpine image that runs the server.
 
 ---
 
@@ -57,14 +56,10 @@ The `Dockerfile` uses a **multi-stage build**:
 
 Ensure the following files exist in your root directory:
 
-1.  **Dockerfile**: Rename `Dockerfile.txt` to `Dockerfile` if needed:
-    ```bash
-    mv Dockerfile.txt Dockerfile
-    ```
-2.  **.dockerignore**: Rename `dockerignore.txt` to `.dockerignore` if needed:
-    ```bash
-    mv dockerignore.txt .dockerignore
-    ```
+1.  **Dockerfile.txt**: Defines the build and run process.
+2.  **dockerignore.txt**: Specifies files to exclude from the Docker build.
+
+These files are already included in the repository. Note: You may need to rename them to `Dockerfile` and `.dockerignore` for standard build tools.
 
 ### Step 2: Build and Push the Image
 
@@ -81,6 +76,8 @@ gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/gcp-pulse
 
 Deploy the container to Cloud Run.
 
+**Security Note:** We inject API keys as **runtime environment variables**. This is the most secure method for Cloud Run, as it keeps secrets out of the Docker image and out of the browser. The server accesses these keys securely to make API calls on behalf of the client.
+
 ```bash
 gcloud run deploy gcp-pulse-service \
   --image gcr.io/YOUR_PROJECT_ID/gcp-pulse \
@@ -93,7 +90,7 @@ gcloud run deploy gcp-pulse-service \
 **Configuration Flags:**
 *   `--allow-unauthenticated`: Makes the app public. Remove for internal-only apps.
 *   `--set-env-vars`: **Required**. The app needs `GEMINI_API_KEY` for AI features and `YOUTUBE_API_KEY` for video enrichment.
-*   *Note*: Cloud Run automatically injects the `PORT` environment variable (default 8080), and our container dynamically configures Nginx to listen on it. No manual port flag is needed.
+*   *Note*: Cloud Run automatically injects the `PORT` environment variable, and our server is configured to listen on it (or default to 3000).
 
 ### Step 4: Verify
 
@@ -105,17 +102,13 @@ You will see a URL like: `https://gcp-pulse-service-uc.a.run.app`. Click it to v
 
 **1. "Build failed"**
 *   Ensure `package.json` and `package-lock.json` are present.
-*   Check that `nginx.txt` exists (it's required for the Docker build).
+*   Check that `Dockerfile.txt` is correctly named (or renamed to `Dockerfile`).
 
-**2. 502 Bad Gateway**
-*   This usually means Nginx is running but can't reach the Node.js app.
-*   Check Cloud Run logs. Ensure the Node.js server started successfully on port 3000.
-
-**3. 500 Error / Crash on Start**
+**2. 500 Error / Crash on Start**
 *   Check Cloud Run logs: `gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=gcp-pulse-service" --limit 20`
 *   Common cause: Missing `GEMINI_API_KEY` environment variable.
 
-**4. YouTube Data Missing**
+**3. YouTube Data Missing**
 *   Ensure `YOUTUBE_API_KEY` is set correctly. The app will log errors if enrichment fails.
 
 ---

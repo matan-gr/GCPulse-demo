@@ -1,10 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { GoogleGenAI } from "@google/genai";
 import { FeedItem } from '../types';
 import { toast } from 'sonner';
-
-const apiKey = window.ENV?.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-const ai = new GoogleGenAI({ apiKey: apiKey || '' });
 
 export const useWeeklyBrief = (items: FeedItem[]) => {
   const [brief, setBrief] = useState<string | null>(null);
@@ -120,15 +116,19 @@ export const useWeeklyBrief = (items: FeedItem[]) => {
         [1-2 actionable pieces of advice based on this week's changes. e.g., "With the new X feature, consider refactoring Y..."]
       `;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.1-flash-lite-preview',
-        contents: prompt,
-        config: {
-          tools: [{ googleSearch: {} }],
-        }
+      const response = await fetch('/api/weekly-brief', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
       });
 
-      const text = response.text;
+      if (!response.ok) {
+        throw new Error(`Failed to generate brief: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const text = data.text;
+
       if (text) {
         setBrief(text);
         const now = new Date();

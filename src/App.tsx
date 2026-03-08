@@ -5,7 +5,6 @@ import { queryClient } from './lib/queryClient';
 import { useFeed, useProductDeprecations, useSecurityBulletins, useArchitectureUpdates, useIncidents, useYouTubeFeed } from './hooks/useFeed';
 import { Toaster } from './components/ui/Toaster';
 import { FeedItem } from './types';
-import { GoogleGenAI } from "@google/genai";
 import { useDebounce } from './hooks/useDebounce';
 import { useUserPreferences } from './hooks/useUserPreferences';
 import { Check } from 'lucide-react';
@@ -30,10 +29,6 @@ const SecurityView = lazy(() => import('./views/SecurityView').then(module => ({
 const WeeklyBriefView = lazy(() => import('./views/WeeklyBriefView').then(module => ({ default: module.WeeklyBriefView })));
 const ToolsView = lazy(() => import('./views/ToolsView').then(module => ({ default: module.ToolsView })));
 const YouTubeView = lazy(() => import('./views/YouTubeView').then(module => ({ default: module.YouTubeView })));
-
-// Initialize Gemini
-const apiKey = window.ENV?.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 function AppContent() {
   // UI State
@@ -195,15 +190,19 @@ function AppContent() {
           Return a JSON array of the indices (integers) of the posts that are most relevant to the user's query.
         `;
 
-        const response = await ai?.models.generateContent({
-          model: 'gemini-3.1-flash-lite-preview',
-          contents: prompt,
-          config: { responseMimeType: 'application/json' }
+        const response = await fetch('/api/smart-filter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
         });
+
+        if (!response.ok) {
+          throw new Error(`AI filtering failed: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        const indices = JSON.parse(data.text || '[]');
         
-        if (!response) throw new Error('AI not initialized');
-        
-        const indices = JSON.parse(response.text || '[]');
         setSmartIndices(indices);
         indices.length === 0 ? toast.info("No AI matches found.") : toast.success(`AI found ${indices.length} articles.`);
       } catch (e) {
