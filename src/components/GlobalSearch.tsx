@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, SlidersHorizontal, Sparkles, X, Calendar, Tag, LayoutGrid, List, Download, ArrowUp, ArrowDown } from 'lucide-react';
+import { Search, SlidersHorizontal, Sparkles, X, Calendar, Tag, LayoutGrid, List, Download, ArrowUp, ArrowDown, Command } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Tooltip } from './ui/Tooltip';
 
@@ -22,6 +22,7 @@ interface GlobalSearchProps {
   viewMode: 'grid' | 'list';
   onViewModeChange: (mode: 'grid' | 'list') => void;
   onExportCSV?: () => void;
+  onClearFilters?: () => void;
 }
 
 export const GlobalSearch: React.FC<GlobalSearchProps> = ({
@@ -43,6 +44,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
   viewMode,
   onViewModeChange,
   onExportCSV,
+  onClearFilters
 }) => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -59,7 +61,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const hasActiveFilters = selectedCategories.length > 0 || dateRange;
+  const hasActiveFilters = selectedCategories.length > 0 || dateRange || value !== '';
 
   return (
     <div className="relative w-full max-w-2xl mx-auto">
@@ -74,11 +76,21 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={isSmartFilter ? "Ask AI to find updates..." : "Search updates (Cmd+K)..."}
-          className={`input-field pl-11 pr-32 py-2.5 relative z-10 ${
-            isSmartFilter ? 'focus:border-violet-500 ring-violet-500/20' : ''
+          placeholder={isSmartFilter ? "Ask AI to find updates..." : "Search updates..."}
+          className={`input-field pl-11 pr-32 py-3 relative z-10 text-sm font-medium shadow-sm transition-all duration-300 ${
+            isSmartFilter 
+              ? 'focus:border-violet-500 ring-violet-500/20 bg-violet-50/30 dark:bg-violet-900/10' 
+              : 'focus:ring-2 focus:ring-blue-500/20'
           }`}
         />
+        
+        {/* Shortcut Hint */}
+        <div className="absolute inset-y-0 right-24 flex items-center pointer-events-none z-20 hidden lg:flex">
+          <div className="flex items-center gap-1 px-1.5 py-1 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-tighter">
+            <Command size={10} />
+            <span>K</span>
+          </div>
+        </div>
         
         {/* Right Actions */}
         <div className="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1 z-20">
@@ -100,17 +112,70 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           <Tooltip content="Filters & View Options" position="bottom">
             <button
               onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-              className={`p-1.5 rounded-lg transition-all ${
-                isFiltersOpen || hasActiveFilters
+              className={`p-1.5 rounded-lg transition-all relative ${
+                isFiltersOpen || (selectedCategories.length > 0 || dateRange)
                   ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' 
                   : 'text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-800'
               }`}
             >
               <SlidersHorizontal size={16} />
+              {(selectedCategories.length > 0 || dateRange) && (
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-white dark:border-[#121212]" />
+              )}
             </button>
           </Tooltip>
         </div>
       </div>
+
+      {/* Active Filters Bar */}
+      <AnimatePresence>
+        {hasActiveFilters && !isFiltersOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            className="flex flex-wrap items-center gap-2 mt-2"
+          >
+            <div className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mr-1">Active Filters:</div>
+            
+            {value && (
+              <div className="flex items-center bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-md text-[10px] font-bold border border-blue-100 dark:border-blue-800/50">
+                Search: {value}
+                <button onClick={() => onChange('')} className="ml-1.5 hover:text-blue-800 dark:hover:text-blue-200">
+                  <X size={10} />
+                </button>
+              </div>
+            )}
+
+            {selectedCategories.map(cat => (
+              <div key={cat} className="flex items-center bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-md text-[10px] font-bold border border-slate-200 dark:border-white/10">
+                {cat}
+                <button onClick={() => onSelectCategory(cat)} className="ml-1.5 hover:text-slate-800 dark:hover:text-slate-200">
+                  <X size={10} />
+                </button>
+              </div>
+            ))}
+
+            {dateRange && (
+              <div className="flex items-center bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md text-[10px] font-bold border border-emerald-100 dark:border-emerald-800/50">
+                Date Range
+                <button onClick={() => onDateRangeChange(null)} className="ml-1.5 hover:text-emerald-800 dark:hover:text-emerald-200">
+                  <X size={10} />
+                </button>
+              </div>
+            )}
+
+            {onClearFilters && (
+              <button 
+                onClick={onClearFilters}
+                className="text-[10px] font-black text-rose-500 hover:text-rose-600 uppercase tracking-widest ml-auto"
+              >
+                Clear All
+              </button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Expanded Filters Panel */}
       <AnimatePresence>
@@ -119,18 +184,15 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute top-full left-0 right-0 mt-2 p-4 bg-white dark:bg-[#15171c] rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 z-50"
+            className="absolute top-full left-0 right-0 mt-2 p-4 bg-white dark:bg-[#121212] rounded-xl shadow-xl border border-slate-200 dark:border-white/10 z-50"
           >
             <div className="space-y-4">
               {/* Header with Clear All */}
               <div className="flex justify-between items-center">
                 <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">Filters</h3>
-                {(selectedCategories.length > 0 || dateRange) && (
+                {hasActiveFilters && (
                   <button 
-                    onClick={() => {
-                      selectedCategories.forEach(cat => onSelectCategory(cat)); // Toggle all off
-                      onDateRangeChange(null);
-                    }}
+                    onClick={onClearFilters}
                     className="text-xs text-rose-500 hover:text-rose-600 font-medium flex items-center"
                   >
                     <X size={12} className="mr-1" /> Clear All

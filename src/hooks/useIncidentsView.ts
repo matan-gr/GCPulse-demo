@@ -17,16 +17,11 @@ export const useIncidentsView = (items: FeedItem[]) => {
          .sort((a, b) => new Date(b.isoDate).getTime() - new Date(a.isoDate).getTime()), 
   [items]);
   
-  // Filter history based on year (current and previous year)
+  // Filter history (all non-active incidents)
   const historyIncidents = useMemo(() => items
-    .filter(item => {
-      if (item.isActive) return false;
-      const itemYear = new Date(item.isoDate).getFullYear();
-      // Show incidents from current year and previous year
-      return itemYear === currentYear || itemYear === currentYear - 1;
-    })
+    .filter(item => !item.isActive)
     .sort((a, b) => new Date(b.isoDate).getTime() - new Date(a.isoDate).getTime()),
-  [items, currentYear]);
+  [items]);
 
   // Helper: Duration Calculator
   const getDuration = (start: string, end?: string) => {

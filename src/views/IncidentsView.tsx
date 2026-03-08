@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FeedItem } from '../types';
-import { CheckCircle2, AlertTriangle, Copy, ChevronDown, ChevronUp, ExternalLink, Clock, Activity, Search, Filter, History, AlertOctagon } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Copy, ChevronDown, ChevronUp, ExternalLink, Clock, Activity, Search, Filter, History, AlertOctagon, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useIncidentsView } from '../hooks/useIncidentsView';
 import ReactMarkdown from 'react-markdown';
@@ -81,23 +81,46 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
               {activeIncidents.length === 0 ? 'All Systems Operational' : `${activeIncidents.length} Active Incident${activeIncidents.length > 1 ? 's' : ''}`}
             </h1>
-            <p className="text-lg opacity-90 max-w-2xl">
+            <p className="text-lg opacity-90 max-w-2xl mb-6">
               {activeIncidents.length === 0 
                 ? 'Google Cloud Platform services are running normally. No active incidents reported.' 
                 : 'Our engineering teams are investigating issues affecting some Google Cloud services.'}
             </p>
+            <div className="flex items-center gap-4">
+              <a 
+                href="https://status.cloud.google.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-xl text-sm font-bold transition-all"
+              >
+                Status Page <ExternalLink size={14} className="ml-2" />
+              </a>
+              <button 
+                onClick={() => window.location.reload()}
+                className="inline-flex items-center px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-xl text-sm font-bold transition-all"
+              >
+                <RefreshCw size={14} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+            </div>
           </div>
           
           {/* Quick Stats */}
-          <div className="flex gap-4 md:gap-8 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
-            <div className="text-center px-4">
-              <div className="text-2xl font-bold">{activeIncidents.length}</div>
-              <div className="text-xs font-medium opacity-80 uppercase">Active</div>
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-4 md:gap-8 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+              <div className="text-center px-4">
+                <div className="text-2xl font-bold">{activeIncidents.length}</div>
+                <div className="text-xs font-medium opacity-80 uppercase">Active</div>
+              </div>
+              <div className="w-px bg-white/20"></div>
+              <div className="text-center px-4">
+                <div className="text-2xl font-bold">{historyIncidents.length}</div>
+                <div className="text-xs font-medium opacity-80 uppercase">Resolved</div>
+              </div>
             </div>
-            <div className="w-px bg-white/20"></div>
-            <div className="text-center px-4">
-              <div className="text-2xl font-bold">{historyIncidents.length}</div>
-              <div className="text-xs font-medium opacity-80 uppercase">Resolved</div>
+            <div className="text-right">
+              <p className="text-[10px] font-bold uppercase tracking-widest opacity-60">Last Checked</p>
+              <p className="text-xs font-bold">{new Date().toLocaleTimeString()}</p>
             </div>
           </div>
         </div>
@@ -238,7 +261,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
           <div className="flex items-center space-x-2">
             <History className="text-zinc-400" size={20} />
             <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
-              Incident History <span className="text-zinc-400 font-normal text-base ml-1">({currentYear - 1}-{currentYear})</span>
+              Incident History
             </h2>
           </div>
           

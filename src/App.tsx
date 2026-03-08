@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useMemo, Suspense, lazy, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, Suspense, lazy, useRef, useCallback, useTransition } from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
 import { useFeed, useProductDeprecations, useSecurityBulletins, useArchitectureUpdates, useIncidents, useYouTubeFeed } from './hooks/useFeed';
@@ -34,11 +34,11 @@ const YouTubeView = lazy(() => import('./views/YouTubeView').then(module => ({ d
 
 // Initialize Gemini
 const apiKey = window.ENV?.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-const ai = new GoogleGenAI({ apiKey: apiKey || '' });
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 function AppContent() {
   // UI State
-  const [activeTab, setActiveTab] = useState<'all' | 'saved' | 'incidents' | 'deprecations' | 'security' | 'architecture' | 'tools' | 'weekly-brief' | 'youtube' | 'cloud-blog' | 'release-notes' | 'updates'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'saved' | 'incidents' | 'deprecations' | 'security' | 'architecture' | 'tools' | 'weekly-brief' | 'youtube' | 'cloud-blog' | 'release-notes' | 'updates'>('weekly-brief');
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -55,6 +55,15 @@ function AppContent() {
   // Custom Hooks
   const { prefs, updatePrefs, toggleCategorySubscription, toggleSavedPost, clearSavedPosts } = useUserPreferences();
   const { summarizingId, analyses, summaryModal, handleSummarize, closeSummaryModal } = useSummarizer();
+
+  const [isPending, startTransition] = useTransition();
+
+  const handleSetActiveTab = (tab: any) => {
+    console.log("setActiveTab called with:", tab);
+    startTransition(() => {
+      setActiveTab(tab);
+    });
+  };
 
   // Feed Update Toast
   const prevRefetching = useRef(false);
@@ -77,7 +86,9 @@ function AppContent() {
   }, [queryError, deprecationsError, architectureError, incidentsError, deprecations, deprecationsLoading, activeTab]);
 
   // Search & Filter State
-  const [search, setSearch] = useState('');
+  const [searchMap, setSearchMap] = useState<Record<string, string>>({});
+  const search = searchMap[activeTab] || '';
+  const setSearch = (val: string) => setSearchMap(prev => ({ ...prev, [activeTab]: val }));
   const [isSmartFilter, setIsSmartFilter] = useState(false);
   const [smartIndices, setSmartIndices] = useState<number[] | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -110,6 +121,20 @@ function AppContent() {
   const handleSortChange = useCallback((sortBy: 'date' | 'category', sortDirection: 'asc' | 'desc') => {
     updatePrefs({ sortBy, sortDirection });
   }, [updatePrefs]);
+
+  const clearAllFilters = useCallback(() => {
+    setSearchMap(prev => ({ ...prev, [activeTab]: '' }));
+    setIsSmartFilter(false);
+    updatePrefs({ 
+      filterCategories: [], 
+      filterDateRange: null 
+    });
+    toast.info("All filters cleared");
+  }, [updatePrefs, activeTab]);
+
+  const isAnyFilterActive = useMemo(() => {
+    return search.length > 0 || selectedCategories.length > 0 || dateRange !== null || isSmartFilter;
+  }, [search, selectedCategories, dateRange, isSmartFilter]);
 
   const debouncedSearch = useDebounce(search, 800);
 
@@ -171,11 +196,13 @@ function AppContent() {
           Return a JSON array of the indices (integers) of the posts that are most relevant to the user's query.
         `;
 
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+        const response = await ai?.models.generateContent({
+          model: 'gemini-3.1-flash-lite-preview',
           contents: prompt,
           config: { responseMimeType: 'application/json' }
         });
+        
+        if (!response) throw new Error('AI not initialized');
         
         const indices = JSON.parse(response.text || '[]');
         setSmartIndices(indices);
@@ -334,7 +361,7 @@ function AppContent() {
     return (
     <AppLayout
       activeTab={activeTab}
-      setActiveTab={setActiveTab}
+      setActiveTab={handleSetActiveTab}
       isPresentationMode={isPresentationMode}
       setIsPresentationMode={setIsPresentationMode}
       isSidebarOpen={isSidebarOpen}
@@ -357,6 +384,8 @@ function AppContent() {
       viewMode={prefs.viewMode}
       onViewModeChange={(mode) => updatePrefs({ viewMode: mode })}
       onExportCSV={handleExportCSV}
+      isAnyFilterActive={isAnyFilterActive}
+      onClearFilters={clearAllFilters}
     >
       <Suspense fallback={<PageLoader />}>
         <AnimatePresence mode="wait">
@@ -372,7 +401,7 @@ function AppContent() {
             ) : activeTab === 'weekly-brief' ? (
               <WeeklyBriefView items={allItems} />
             ) : activeTab === 'youtube' ? (
-              <YouTubeView items={filteredItems} loading={youtubeLoading} />
+              <YouTubeView items={filteredItems} loading={youtubeLoading} onClearFilters={clearAllFilters} />
             ) : activeTab === 'cloud-blog' ? (
               <StandardFeedView
                 items={filteredItems}
@@ -387,6 +416,7 @@ function AppContent() {
                 handleCategoryChange={handleCategoryChange}
                 analyses={analyses}
                 isPresentationMode={isPresentationMode}
+                onClearFilters={clearAllFilters}
               />
             ) : activeTab === 'incidents' ? (
               <IncidentsView 
@@ -451,6 +481,7 @@ function AppContent() {
                   });
                 }}
                 onUpdateColumnOrder={(order) => updatePrefs({ columnOrder: order })}
+                onClearFilters={clearAllFilters}
               />
             ) : (
               <StandardFeedView
@@ -466,6 +497,7 @@ function AppContent() {
                 handleCategoryChange={handleCategoryChange}
                 analyses={analyses}
                 isPresentationMode={isPresentationMode}
+                onClearFilters={clearAllFilters}
               />
             )}
           </motion.div>

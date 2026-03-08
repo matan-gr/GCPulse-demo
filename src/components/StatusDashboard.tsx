@@ -73,7 +73,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
         <motion.div 
           layout
           className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 ${
-            hasActiveIncidents ? 'border-l-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-l-emerald-500 bg-white dark:bg-[#15171c]'
+            hasActiveIncidents ? 'border-l-rose-500 bg-rose-50/50 dark:bg-rose-900/10' : 'border-l-emerald-500 bg-white dark:bg-[#121212]'
           } ${isPresentationMode ? 'h-64' : 'h-60'}`}
         >
           <div className="flex justify-between items-start z-10">
@@ -117,7 +117,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
         {/* 2. Security Posture Card */}
         <motion.div 
           layout
-          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-violet-500 bg-white dark:bg-[#15171c] ${isPresentationMode ? 'h-64' : 'h-60'}`}
+          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-violet-500 bg-white dark:bg-[#121212] ${isPresentationMode ? 'h-64' : 'h-60'}`}
         >
           <div className="flex justify-between items-start z-10">
             <div>
@@ -149,7 +149,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
         {/* 3. Velocity Card */}
         <motion.div 
           layout
-          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-blue-500 bg-white dark:bg-[#15171c] ${isPresentationMode ? 'h-64' : 'h-60'}`}
+          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-blue-500 bg-white dark:bg-[#121212] ${isPresentationMode ? 'h-64' : 'h-60'}`}
         >
           <div className="flex justify-between items-start z-10">
             <div>
@@ -174,7 +174,7 @@ export const StatusDashboard: React.FC<StatusDashboardProps> = ({
         {/* 4. Action Items Card */}
         <motion.div 
           layout
-          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-amber-500 bg-white dark:bg-[#15171c] ${isPresentationMode ? 'h-64' : 'h-60'}`}
+          className={`card p-6 flex flex-col justify-between relative overflow-hidden border-l-4 border-l-amber-500 bg-white dark:bg-[#121212] ${isPresentationMode ? 'h-64' : 'h-60'}`}
         >
           <div className="flex justify-between items-start z-10">
             <div>

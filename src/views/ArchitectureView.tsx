@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { FeedItem } from '../types';
 import { Layers, ArrowRight, Star, Zap, Box, Grid, Server, Database, Cloud, Shield, Cpu, Globe, ExternalLink, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useArchitectureView } from '../hooks/useArchitectureView';
 
 interface ArchitectureViewProps {
   items: FeedItem[];

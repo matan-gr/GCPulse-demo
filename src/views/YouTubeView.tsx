@@ -1,15 +1,16 @@
 import React from 'react';
 import { FeedItem } from '../types';
 import { motion } from 'motion/react';
-import { Youtube, ExternalLink, Calendar, Play } from 'lucide-react';
+import { Youtube, ExternalLink, Calendar, Play, Clock, Eye, ThumbsUp } from 'lucide-react';
 import { EmptyState } from '../components/EmptyState';
 
 interface YouTubeViewProps {
   items: FeedItem[];
   loading: boolean;
+  onClearFilters?: () => void;
 }
 
-export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading }) => {
+export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading, onClearFilters }) => {
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -31,7 +32,9 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading }) => {
       <EmptyState 
         icon={Youtube}
         title="No videos found"
-        description="There are currently no videos available from the Google Cloud YouTube channel."
+        description="There are currently no videos available matching your filters."
+        actionLabel="Clear All Filters"
+        onAction={onClearFilters}
       />
     );
   }
@@ -86,6 +89,12 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading }) => {
                     <Play className="w-8 h-8 text-white ml-1" />
                   </div>
                 </div>
+                {item.duration && (
+                  <div className="absolute bottom-2 right-2 px-1.5 py-0.5 bg-black/80 text-white text-[10px] font-bold rounded flex items-center gap-1">
+                    <Clock size={10} />
+                    {item.duration}
+                  </div>
+                )}
               </a>
             ) : (
               <a 
@@ -105,19 +114,62 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading }) => {
                 href={item.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-2 hover:text-red-600 dark:hover:text-red-400 transition-colors mb-3"
+                className="font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-2 hover:text-red-600 dark:hover:text-red-400 transition-colors mb-2"
               >
                 {item.title}
               </a>
+
+              {item.description && (
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-4 leading-relaxed">
+                  {item.description}
+                </p>
+              )}
               
-              <div className="mt-auto flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400">
-                <div className="flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5" />
-                  {new Date(item.isoDate).toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
+              <div className="mt-auto flex flex-col gap-3">
+                {item.categories && item.categories.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {item.categories.slice(0, 3).map(cat => (
+                      <span key={cat} className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[9px] font-bold rounded uppercase tracking-wider">
+                        {cat}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-1 text-zinc-600 dark:text-zinc-300 font-semibold">
+                       {(item as any).channelTitle}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(item.isoDate).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </div>
+                      {(item as any).duration && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {(item as any).duration}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1">
+                    {(item as any).viewCount && (
+                      <div className="flex items-center gap-1">
+                        {Intl.NumberFormat('en-US', { notation: 'compact' }).format((item as any).viewCount)} views
+                        <Eye className="w-3 h-3" />
+                      </div>
+                    )}
+                    {(item as any).likeCount && (
+                      <div className="flex items-center gap-1 text-red-500">
+                        {Intl.NumberFormat('en-US', { notation: 'compact' }).format((item as any).likeCount)} likes
+                        <ThumbsUp className="w-3 h-3" />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

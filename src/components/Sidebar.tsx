@@ -21,7 +21,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 interface SidebarProps {
   activeTab: string;
-  setActiveTab: (tab: 'all' | 'saved' | 'incidents' | 'deprecations' | 'security' | 'architecture' | 'tools' | 'assistant' | 'youtube' | 'cloud-blog' | 'release-notes' | 'updates') => void;
+  setActiveTab: (tab: any) => void;
   isPresentationMode: boolean;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -50,7 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }, [setIsOpen]);
 
   const menuItems = [
-    { id: 'all', label: 'Discover Feed', icon: Compass, highlighted: true },
+    { id: 'all', label: 'Discover Feed', icon: Compass },
     { id: 'updates', label: 'Updates & Innovation', icon: Rocket },
     { id: 'cloud-blog', label: 'Cloud Blog', icon: BookOpen },
     { id: 'release-notes', label: 'Release Notes', icon: FileText },
@@ -71,31 +71,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Menu Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-white dark:bg-slate-800 rounded-lg shadow-md text-slate-600 dark:text-slate-300"
+        className="lg:hidden fixed top-4 left-4 z-[60] p-2 bg-white dark:bg-[#121212] rounded-lg shadow-md text-slate-600 dark:text-slate-300"
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
       {/* Sidebar Container */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {((isDesktop && isDesktopOpen) || (!isDesktop && isOpen)) && (
           <motion.div 
             initial={isDesktop ? { x: -280, opacity: 0 } : { x: -280 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -280, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`fixed top-0 left-0 h-full w-72 bg-white dark:bg-[#0f1115] border-r border-slate-200 dark:border-slate-800 z-[50] shadow-xl lg:shadow-none flex flex-col`}
+            className={`fixed top-0 left-0 h-full w-72 bg-white dark:bg-[#121212] border-r border-slate-200 dark:border-white/5 z-[50] shadow-xl lg:shadow-none flex flex-col`}
           >
             {/* Logo Area */}
-            <div className="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-800/50 relative overflow-hidden bg-slate-50/50 dark:bg-slate-900/20">
-              <div className="flex items-center space-x-3 relative z-10">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm text-white">
-                  <Zap size={18} className="fill-current" />
+            <div className="h-20 flex items-center px-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950">
+              <div className="flex items-center space-x-3 group cursor-pointer">
+                <div className="relative w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20">
+                  <Zap size={20} className="text-white" />
                 </div>
-                <div>
-                  <h1 className="text-base font-bold text-slate-900 dark:text-white tracking-tight leading-none">GCP Pulse</h1>
-                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest">Enterprise</span>
-                </div>
+                <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">GCP Pulse</span>
               </div>
             </div>
 
@@ -105,13 +102,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* Main Menu */}
               <div>
                 <div className="flex items-center px-3 mb-3">
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Platform Intelligence</span>
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Platform</span>
                 </div>
                 <div className="space-y-1">
                   {menuItems.map((item) => {
                     const isActive = activeTab === item.id;
                     const Icon = item.icon;
-                    const isHighlighted = item.highlighted;
                     
                     return (
                       <button
@@ -120,27 +116,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           setActiveTab(item.id as any);
                           if (!isDesktop) setIsOpen(false);
                         }}
-                        className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 group ${
-                          isActive 
-                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 shadow-sm ring-1 ring-blue-200 dark:ring-blue-800' 
-                            : isHighlighted
-                              ? 'bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800'
-                              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
-                        }`}
+                        className={`sidebar-link ${isActive ? 'sidebar-link-active' : ''} group`}
                       >
                         <div className="relative flex items-center space-x-3 z-10">
                           <Icon 
-                            size={isHighlighted ? 20 : 18} 
-                            strokeWidth={isActive || isHighlighted ? 2.5 : 2} 
-                            className={`transition-colors ${
-                              isActive 
-                                ? 'text-blue-600 dark:text-blue-400' 
-                                : isHighlighted
-                                  ? 'text-slate-900 dark:text-white'
-                                  : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300'
-                            }`} 
+                            size={18} 
+                            className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}
                           />
-                          <span className={`text-sm ${isActive || isHighlighted ? 'font-semibold' : 'font-medium'}`}>
+                          <span className="text-sm font-medium">
                             {item.label}
                           </span>
                         </div>
@@ -148,12 +131,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         {isActive && (
                           <motion.div
                             layoutId="activeTabIndicator"
-                            className="absolute right-2 w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400"
+                            className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 shadow-[0_0_8px_rgba(37,99,235,0.6)]"
                           />
-                        )}
-                        
-                        {isHighlighted && !isActive && (
-                           <ChevronRight size={14} className="text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                         )}
                       </button>
                     );
@@ -181,16 +160,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           setActiveTab(item.id as any);
                           if (!isDesktop) setIsOpen(false);
                         }}
-                        className={`relative w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all duration-200 group ${
-                          isActive 
-                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 shadow-sm ring-1 ring-blue-200 dark:ring-blue-800' 
-                            : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
-                        }`}
+                        className={`sidebar-link ${isActive ? 'sidebar-link-active' : ''} group`}
                       >
                         <div className="relative flex items-center space-x-3 z-10">
-                          <Icon size={18} strokeWidth={isActive ? 2.5 : 2} className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 group-hover:text-slate-600 dark:text-slate-500 dark:group-hover:text-slate-300'} />
-                          <span className={`text-sm ${isActive ? 'font-semibold' : 'font-medium'}`}>{item.label}</span>
+                          <Icon size={18} className={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'} />
+                          <span className="text-sm font-medium">{item.label}</span>
                         </div>
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeTabIndicatorPersonal"
+                            className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 shadow-[0_0_8px_rgba(37,99,235,0.6)]"
+                          />
+                        )}
                       </button>
                     );
                   })}
@@ -199,16 +180,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             </nav>
             
-            {/* Footer / User Info could go here */}
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-900/20">
-               <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-violet-500 flex items-center justify-center text-white font-bold text-xs">
-                    G
+            {/* Sidebar Footer */}
+            <div className="p-4 border-t border-slate-200 dark:border-white/5 bg-white dark:bg-[#121212]">
+               <div className="flex items-center justify-between px-2">
+                  <div className="flex items-center space-x-2 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Live Sync</span>
                   </div>
-                  <div className="flex flex-col">
-                     <span className="text-xs font-bold text-slate-900 dark:text-white">Google Cloud User</span>
-                     <span className="text-[10px] text-slate-500 dark:text-slate-400">Enterprise Edition</span>
-                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">v2.4.0</span>
                </div>
             </div>
 

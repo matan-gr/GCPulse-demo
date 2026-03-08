@@ -29,6 +29,7 @@ export default defineConfig(({mode}) => {
             'recharts': ['recharts'],
             'genai': ['@google/genai'],
             'ui-libs': ['lucide-react', 'sonner', '@tanstack/react-query'],
+            'common': ['./src/components/ErrorBoundary.tsx', './src/components/GlobalErrorBoundary.tsx'],
             'markdown': ['react-markdown', 'dompurify']
           },
         },

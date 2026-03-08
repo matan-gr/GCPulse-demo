@@ -62,24 +62,27 @@ export const useSummarizer = () => {
         - Use bullet points for lists.
         
         Include the following sections:
-        ## Executive Summary
-        (A brief, high-level overview. Use bolding for the most important sentence.)
+        ## 🚀 Executive Summary
+        (A high-level, punchy overview. Start with a bold sentence that summarizes the entire update.)
         
-        ## Impact
-        (Business value or technical impact. Use a blockquote for the primary impact statement.)
+        ## 📈 Business & Technical Impact
+        (Detail the business value or technical impact. Use a blockquote for the primary impact statement.)
         
-        ## Role-Based Insights
-        Provide specific takeaways for the following roles where applicable:
-        - **SRE / DevOps**: Operational impact, reliability concerns, actions needed.
-        - **Developer**: API changes, new features, code required.
-        - **Architect**: Design patterns, integration strategies, trade-offs.
+        ## ⚠️ Risks & Considerations
+        (If relevant, detail any security, operational, or cost risks. If not relevant, state "None identified.")
+        
+        ## 👥 Role-Based Insights
+        Provide specific, actionable takeaways for:
+        - **SRE / DevOps**: Operational impact, reliability, monitoring, actions needed.
+        - **Developer**: API changes, new features, code required, migration steps.
+        - **Architect**: Design patterns, integration strategies, trade-offs, scalability.
         - **CxO / Leadership**: Business value, cost implications, strategic alignment.
         
-        ## Key Takeaways
-        (Bulleted list of 3-5 key points)
+        ## 🔑 Key Takeaways
+        (Bulleted list of 3-5 high-impact points.)
         
-        ## Related Products
-        (List of specific Google Cloud products mentioned, e.g., "Compute Engine", "BigQuery", "Cloud Run". If multiple products are mentioned, list them clearly. Do not include generic terms like "Cloud" or "AI".)
+        ## 🛠️ Related Products
+        (List of specific Google Cloud products mentioned. Do not include generic terms.)
 
         ---
         
@@ -92,7 +95,8 @@ export const useSummarizer = () => {
             { "subject": "Security", "A": 0-100, "fullMark": 100 },
             { "subject": "Operational", "A": 0-100, "fullMark": 100 }
           ],
-          "actionPriority": 0-100
+          "actionPriority": 0-100,
+          "complexity": 0-100
         }
         \`\`\`
 
@@ -101,7 +105,7 @@ export const useSummarizer = () => {
       `;
 
       const result = await ai.models.generateContentStream({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.1-flash-lite-preview',
         contents: prompt,
       });
 
@@ -128,10 +132,10 @@ export const useSummarizer = () => {
       }
 
       // Parse markdown sections
-      const summaryMatch = fullText.match(/## Executive Summary\n([\s\S]*?)(?=\n##|$)/);
-      const impactMatch = fullText.match(/## Impact\n([\s\S]*?)(?=\n##|$)/);
-      const audienceMatch = fullText.match(/## Role-Based Insights\n([\s\S]*?)(?=\n##|$)/);
-      const productsMatch = fullText.match(/## Related Products\n([\s\S]*?)(?=\n##|---|$)/);
+      const summaryMatch = fullText.match(/##\s*.*?Executive Summary\n([\s\S]*?)(?=\n##|$)/);
+      const impactMatch = fullText.match(/##\s*.*?Impact\n([\s\S]*?)(?=\n##|$)/);
+      const audienceMatch = fullText.match(/##\s*.*?Role-Based Insights\n([\s\S]*?)(?=\n##|$)/);
+      const productsMatch = fullText.match(/##\s*.*?Related Products\n([\s\S]*?)(?=\n##|---|$)/);
 
       const analysis: AnalysisResult = {
         summary: summaryMatch ? summaryMatch[1].trim() : "Summary not available.",

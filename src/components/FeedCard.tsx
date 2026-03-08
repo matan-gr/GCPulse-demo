@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { FeedItem } from '../types';
-import { extractImage, extractGCPProducts } from '../utils';
-import { Tag, ExternalLink, Sparkles, Bookmark, Loader2, Check, AlertOctagon, Activity, Box, Link as LinkIcon, ChevronDown, ChevronUp, Clock, ArrowRight, Play, Youtube } from 'lucide-react';
+import { extractImage, extractGCPProducts, cn } from '../utils';
+import { Tag, ExternalLink, Sparkles, Bookmark, Loader2, Check, AlertOctagon, Activity, Box, Link as LinkIcon, ChevronDown, ChevronUp, Clock, ArrowRight, Play, Youtube, TrendingUp } from 'lucide-react';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import { format, differenceInDays } from 'date-fns';
 
 import { AnalysisResult } from '../types';
 import { Tooltip } from './ui/Tooltip';
@@ -46,16 +47,16 @@ export const FeedCard = React.memo<FeedCardProps>((props) => {
           <FeedCardContent {...props} />
         </ErrorBoundary>
       ) : (
-        <div className="w-full h-64 bg-white dark:bg-[#15171c] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col space-y-4">
+        <div className="w-full h-64 bg-white dark:bg-[#121212] rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm p-6 flex flex-col space-y-4">
             <div className="flex justify-between items-center">
-                <div className="w-24 h-6 bg-slate-100 dark:bg-slate-800 rounded-full animate-pulse" />
-                <div className="w-16 h-4 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+                <div className="w-24 h-6 bg-slate-100 dark:bg-white/5 rounded-full animate-pulse" />
+                <div className="w-16 h-4 bg-slate-100 dark:bg-white/5 rounded animate-pulse" />
             </div>
-            <div className="w-3/4 h-6 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+            <div className="w-3/4 h-6 bg-slate-100 dark:bg-white/5 rounded animate-pulse" />
             <div className="space-y-2">
-                <div className="w-full h-4 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
-                <div className="w-full h-4 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
-                <div className="w-2/3 h-4 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+                <div className="w-full h-4 bg-slate-100 dark:bg-white/5 rounded animate-pulse" />
+                <div className="w-full h-4 bg-slate-100 dark:bg-white/5 rounded animate-pulse" />
+                <div className="w-2/3 h-4 bg-slate-100 dark:bg-white/5 rounded animate-pulse" />
             </div>
         </div>
       )}
@@ -83,15 +84,17 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
   
   const image = item.thumbnailUrl || item.enclosure?.url || extractImage(item.content);
   const dateObj = new Date(item.isoDate);
-  const date = dateObj.toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-  });
+  const date = format(dateObj, 'MMM d');
+
+  // Calculate reading time (approx 200 words per minute)
+  const wordCount = (item.contentSnippet || '').split(/\s+/).length;
+  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
   // Calculate if item is "New" (within last 48 hours)
   const now = new Date();
   const hoursSince = (now.getTime() - dateObj.getTime()) / (1000 * 60 * 60);
   const isNew = hoursSince < 48;
+  const isTrending = item.source === 'Cloud Blog' || item.source === 'Google Cloud YouTube' || (item as any).viewCount > 1000;
 
   const isListView = viewMode === 'list' && !isPresentationMode;
   const isIncident = item.source === 'Service Health';
@@ -186,10 +189,10 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05 }}
-        className={`rounded-xl shadow-sm border ${cardBorder} dark:border-opacity-20 flex flex-col relative overflow-hidden group hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-white dark:bg-[#15171c] ${isPresentationMode ? 'scale-105 shadow-lg' : ''}`}
+        className={`rounded-2xl shadow-sm border ${cardBorder} dark:border-white/10 flex flex-col relative overflow-hidden group hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 bg-white dark:bg-[#121212] ${isPresentationMode ? 'scale-105 shadow-lg' : ''}`}
       >
         {/* Status Header */}
-        <div className={`px-4 py-2.5 border-b ${cardBorder} dark:border-opacity-20 ${status === 'Resolved' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : status === 'Monitoring' ? 'bg-amber-50/50 dark:bg-amber-900/10' : 'bg-rose-50/50 dark:bg-rose-900/10'} flex justify-between items-center`}>
+        <div className={`px-4 py-2.5 border-b ${cardBorder} dark:border-white/5 ${status === 'Resolved' ? 'bg-emerald-50/50 dark:bg-emerald-900/10' : status === 'Monitoring' ? 'bg-amber-50/50 dark:bg-amber-900/10' : 'bg-rose-50/50 dark:bg-rose-900/10'} flex justify-between items-center`}>
            <div className="flex items-center space-x-2">
               {status === 'Resolved' ? <Check size={14} className={iconColor} /> : <AlertOctagon size={14} className={iconColor} />}
               <span className={`text-[11px] font-bold uppercase tracking-wider ${iconColor}`}>
@@ -222,7 +225,7 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
             {item.contentSnippet}
           </p>
 
-          <div className="mt-auto z-10 flex items-center justify-between relative pt-3 border-t border-slate-100 dark:border-slate-800/50">
+          <div className="mt-auto z-10 flex items-center justify-between relative pt-3 border-t border-slate-100 dark:border-white/5">
             <a 
                 href={item.link} 
                 target="_blank" 
@@ -259,9 +262,12 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className={`card card-hover flex ${
-        isListView ? 'flex-row min-h-[160px]' : 'flex-col h-full'
-      } group relative ${isSaved ? 'ring-1 ring-blue-500 dark:ring-blue-400' : ''} ${getBorderColor(item.source)} border-t-4`}
+      className={cn(
+        "card card-hover flex group relative border-t-4",
+        isListView ? "flex-row min-h-[180px]" : "flex-col h-full",
+        isSaved && "ring-2 ring-blue-500/50 dark:ring-blue-400/50",
+        getBorderColor(item.source)
+      )}
     >
       {/* Deprecation Warning Banner */}
       {isDeprecation && daysUntilEOL > 0 && (
@@ -277,7 +283,7 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
       {/* Image Section */}
       {image && !isPresentationMode && showImages && (
         <div 
-          className={`${isListView ? 'w-56 min-w-[224px]' : isCompact ? 'h-36' : 'h-48'} overflow-hidden relative cursor-pointer group/image bg-slate-100 dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800/50`}
+          className={`${isListView ? 'w-56 min-w-[224px]' : isCompact ? 'h-36' : 'h-48'} overflow-hidden relative cursor-pointer group/image bg-slate-100 dark:bg-slate-900 border-b border-slate-100 dark:border-white/5`}
           onClick={(e) => {
             e.stopPropagation();
             onSummarize(item);
@@ -307,15 +313,6 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
                 </span>
               </div>
             )}
-            
-            {/* New Badge - Floating on Image */}
-            {isNew && !isCompact && (
-              <div className="absolute top-2 left-2 z-20">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-600 text-white shadow-sm border border-white/10 backdrop-blur-sm">
-                  NEW
-                </span>
-              </div>
-            )}
         </div>
       )}
       
@@ -323,14 +320,24 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
         <div>
           <div className={`flex items-center justify-between ${isCompact ? 'mb-2' : 'mb-3'}`}>
              <div className="flex items-center space-x-2">
-                {/* Fallback New Badge if no image */}
-                {isNew && (!image || !showImages || isCompact) && !isPresentationMode && (
-                   <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                {isNew && !isPresentationMode && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-black bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-200 dark:border-blue-800 shadow-sm shadow-blue-500/10">
+                    <Sparkles size={10} className="animate-pulse text-blue-600 dark:text-blue-400" />
                     NEW
                   </span>
                 )}
                 <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${getSourceStyles(item.source)}`}>
                   {item.source}
+                </span>
+                {isTrending && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-black bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-800 shadow-sm shadow-amber-500/10">
+                    <TrendingUp size={10} />
+                    TRENDING
+                  </span>
+                )}
+                <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                  <Clock size={10} />
+                  {readingTime} min read
                 </span>
              </div>
              <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium tabular-nums">
@@ -417,18 +424,22 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
 
           {/* AI Analysis Data */}
           {analysis && (
-            <div className={`mb-3 bg-gradient-to-br from-violet-50 to-white dark:from-violet-900/10 dark:to-slate-800 rounded-lg border border-violet-100 dark:border-violet-800/30 ${isCompact ? 'p-2' : 'p-3'} shadow-sm`}>
-              <div className="flex items-center text-[10px] font-bold text-violet-700 dark:text-violet-300 uppercase tracking-wide mb-1">
-                <Sparkles size={10} className="mr-1 fill-current" /> AI Insight
+            <div className={`mb-4 bg-gradient-to-br from-indigo-50/50 via-white to-violet-50/50 dark:from-indigo-950/30 dark:via-slate-900/50 dark:to-violet-950/30 rounded-2xl border border-indigo-100/50 dark:border-indigo-500/20 ${isCompact ? 'p-3' : 'p-5'} shadow-sm relative overflow-hidden group/ai`}>
+              <div className="absolute top-0 right-0 p-3 opacity-5 group-hover/ai:opacity-10 transition-opacity">
+                <Sparkles size={48} className="text-indigo-500" />
               </div>
-              <p className={`text-slate-700 dark:text-slate-300 leading-relaxed ${isCompact ? 'text-[10px] line-clamp-2' : 'text-xs line-clamp-3'}`}>
+              <div className="flex items-center text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.2em] mb-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 animate-pulse" />
+                AI Insight
+              </div>
+              <p className={`text-slate-700 dark:text-slate-300 leading-relaxed relative z-10 ${isCompact ? 'text-[11px] line-clamp-2' : 'text-xs line-clamp-4 font-medium'}`}>
                 {analysis.impact}
               </p>
             </div>
           )}
         </div>
         
-        <div className={`mt-auto ${!isListView ? `pt-3 border-t border-slate-100 dark:border-slate-800/50 ${isCompact ? 'pt-2' : 'pt-3'}` : ''}`}>
+        <div className={`mt-auto ${!isListView ? `pt-3 border-t border-slate-100 dark:border-white/5 ${isCompact ? 'pt-2' : 'pt-3'}` : ''}`}>
             <div className="flex items-center justify-between">
                 <a 
                     href={item.link} 

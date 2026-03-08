@@ -82,14 +82,16 @@ export const useWeeklyBrief = (items: FeedItem[]) => {
         ${contextData}
 
         **Critical Instructions:**
-        1.  **Accuracy is Paramount:** Verify dates, version numbers, and product names.
-        2.  **Deprecation Deep Dive:**
+        1.  **Comprehensive Scan:** Review ALL provided input data thoroughly. Do not miss any product updates, deprecations, or security bulletins.
+        2.  **Accuracy is Paramount:** Verify dates, version numbers, and product names.
+        3.  **Deprecation Deep Dive:**
             *   **MANDATORY:** Use the **Google Search tool** to scan for the official "Google Cloud Product Deprecations" list and recent release notes to ensure completeness.
             *   Identify any major deprecations announced in the last 7-14 days that might be missing from the provided feed.
             *   **MUST** include the specific "Shutdown Date" or "EOL Date" for every deprecation listed.
-        3.  **New Features & Options:** Highlight *new* capabilities that unlock new architectural patterns (not just minor bug fixes).
-        4.  **YouTube/Video:** If the data contains video links, summarize the key takeaway.
-        5.  **Synthesis:** Do not just list items. Connect the dots. (e.g., "The release of X complements the recent update to Y...").
+        4.  **New Features & Options:** Highlight *new* capabilities that unlock new architectural patterns (not just minor bug fixes).
+        5.  **YouTube/Video:** If the data contains video links, summarize the key takeaway.
+        6.  **Synthesis:** Do not just list items. Connect the dots. (e.g., "The release of X complements the recent update to Y...").
+        7.  **Detailed Analysis:** Provide a deep dive into the most significant changes, explaining the "Why", "What", and "How" for each.
 
         **Output Structure:**
         # 📅 Weekly Cloud Briefing
@@ -119,7 +121,7 @@ export const useWeeklyBrief = (items: FeedItem[]) => {
       `;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.1-flash-lite-preview',
         contents: prompt,
         config: {
           tools: [{ googleSearch: {} }],

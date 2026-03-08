@@ -1,3 +1,10 @@
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 export function extractImage(content: string): string | null {
   if (!content) return null;
   const match = content.match(/<img[^>]+src="([^">]+)"/);
@@ -18,6 +25,15 @@ const GCP_PRODUCTS = [
   "Operations Suite", "Cloud Logging", "Cloud Monitoring"
 ];
 
+export function cleanText(text: string | undefined): string {
+  if (!text) return "";
+  return text
+    .replace(/<[^>]*>/g, "") // Remove HTML tags
+    .replace(/&nbsp;/g, " ") // Replace &nbsp;
+    .replace(/\s+/g, " ") // Normalize whitespace
+    .trim();
+}
+
 export function extractGCPProducts(text: string): string[] {
   if (!text) return [];
   const found = new Set<string>();
@@ -30,28 +46,4 @@ export function extractGCPProducts(text: string): string[] {
   });
   
   return Array.from(found);
-}
-
-export function extractEOLDate(text: string): Date | null {
-  if (!text) return null;
-  
-  // 1. Look for "YYYY-MM-DD"
-  const isoMatch = text.match(/(\d{4}-\d{2}-\d{2})/);
-  if (isoMatch) return new Date(isoMatch[0]);
-
-  // 2. Look for "Month DD, YYYY" (e.g., "January 15, 2025")
-  const longDateMatch = text.match(/([A-Z][a-z]+ \d{1,2}, \d{4})/);
-  if (longDateMatch) {
-    const date = new Date(longDateMatch[0]);
-    if (!isNaN(date.getTime())) return date;
-  }
-
-  // 3. Look for "DD Month YYYY" (e.g., "15 January 2025")
-  const euDateMatch = text.match(/(\d{1,2} [A-Z][a-z]+ \d{4})/);
-  if (euDateMatch) {
-     const date = new Date(euDateMatch[0]);
-     if (!isNaN(date.getTime())) return date;
-  }
-
-  return null;
 }

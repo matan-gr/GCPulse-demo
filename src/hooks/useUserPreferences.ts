@@ -105,11 +105,18 @@ export function useUserPreferences() {
     toast.success("Reading list cleared");
   };
 
+  const resetPrefs = () => {
+    localStorage.removeItem('user_prefs');
+    setPrefs(DEFAULT_PREFS);
+    toast.success("Preferences reset to default");
+  };
+
   return {
     prefs,
     updatePrefs,
     toggleCategorySubscription,
     toggleSavedPost,
-    clearSavedPosts
+    clearSavedPosts,
+    resetPrefs
   };
 }

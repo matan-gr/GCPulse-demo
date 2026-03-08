@@ -2,8 +2,9 @@ import React from 'react';
 import { FeedItem } from '../types';
 import { FeedCard } from '../components/FeedCard';
 import { SkeletonCard } from '../components/SkeletonCard';
+import { EmptyState } from '../components/EmptyState';
 import { AnalysisResult } from '../types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, SearchX } from 'lucide-react';
 import { useStandardFeedView } from '../hooks/useStandardFeedView';
 
 interface StandardFeedViewProps {
@@ -19,6 +20,7 @@ interface StandardFeedViewProps {
   handleCategoryChange: (category: string) => void;
   analyses: Record<string, AnalysisResult>;
   isPresentationMode: boolean;
+  onClearFilters?: () => void;
 }
 
 export const StandardFeedView: React.FC<StandardFeedViewProps> = ({
@@ -33,7 +35,8 @@ export const StandardFeedView: React.FC<StandardFeedViewProps> = ({
   toggleCategorySubscription,
   handleCategoryChange,
   analyses,
-  isPresentationMode
+  isPresentationMode,
+  onClearFilters
 }) => {
   const { visibleItems, loadMoreRef, hasMore } = useStandardFeedView(items);
 
@@ -47,6 +50,16 @@ export const StandardFeedView: React.FC<StandardFeedViewProps> = ({
         Array.from({ length: 6 }).map((_, i) => (
           <SkeletonCard key={i} viewMode={viewMode} />
         ))
+      ) : visibleItems.length === 0 ? (
+        <div className="col-span-full">
+          <EmptyState 
+            icon={SearchX}
+            title="No items found"
+            description="No items match your current filters or search criteria."
+            actionLabel="Clear All Filters"
+            onAction={onClearFilters}
+          />
+        </div>
       ) : (
         <>
           {visibleItems.map((item, index) => (

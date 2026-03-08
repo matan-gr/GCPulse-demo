@@ -1,7 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Feed, FeedItem } from '../types';
-import { extractGCPProducts } from '../utils';
+import { extractGCPProducts, cleanText } from '../utils';
 import { GoogleGenAI } from "@google/genai";
 
 const fetchFeed = async (): Promise<Feed> => {
@@ -196,61 +196,6 @@ export const useArchitectureUpdates = () => {
   });
 };
 
-export const useYouTubeFeed = () => {
-  return useQuery({
-    queryKey: ['feed'], // Share cache with useFeed
-    queryFn: fetchFeed,
-    staleTime: 1000 * 60 * 5,
-    select: (data: Feed) => {
-      return data.items.filter(item => item.source === 'Google Cloud YouTube').map(item => {
-        // Extract video ID from link or id
-        let videoId = (item as any).videoId || '';
-        
-        // Try to extract from yt:video:ID format which might be in the baseId before we appended -index
-        if (!videoId && item.id && item.id.includes('yt:video:')) {
-          const match = item.id.match(/yt:video:([a-zA-Z0-9_-]{11})/);
-          if (match) {
-            videoId = match[1];
-          }
-        }
-        
-        // Fallback to link extraction
-        if (!videoId && item.link) {
-          const match = item.link.match(/(?:v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
-          if (match) {
-            videoId = match[1];
-          }
-        }
-
-        const anyItem = item as any;
-        const thumbnailUrl = anyItem.mediaGroup?.['media:thumbnail']?.[0]?.$?.url;
-        const channelName = anyItem.author;
-        
-        let duration = '';
-        // Try to get duration from media:content
-        // Sometimes it's in seconds, sometimes formatted
-        const durationSeconds = anyItem.mediaGroup?.['media:content']?.[0]?.$?.duration;
-        if (durationSeconds) {
-          const totalSeconds = parseInt(durationSeconds, 10);
-          if (!isNaN(totalSeconds)) {
-            const minutes = Math.floor(totalSeconds / 60);
-            const seconds = totalSeconds % 60;
-            duration = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-          }
-        }
-
-        return {
-          ...item,
-          categories: Array.from(new Set(['Video', 'YouTube', ...(item.categories || [])])),
-          videoId,
-          thumbnailUrl,
-          channelName,
-          duration,
-        };
-      });
-    }
-  });
-};
 
 export const useIncidents = () => {
   return useQuery({
@@ -262,5 +207,16 @@ export const useIncidents = () => {
       return data;
     },
     staleTime: 1000 * 60 * 5,
+  });
+};
+
+export const useYouTubeFeed = () => {
+  return useQuery({
+    queryKey: ['feed'], // Share cache with useFeed
+    queryFn: fetchFeed,
+    staleTime: 1000 * 60 * 5,
+    select: (data: Feed) => {
+      return data.items.filter(item => item.source === 'Google Cloud YouTube');
+    }
   });
 };
