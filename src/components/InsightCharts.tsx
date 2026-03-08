@@ -1,5 +1,5 @@
 import React from 'react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
 import { motion } from 'motion/react';
 import { ChartData } from '../types';
 
@@ -17,9 +17,9 @@ export const InsightCharts: React.FC<InsightChartsProps> = ({ data }) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2 }}
-        className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm"
+        className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm"
       >
-        <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 text-center">Risk Assessment</h3>
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4 text-center">Risk Assessment</h3>
         <div className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data.riskAnalysis}>
@@ -48,9 +48,9 @@ export const InsightCharts: React.FC<InsightChartsProps> = ({ data }) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.3 }}
-        className="bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center"
+        className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center"
       >
-        <h3 className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6 text-center">Action Priority Score</h3>
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-6 text-center">Action Priority Score</h3>
         
         <div className="relative w-48 h-48 flex items-center justify-center">
             {/* Circular Progress Background */}
@@ -62,7 +62,7 @@ export const InsightCharts: React.FC<InsightChartsProps> = ({ data }) => {
                     stroke="currentColor"
                     strokeWidth="12"
                     fill="transparent"
-                    className="text-zinc-100 dark:text-zinc-800"
+                    className="text-slate-100 dark:text-slate-800"
                 />
                 <motion.circle
                     initial={{ strokeDashoffset: 553 }}
@@ -82,17 +82,17 @@ export const InsightCharts: React.FC<InsightChartsProps> = ({ data }) => {
                 <motion.span 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-4xl font-bold text-zinc-900 dark:text-white"
+                    className="text-4xl font-bold text-slate-900 dark:text-white"
                 >
                     {data.actionPriority}
                 </motion.span>
-                <span className="text-xs font-medium text-zinc-500 uppercase mt-1">
+                <span className="text-xs font-medium text-slate-500 uppercase mt-1">
                     {data.actionPriority > 75 ? 'Critical' : data.actionPriority > 40 ? 'Moderate' : 'Low'}
                 </span>
             </div>
         </div>
         
-        <p className="text-center text-xs text-zinc-500 mt-6 max-w-[200px]">
+        <p className="text-center text-xs text-slate-500 mt-6 max-w-[200px]">
           AI-calculated urgency based on business impact and technical complexity.
         </p>
       </motion.div>

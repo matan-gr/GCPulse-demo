@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FeedItem } from '../types';
-import { CheckCircle2, AlertTriangle, Copy, ChevronDown, ChevronUp, ExternalLink, Clock, Activity, Search, Filter, History, AlertOctagon, RefreshCw } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, Copy, ChevronDown, ChevronUp, ExternalLink, Clock, Activity, Search, History, AlertOctagon, RefreshCw } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useIncidentsView } from '../hooks/useIncidentsView';
 import ReactMarkdown from 'react-markdown';
@@ -14,18 +14,18 @@ const FormattedUpdateText = ({ text }: { text: string }) => {
   if (!text) return null;
 
   return (
-    <div className="text-sm text-zinc-800 dark:text-zinc-200 leading-relaxed prose dark:prose-invert max-w-none prose-sm prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-li:my-0">
+    <div className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed prose dark:prose-invert max-w-none prose-sm prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-li:my-0">
       <ReactMarkdown
         components={{
-          strong: ({...props}) => <span className="font-bold text-zinc-900 dark:text-white bg-zinc-100 dark:bg-zinc-800 px-1 rounded" {...props} />,
-          h1: ({...props}) => <h3 className="text-base font-bold text-zinc-900 dark:text-white mt-3 mb-1" {...props} />,
-          h2: ({...props}) => <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-100 mt-2 mb-1" {...props} />,
-          h3: ({...props}) => <h5 className="text-sm font-semibold text-zinc-700 dark:text-zinc-200 mt-2 mb-1" {...props} />,
+          strong: ({...props}) => <span className="font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-1 rounded" {...props} />,
+          h1: ({...props}) => <h3 className="text-base font-bold text-slate-900 dark:text-white mt-3 mb-1" {...props} />,
+          h2: ({...props}) => <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 mt-2 mb-1" {...props} />,
+          h3: ({...props}) => <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200 mt-2 mb-1" {...props} />,
           ul: ({...props}) => <ul className="list-disc list-outside ml-4 space-y-1" {...props} />,
           ol: ({...props}) => <ol className="list-decimal list-outside ml-4 space-y-1" {...props} />,
           li: ({...props}) => <li className="pl-1" {...props} />,
           p: ({...props}) => <p className="mb-2 last:mb-0" {...props} />,
-          a: ({...props}) => <a className="text-indigo-600 dark:text-indigo-400 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
+          a: ({...props}) => <a className="text-blue-600 dark:text-blue-400 hover:underline" target="_blank" rel="noopener noreferrer" {...props} />,
         }}
       >
         {text}
@@ -136,7 +136,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
         <section>
           <div className="flex items-center space-x-2 mb-6">
             <div className="w-2 h-2 bg-rose-500 rounded-full animate-pulse"></div>
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Live Updates</h2>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Live Updates</h2>
           </div>
           
           <div className="grid gap-6">
@@ -145,10 +145,10 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`bg-white dark:bg-zinc-900 rounded-2xl border shadow-sm overflow-hidden transition-all ${
+                className={`bg-white dark:bg-slate-900 rounded-2xl border shadow-sm overflow-hidden transition-all ${
                   expandedIncidentId === item.id 
                     ? 'border-rose-500 ring-1 ring-rose-500 shadow-rose-100 dark:shadow-none' 
-                    : 'border-zinc-200 dark:border-zinc-800 hover:border-rose-300 dark:hover:border-rose-700'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-rose-300 dark:hover:border-rose-700'
                 }`}
               >
                 <div 
@@ -162,25 +162,25 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                           <AlertTriangle size={12} className="mr-1.5" />
                           {item.severity || "High Severity"}
                         </span>
-                        <span className="text-xs text-zinc-500 font-mono flex items-center">
+                        <span className="text-xs text-slate-500 font-mono flex items-center">
                           <Clock size={12} className="mr-1.5" />
                           Started {new Date(item.begin || '').toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                         </span>
                       </div>
-                      <h3 className="text-xl font-bold text-zinc-900 dark:text-white flex items-center gap-2 group">
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2 group">
                         {item.serviceName || "GCP Service"}
-                        <span className="text-zinc-400 group-hover:text-zinc-600 transition-colors">
+                        <span className="text-slate-400 group-hover:text-slate-600 transition-colors">
                           {expandedIncidentId === item.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                         </span>
                       </h3>
-                      <p className="text-zinc-600 dark:text-zinc-400 mt-1 text-sm">
+                      <p className="text-slate-600 dark:text-slate-400 mt-1 text-sm">
                         {item.title}
                       </p>
                     </div>
                     
                     <div className="flex items-center gap-3">
                       <div className="text-right hidden md:block">
-                        <div className="text-xs font-bold text-zinc-400 uppercase">Duration</div>
+                        <div className="text-xs font-bold text-slate-400 uppercase">Duration</div>
                         <div className="text-sm font-mono font-medium text-rose-600 dark:text-rose-400">
                           {getDuration(item.begin || '')}
                         </div>
@@ -190,7 +190,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                           e.stopPropagation();
                           handleCopyUpdate(item);
                         }}
-                        className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-500 transition-colors"
+                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500 transition-colors"
                         title="Copy Latest Update"
                       >
                         <Copy size={18} />
@@ -205,11 +205,11 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50"
+                      className="border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50"
                     >
                       <div className="p-6 md:p-8">
                         <div className="flex justify-between items-center mb-6">
-                           <h4 className="font-bold text-zinc-900 dark:text-white text-sm uppercase tracking-wider flex items-center">
+                           <h4 className="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider flex items-center">
                              <Activity size={16} className="mr-2 text-rose-500" />
                              Incident Timeline
                            </h4>
@@ -218,31 +218,31 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                              target="_blank" 
                              rel="noopener noreferrer"
                              onClick={(e) => e.stopPropagation()}
-                             className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center bg-white dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 shadow-sm"
+                             className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center bg-white dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm"
                            >
                              Official Status Page <ExternalLink size={12} className="ml-1.5" />
                            </a>
                         </div>
                         
-                        <div className="space-y-8 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px before:h-full before:w-0.5 before:bg-zinc-200 dark:before:bg-zinc-700">
+                        <div className="space-y-8 relative before:absolute before:inset-0 before:ml-2.5 before:-translate-x-px before:h-full before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700">
                           {item.updates?.map((update, idx) => (
                             <div key={idx} className="relative pl-8 group">
-                              <div className={`absolute left-0 top-1.5 w-5 h-5 rounded-full border-4 border-white dark:border-zinc-900 z-10 ${idx === 0 ? 'bg-rose-500 animate-pulse' : 'bg-zinc-300 dark:bg-zinc-600'}`}></div>
+                              <div className={`absolute left-0 top-1.5 w-5 h-5 rounded-full border-4 border-white dark:border-slate-900 z-10 ${idx === 0 ? 'bg-rose-500 animate-pulse' : 'bg-slate-300 dark:bg-slate-600'}`}></div>
                               <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 mb-2">
-                                <span className="text-xs font-bold text-zinc-900 dark:text-white">
+                                <span className="text-xs font-bold text-slate-900 dark:text-white">
                                   {new Date(update.created).toLocaleDateString()}
                                 </span>
-                                <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
+                                <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
                                   {new Date(update.created).toLocaleTimeString()}
                                 </span>
                               </div>
-                              <div className="bg-white dark:bg-zinc-800 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm group-hover:shadow-md transition-shadow">
+                              <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm group-hover:shadow-md transition-shadow">
                                 <FormattedUpdateText text={update.text} />
                               </div>
                             </div>
                           ))}
                           {(!item.updates || item.updates.length === 0) && (
-                            <div className="pl-8 text-zinc-500 italic text-sm">No detailed updates available.</div>
+                            <div className="pl-8 text-slate-500 italic text-sm">No detailed updates available.</div>
                           )}
                         </div>
                       </div>
@@ -259,36 +259,36 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
       <section>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div className="flex items-center space-x-2">
-            <History className="text-zinc-400" size={20} />
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
+            <History className="text-slate-400" size={20} />
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white">
               Incident History
             </h2>
           </div>
           
           <div className="relative w-full md:w-72">
-            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400" />
+            <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
             <input 
               type="text" 
               placeholder="Filter history by service..." 
               value={historySearch}
               onChange={(e) => setHistorySearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
             />
           </div>
         </div>
         
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800">
+              <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th className="px-6 py-4 font-bold text-zinc-500 uppercase tracking-wider text-xs w-48">Date</th>
-                  <th className="px-6 py-4 font-bold text-zinc-500 uppercase tracking-wider text-xs w-64">Service</th>
-                  <th className="px-6 py-4 font-bold text-zinc-500 uppercase tracking-wider text-xs w-32">Duration</th>
-                  <th className="px-6 py-4 font-bold text-zinc-500 uppercase tracking-wider text-xs">Impact Summary</th>
+                  <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs w-48">Date</th>
+                  <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs w-64">Service</th>
+                  <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs w-32">Duration</th>
+                  <th className="px-6 py-4 font-bold text-slate-500 uppercase tracking-wider text-xs">Impact Summary</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredHistory.length > 0 ? (
                   filteredHistory.map((item) => (
                     <React.Fragment key={item.id}>
@@ -296,36 +296,36 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                         onClick={() => toggleExpand(item.id)}
                         className={`transition-colors cursor-pointer group ${
                           expandedIncidentId === item.id 
-                            ? 'bg-indigo-50/50 dark:bg-indigo-900/10' 
-                            : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+                            ? 'bg-blue-50/50 dark:bg-blue-900/10' 
+                            : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
                         }`}
                       >
-                        <td className="px-6 py-4 whitespace-nowrap text-zinc-600 dark:text-zinc-400 font-mono text-xs">
+                        <td className="px-6 py-4 whitespace-nowrap text-slate-600 dark:text-slate-400 font-mono text-xs">
                           {new Date(item.begin || '').toLocaleString(undefined, { 
                             month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
                           })}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                          <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             {item.serviceName || "GCP Service"}
-                            <span className="text-zinc-300 group-hover:text-zinc-500 transition-colors">
+                            <span className="text-slate-300 group-hover:text-slate-500 transition-colors">
                               {expandedIncidentId === item.id ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                             {getDuration(item.begin || '', item.end)}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-zinc-600 dark:text-zinc-400 max-w-lg">
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-400 max-w-lg">
                           <p className="line-clamp-1 truncate">
                             {item.description || item.title}
                           </p>
                         </td>
                       </tr>
                       {expandedIncidentId === item.id && (
-                        <tr className="bg-zinc-50/50 dark:bg-zinc-900/50">
+                        <tr className="bg-slate-50/50 dark:bg-slate-900/50">
                           <td colSpan={4} className="px-0 py-0">
                             <motion.div
                               initial={{ height: 0, opacity: 0 }}
@@ -333,30 +333,30 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                               exit={{ height: 0, opacity: 0 }}
                               className="overflow-hidden"
                             >
-                              <div className="p-6 border-b border-zinc-100 dark:border-zinc-800">
+                              <div className="p-6 border-b border-slate-100 dark:border-slate-800">
                                 <div className="flex justify-between items-center mb-4">
-                                  <h4 className="font-bold text-zinc-900 dark:text-white text-sm flex items-center">
-                                    <Activity size={16} className="mr-2 text-indigo-500" />
+                                  <h4 className="font-bold text-slate-900 dark:text-white text-sm flex items-center">
+                                    <Activity size={16} className="mr-2 text-blue-500" />
                                     Incident Timeline
                                   </h4>
                                   <a 
                                     href={item.link} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
-                                    className="text-xs font-bold text-zinc-500 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center transition-colors"
+                                    className="text-xs font-bold text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 flex items-center transition-colors"
                                   >
                                     View Official Status Page <ExternalLink size={12} className="ml-1" />
                                   </a>
                                 </div>
-                                <div className="space-y-6 pl-4 border-l-2 border-zinc-200 dark:border-zinc-700 ml-2">
+                                <div className="space-y-6 pl-4 border-l-2 border-slate-200 dark:border-slate-700 ml-2">
                                   {item.updates?.map((update, idx) => (
                                     <div key={idx} className="relative">
-                                      <div className="absolute -left-[21px] top-1.5 w-3 h-3 rounded-full bg-zinc-300 dark:bg-zinc-600 border-2 border-white dark:border-zinc-900"></div>
-                                      <div className="text-xs font-mono text-zinc-400 mb-1 flex items-center">
+                                      <div className="absolute -left-[21px] top-1.5 w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-600 border-2 border-white dark:border-slate-900"></div>
+                                      <div className="text-xs font-mono text-slate-400 mb-1 flex items-center">
                                         <Clock size={12} className="mr-1" />
                                         {new Date(update.created).toLocaleString()}
                                       </div>
-                                      <div className="bg-white dark:bg-zinc-800 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                                      <div className="bg-white dark:bg-slate-800 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
                                         <FormattedUpdateText text={update.text} />
                                       </div>
                                     </div>
@@ -371,7 +371,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-zinc-500">
+                    <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
                       <div className="flex flex-col items-center justify-center">
                         <Search size={32} className="mb-2 opacity-50" />
                         <p>No incidents found matching your search.</p>

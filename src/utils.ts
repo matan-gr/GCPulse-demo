@@ -47,3 +47,16 @@ export function extractGCPProducts(text: string): string[] {
   
   return Array.from(found);
 }
+
+export function getCategoryColor(cat: string) {
+  const c = cat.toLowerCase();
+  if (c.includes('compute') || c.includes('engine') || c.includes('kubernetes') || c.includes('gke')) return 'blue';
+  if (c.includes('storage') || c.includes('database') || c.includes('sql') || c.includes('spanner')) return 'amber';
+  if (c.includes('network') || c.includes('vpc') || c.includes('dns') || c.includes('cdn')) return 'emerald';
+  if (c.includes('data') || c.includes('analytics') || c.includes('bigquery') || c.includes('pubsub')) return 'blue';
+  if (c.includes('ai') || c.includes('ml') || c.includes('vertex') || c.includes('gemini')) return 'pink';
+  if (c.includes('security') || c.includes('iam') || c.includes('kms') || c.includes('shield')) return 'rose';
+  if (c.includes('ops') || c.includes('monitoring') || c.includes('logging') || c.includes('trace')) return 'slate';
+  if (c.includes('dev') || c.includes('code') || c.includes('build') || c.includes('deploy')) return 'cyan';
+  return 'slate';
+}

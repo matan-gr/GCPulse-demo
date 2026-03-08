@@ -15,11 +15,11 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading, onClea
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="animate-pulse flex flex-col bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm">
-            <div className="w-full aspect-video bg-zinc-200 dark:bg-zinc-800" />
+          <div key={i} className="animate-pulse flex flex-col bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="w-full aspect-video bg-slate-200 dark:bg-slate-800" />
             <div className="p-4 space-y-3">
-              <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4" />
-              <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-1/2" />
+              <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-3/4" />
+              <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-1/2" />
             </div>
           </div>
         ))}
@@ -43,11 +43,11 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading, onClea
     <div className="space-y-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
             <Youtube className="w-6 h-6 text-red-500" />
             Google Cloud YouTube
           </h2>
-          <p className="text-zinc-500 dark:text-zinc-400 mt-1">
+          <p className="text-slate-500 dark:text-slate-400 mt-1">
             Latest videos, tutorials, and announcements from Google Cloud.
           </p>
         </div>
@@ -69,14 +69,14 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading, onClea
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
-            className="group flex flex-col bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all"
+            className="group flex flex-col bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all"
           >
             {item.videoId ? (
               <a 
                 href={item.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="relative w-full aspect-video bg-zinc-900 block group-hover:opacity-90 transition-opacity"
+                className="relative w-full aspect-video bg-slate-900 block group-hover:opacity-90 transition-opacity"
               >
                 <img 
                   src={`https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`}
@@ -101,7 +101,7 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading, onClea
                 href={item.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors"
+                className="relative w-full aspect-video bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-slate-200 dark:group-hover:bg-slate-700 transition-colors"
               >
                 <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Play className="w-8 h-8 text-red-500 ml-1" />
@@ -114,13 +114,13 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading, onClea
                 href={item.link} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="font-semibold text-zinc-900 dark:text-zinc-100 line-clamp-2 hover:text-red-600 dark:hover:text-red-400 transition-colors mb-2"
+                className="font-semibold text-slate-900 dark:text-slate-100 line-clamp-2 hover:text-red-600 dark:hover:text-red-400 transition-colors mb-2"
               >
                 {item.title}
               </a>
 
               {item.description && (
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 mb-4 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 leading-relaxed">
                   {item.description}
                 </p>
               )}
@@ -135,9 +135,9 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading, onClea
                     ))}
                   </div>
                 )}
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1 text-zinc-600 dark:text-zinc-300 font-semibold">
+                    <div className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-semibold">
                        {(item as any).channelTitle}
                     </div>
                     <div className="flex items-center gap-3">

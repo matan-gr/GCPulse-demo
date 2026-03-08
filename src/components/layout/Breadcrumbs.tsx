@@ -14,6 +14,7 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ activeTab, setActiveTa
     'cloud-blog': 'Cloud Blog',
     'release-notes': 'Release Notes',
     'deprecations': 'Product Deprecations',
+    'youtube': 'GCP YouTube Channel',
     'incidents': 'Cloud Incidents',
     'security': 'Security Bulletins',
     'architecture': 'Architecture',

@@ -55,20 +55,21 @@ export const SavedView: React.FC<SavedViewProps> = ({
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
-        <div className="w-24 h-24 bg-indigo-50 dark:bg-indigo-900/20 rounded-full flex items-center justify-center mb-6">
-          <Bookmark size={48} className="text-indigo-500 dark:text-indigo-400" />
+        <div className="w-20 h-20 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-6 border border-slate-200 dark:border-slate-800">
+          <Bookmark size={32} className="text-slate-400 dark:text-slate-500" />
         </div>
-        <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">
           Your reading list is empty
         </h2>
-        <p className="text-zinc-500 dark:text-zinc-400 max-w-md mb-8">
-          Save interesting updates, tutorials, and announcements here to read them later when you have more time.
+        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs mb-8 leading-relaxed">
+          Save interesting updates, tutorials, and announcements here to read them later.
         </p>
         <button 
           onClick={onExplore}
-          className="btn btn-primary btn-lg group"
+          className="flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-700 transition-all shadow-sm group uppercase tracking-widest"
         >
-          Explore Updates <ArrowRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+          <span>Explore Updates</span>
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
     );
@@ -76,23 +77,23 @@ export const SavedView: React.FC<SavedViewProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between pb-6 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
-            <BookOpen size={24} />
+          <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400">
+            <BookOpen size={20} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Reading List</h2>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">{items.length} articles saved</p>
+            <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Reading List</h2>
+            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{items.length} articles saved</p>
           </div>
         </div>
         
         <button 
           onClick={handleClearAll}
-          className="btn btn-ghost text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-900/20"
+          className="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-[10px] font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all uppercase tracking-widest"
         >
-          <Trash2 size={16} className="mr-2" />
-          Clear List
+          <Trash2 size={12} />
+          <span>Clear List</span>
         </button>
       </div>
 

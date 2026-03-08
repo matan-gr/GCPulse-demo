@@ -1,5 +1,5 @@
 /* Import Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -10,29 +10,41 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   
-  /* Refined Color Palette */
-  --color-brand-primary: #2563eb; /* Modern Blue */
-  --color-brand-secondary: #4f46e5; /* Indigo */
-  --color-brand-accent: #f43f5e; /* Rose */
+  /* Cloud Native Palette */
+  --color-brand-primary: #1a73e8; /* Google Blue */
+  --color-brand-secondary: #34a853; /* Google Green */
+  --color-brand-accent: #8ab4f8; /* Soft Blue */
   
-  /* Backgrounds - Light Mode */
+  /* Backgrounds - Light (Clean & Trustworthy) */
   --color-bg-app: #f8fafc; /* Slate 50 */
   --color-bg-card: #ffffff;
+  --color-bg-sidebar: #ffffff;
   
-  /* Backgrounds - Dark Mode */
-  --color-bg-app-dark: #020617; /* Slate 950 */
-  --color-bg-card-dark: #0f172a; /* Slate 900 */
+  /* Backgrounds - Dark (Deep Slate) */
+  --color-bg-app-dark: #0f172a; /* Slate 900 */
+  --color-bg-card-dark: #1e293b; /* Slate 800 */
+  --color-bg-sidebar-dark: #0f172a;
+
+  /* Category Colors - Refined */
+  --cat-compute: #3b82f6;
+  --cat-storage: #f59e0b;
+  --cat-network: #10b981;
+  --cat-data: #8b5cf6;
+  --cat-ai: #ec4899;
+  --cat-security: #f43f5e;
+  --cat-ops: #71717a;
+  --cat-dev: #06b6d4;
 }
 
 body {
   font-family: var(--font-sans);
-  @apply antialiased text-slate-900 dark:text-slate-100 bg-[var(--color-bg-app)] dark:bg-[var(--color-bg-app-dark)];
+  @apply antialiased text-slate-900 dark:text-slate-50 bg-[var(--color-bg-app)] dark:bg-[var(--color-bg-app-dark)];
 }
 
-/* Custom Scrollbar - Slim & Minimal */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -40,17 +52,42 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600 transition-colors;
+  @apply bg-slate-200 dark:bg-slate-800 rounded-full hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors;
 }
 
 /* Component Classes */
 @layer components {
-  /* Sidebar Links - More refined */
+  .glass-card {
+    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/50 shadow-sm transition-all duration-300;
+  }
+
   .sidebar-link {
-    @apply w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-all duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-100 font-medium text-sm;
+    @apply w-full flex items-center justify-between px-4 py-2.5 rounded-xl transition-all duration-200 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 font-medium text-sm;
   }
 
   .sidebar-link-active {
-    @apply bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 font-semibold shadow-sm;
+    @apply bg-blue-600 text-white dark:bg-blue-500 dark:text-white shadow-lg shadow-blue-600/20 dark:shadow-blue-500/10 font-semibold;
   }
+  
+  .category-badge {
+    @apply px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider transition-all duration-200 border;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Animations */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
 }

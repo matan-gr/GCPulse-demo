@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { FeedItem } from '../types';
-import { Layers, ArrowRight, Star, Zap, Box, Grid, Server, Database, Cloud, Shield, Cpu, Globe, ExternalLink, Filter } from 'lucide-react';
+import { Layers, ArrowRight, Star, Zap, Box, Grid, ExternalLink, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ArchitectureViewProps {
@@ -59,7 +59,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
-            <Box className="mr-3 text-indigo-600 dark:text-indigo-400" size={32} />
+            <Box className="mr-3 text-blue-600 dark:text-blue-400" size={32} />
             Architecture Center
           </h2>
           <p className="text-slate-600 dark:text-slate-400 mt-1 flex items-center">
@@ -68,7 +68,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({
               href="https://docs.cloud.google.com/architecture/release-notes" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="text-indigo-600 dark:text-indigo-400 hover:underline ml-2 text-sm flex items-center"
+              className="text-blue-600 dark:text-blue-400 hover:underline ml-2 text-sm flex items-center"
             >
               Source <ExternalLink size={12} className="ml-1" />
             </a>
@@ -85,7 +85,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${
                 selectedCategory === cat
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-200 dark:shadow-none'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-200 dark:shadow-none'
                   : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
               }`}
             >
@@ -119,7 +119,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({
             <div className="relative p-8 md:p-12 flex flex-col md:flex-row gap-8 items-start">
               <div className="flex-1 space-y-6">
                 <div className="flex items-center space-x-3">
-                  <span className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-bold uppercase tracking-wider">
+                  <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-mono font-bold uppercase tracking-wider">
                     Featured Pattern
                   </span>
                   <span className="text-slate-400 text-sm font-mono">
@@ -148,7 +148,7 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({
                     href={featuredItem.link}
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-900/20 transition-all hover:scale-105 flex items-center group/btn"
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/20 transition-all hover:scale-105 flex items-center group/btn"
                   >
                     View Architecture <ArrowRight size={18} className="ml-2 group-hover/btn:translate-x-1 transition-transform" />
                   </a>
@@ -164,9 +164,9 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({
               </div>
 
               {/* Decorative Icon */}
-              <div className="hidden md:flex items-center justify-center w-64 h-64 bg-indigo-500/10 rounded-full border border-indigo-500/20 relative">
-                <div className="absolute inset-0 rounded-full border border-indigo-500/20 animate-[spin_10s_linear_infinite]" />
-                <Layers size={80} className="text-indigo-400" />
+              <div className="hidden md:flex items-center justify-center w-64 h-64 bg-blue-500/10 rounded-full border border-blue-500/20 relative">
+                <div className="absolute inset-0 rounded-full border border-blue-500/20 animate-[spin_10s_linear_infinite]" />
+                <Layers size={80} className="text-blue-400" />
               </div>
             </div>
           </motion.div>
@@ -210,19 +210,19 @@ const ArchitectureCard = ({ item, index, onSummarize, isSummarizing, onSave, isS
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ delay: index * 0.05 }}
-      className="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-700 transition-all duration-300 overflow-hidden"
+      className="group flex flex-col bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 overflow-hidden"
     >
       {/* Card Header */}
       <div className="p-6 flex-1 flex flex-col">
         <div className="flex justify-between items-start mb-4">
-          <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/40 transition-colors">
+          <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
             <Box size={20} />
           </div>
           <button
             onClick={() => onSave(item)}
             className={`p-2 rounded-lg transition-colors ${
               isSaved 
-                ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-900/20' 
+                ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20' 
                 : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
@@ -230,7 +230,7 @@ const ArchitectureCard = ({ item, index, onSummarize, isSummarizing, onSave, isS
           </button>
         </div>
 
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
           <a href={item.link} target="_blank" rel="noopener noreferrer">
             {item.title}
           </a>
@@ -253,7 +253,7 @@ const ArchitectureCard = ({ item, index, onSummarize, isSummarizing, onSave, isS
             <button 
               onClick={() => onSummarize(item)}
               disabled={isSummarizing}
-              className="p-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors disabled:opacity-50"
+              className="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors disabled:opacity-50"
               title="AI Summary"
             >
               <Zap size={18} className={isSummarizing ? "animate-spin" : ""} />
@@ -264,7 +264,7 @@ const ArchitectureCard = ({ item, index, onSummarize, isSummarizing, onSave, isS
             href={item.link}
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-xs font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center transition-colors"
+            className="text-xs font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 flex items-center transition-colors"
           >
             View Diagram <ExternalLink size={12} className="ml-1.5" />
           </a>
@@ -272,7 +272,7 @@ const ArchitectureCard = ({ item, index, onSummarize, isSummarizing, onSave, isS
       </div>
       
       {/* Bottom accent line */}
-      <div className="h-1 w-full bg-gradient-to-r from-indigo-500 to-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+      <div className="h-1 w-full bg-gradient-to-r from-blue-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
     </motion.div>
   );
 };

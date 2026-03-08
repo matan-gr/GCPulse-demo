@@ -82,17 +82,19 @@ export const StandardFeedView: React.FC<StandardFeedViewProps> = ({
           
           {/* Load More Sentinel */}
           {hasMore ? (
-            <div ref={loadMoreRef} className="col-span-full flex justify-center py-8">
-              <div className="flex items-center space-x-2 text-slate-400 dark:text-slate-500">
-                <Loader2 className="animate-spin" size={24} />
-                <span>Loading more updates...</span>
+            <div ref={loadMoreRef} className="col-span-full flex justify-center py-12">
+              <div className="flex items-center space-x-3 text-slate-400 dark:text-slate-500">
+                <Loader2 className="animate-spin" size={18} />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Loading more updates...</span>
               </div>
             </div>
           ) : (
-            <div className="col-span-full flex justify-center py-12">
-              <p className="text-slate-400 dark:text-slate-600 text-sm font-medium">
-                You've reached the end of the feed.
+            <div className="col-span-full flex flex-col items-center justify-center py-16 space-y-4">
+              <div className="w-12 h-px bg-slate-200 dark:bg-slate-800" />
+              <p className="text-slate-400 dark:text-slate-600 text-[10px] font-bold uppercase tracking-widest">
+                You've reached the end of the feed
               </p>
+              <div className="w-12 h-px bg-slate-200 dark:bg-slate-800" />
             </div>
           )}
         </>

@@ -1,5 +1,5 @@
 import React, { useState, Suspense } from 'react';
-import { Globe, Server, Loader2, Wrench, ArrowRight, GitMerge, ChevronRight } from 'lucide-react';
+import { Globe, Server, Loader2, Wrench, GitMerge, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // Lazy load tool components
@@ -32,8 +32,8 @@ const TOOLS: ToolDef[] = [
     title: 'GKE Lifecycle',
     description: 'Track official GKE release versions across Stable, Regular, and Rapid channels.',
     icon: Server,
-    color: 'text-indigo-600 dark:text-indigo-400',
-    bgColor: 'bg-indigo-50 dark:bg-indigo-900/20'
+    color: 'text-blue-600 dark:text-blue-400',
+    bgColor: 'bg-blue-50 dark:bg-blue-900/20'
   },
   {
     id: 'gke-skew',
@@ -55,7 +55,7 @@ export const ToolsView: React.FC = () => {
         <motion.div 
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-6 shadow-lg shadow-blue-500/20"
+          className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg shadow-blue-500/20"
         >
           <Wrench className="text-white" size={32} />
         </motion.div>

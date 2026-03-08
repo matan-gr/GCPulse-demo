@@ -5,11 +5,13 @@ import { FeedCard } from '../components/FeedCard';
 import { SkeletonCard } from '../components/SkeletonCard';
 import { AnalysisResult } from '../types';
 import { EmptyState } from '../components/EmptyState';
-import { Loader2, LayoutTemplate, AlignJustify, Grid, Download, Sparkles, TrendingUp, Filter, SearchX } from 'lucide-react';
+import { Loader2, LayoutTemplate, AlignJustify, Grid, Download, TrendingUp, Filter, SearchX, X, Search } from 'lucide-react';
 import { UserPreferences } from '../hooks/useUserPreferences';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import { useStandardFeedView } from '../hooks/useStandardFeedView';
+
+import { getCategoryColor } from '../utils';
 
 interface DiscoverViewProps {
   items: FeedItem[];
@@ -26,6 +28,7 @@ interface DiscoverViewProps {
   onToggleColumnVisibility: (column: string) => void;
   onUpdateColumnOrder: (order: string[]) => void;
   onClearFilters?: () => void;
+  search?: string;
 }
 
 export const DiscoverView: React.FC<DiscoverViewProps> = ({
@@ -41,6 +44,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
   isPresentationMode,
   isAiLoading,
   onClearFilters,
+  search = '',
 }) => {
   // View Customization State
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -51,18 +55,21 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
   }, [items]);
 
   // Extract popular categories for quick filters
-  const popularCategories = useMemo(() => {
+  const categoryStats = useMemo(() => {
     const counts: Record<string, number> = {};
     allFeedItems.forEach(item => {
       (item.categories || []).forEach(cat => {
         counts[cat] = (counts[cat] || 0) + 1;
       });
     });
-    return Object.entries(counts)
+    const popular = Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-      .map(([name]) => name);
+      .slice(0, 12)
+      .map(([name, count]) => ({ name, count }));
+    return { popular, counts };
   }, [allFeedItems]);
+
+  const popularCategories = categoryStats.popular;
 
   const { visibleItems, loadMoreRef, hasMore } = useStandardFeedView(allFeedItems);
 
@@ -81,36 +88,61 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
     return visibleItems.filter(item => !featuredLinks.has(item.link));
   }, [visibleItems, featuredItems]);
 
-  const handleExportCSV = () => {
+  const handleExportHTML = () => {
     if (allFeedItems.length === 0) {
       toast.error("No items to export");
       return;
     }
 
-    const headers = ['Title', 'Source', 'Date', 'Link', 'Categories'];
-    const csvContent = [
-      headers.join(','),
-      ...allFeedItems.map(item => {
-        const date = new Date(item.isoDate).toLocaleDateString();
-        const title = `"${item.title.replace(/"/g, '""')}"`;
-        const source = `"${item.source.replace(/"/g, '""')}"`;
-        const link = `"${item.link}"`;
-        const categories = `"${(item.categories || []).join('; ').replace(/"/g, '""')}"`;
-        return [title, source, date, link, categories].join(',');
-      })
-    ].join('\n');
+    const htmlContent = `
+      <html>
+        <head>
+          <style>
+            body { font-family: sans-serif; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+          </style>
+        </head>
+        <body>
+          <h1>GCP Updates</h1>
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Source</th>
+                <th>Date</th>
+                <th>Link</th>
+                <th>Categories</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${allFeedItems.map(item => `
+                <tr>
+                  <td>${item.title}</td>
+                  <td>${item.source}</td>
+                  <td>${new Date(item.isoDate).toLocaleDateString()}</td>
+                  <td><a href="${item.link}">${item.link}</a></td>
+                  <td>${(item.categories || []).join(', ')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `gcp_updates_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', 'gcp_updates_' + new Date().toISOString().split('T')[0] + '.html');
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     
-    toast.success(`Exported ${allFeedItems.length} items to CSV`);
+    toast.success('Exported ' + allFeedItems.length + ' items to HTML');
   };
 
   const handleScrollToFeed = () => {
@@ -133,97 +165,123 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
 
       {isAiLoading && (
           <div className="flex justify-center mb-8">
-              <div className="flex items-center space-x-2 text-purple-600 bg-purple-50 px-4 py-2 rounded-full border border-purple-100 shadow-sm animate-pulse">
-                  <Loader2 className="animate-spin" size={16} />
-                  <span className="text-sm font-medium">AI is analyzing the feed...</span>
+              <div className="flex items-center space-x-2 text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-full border border-blue-100 dark:border-blue-800/30 shadow-sm animate-pulse">
+                  <Loader2 className="animate-spin" size={14} />
+                  <span className="text-xs font-bold uppercase tracking-widest">AI Analysis in progress...</span>
               </div>
           </div>
       )}
 
       {/* View Customization Toolbar */}
       <motion.div 
-        initial={{ y: -20, opacity: 0 }}
+        initial={{ y: -10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="sticky top-[80px] z-20"
+        className="sticky top-[72px] z-20"
       >
-        <div className="flex flex-col gap-4 bg-white/70 dark:bg-[#121212]/70 backdrop-blur-xl p-5 rounded-[2rem] border border-slate-200/50 dark:border-white/5 shadow-2xl shadow-slate-200/20 dark:shadow-none transition-all">
+        <div className="flex flex-col gap-4 bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm transition-all">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-blue-600 dark:text-blue-400 shadow-inner">
-                <LayoutTemplate size={24} />
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-slate-100 dark:bg-slate-900 rounded-lg text-slate-600 dark:text-slate-400">
+                <LayoutTemplate size={20} />
               </div>
               <div>
-                <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none mb-1">Discover Feed</h2>
-                <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Personalized Intelligence</p>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white tracking-tight leading-none mb-1">Discover</h2>
+                <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Intelligence Feed</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              {/* Export CSV Button */}
+            <div className="flex items-center gap-3">
+              {/* Export Button */}
               <motion.button
-                whileHover={{ scale: 1.02, y: -1 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={handleExportCSV}
-                className="flex items-center space-x-2 px-5 py-2.5 rounded-xl text-xs font-black transition-all whitespace-nowrap shadow-sm bg-white dark:bg-[#121212] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-blue-700 hover:text-blue-600 dark:hover:text-blue-400 uppercase tracking-widest"
-                title="Export to CSV"
+                onClick={handleExportHTML}
+                className="flex items-center space-x-2 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all whitespace-nowrap bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-transparent hover:border-slate-300 dark:hover:border-slate-700 uppercase tracking-widest"
+                title="Export to HTML"
               >
-                <Download size={14} />
-                <span className="hidden sm:inline">Export CSV</span>
+                <Download size={12} />
+                <span className="hidden sm:inline">Export</span>
               </motion.button>
 
-              <div className="w-px h-8 bg-slate-200 dark:bg-white/10 mx-1" />
+              <div className="w-px h-6 bg-slate-200 dark:bg-slate-800 mx-1" />
 
-              <div className="flex items-center gap-4 overflow-x-auto no-scrollbar py-1">
-                {/* View Options Group */}
-                <div className="flex items-center bg-slate-100 dark:bg-[#121212]/50 rounded-xl p-1 border border-slate-200 dark:border-white/10 shadow-inner">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-lg transition-all flex items-center space-x-2 ${
-                      viewMode === 'grid' 
-                        ? 'bg-white dark:bg-white/10 shadow-md text-blue-600 dark:text-blue-400' 
-                        : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                    }`}
-                    title="Grid View"
-                  >
-                    <Grid size={18} />
-                    <span className="text-xs font-bold hidden lg:inline">Grid</span>
-                  </button>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-lg transition-all flex items-center space-x-2 ${
-                      viewMode === 'list' 
-                        ? 'bg-white dark:bg-white/10 shadow-md text-blue-600 dark:text-blue-400' 
-                        : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-                    }`}
-                    title="List View"
-                  >
-                    <AlignJustify size={18} />
-                    <span className="text-xs font-bold hidden lg:inline">List</span>
-                  </button>
-                </div>
+              <div className="flex items-center bg-slate-100 dark:bg-slate-900 rounded-lg p-1 border border-transparent">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-1.5 rounded-md transition-all flex items-center space-x-1.5 ${
+                    viewMode === 'grid' 
+                      ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' 
+                      : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+                  }`}
+                  title="Grid View"
+                >
+                  <Grid size={14} />
+                  <span className="text-[10px] font-bold hidden lg:inline uppercase tracking-wider">Grid</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-1.5 rounded-md transition-all flex items-center space-x-1.5 ${
+                    viewMode === 'list' 
+                      ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400' 
+                      : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+                  }`}
+                  title="List View"
+                >
+                  <AlignJustify size={14} />
+                  <span className="text-[10px] font-bold hidden lg:inline uppercase tracking-wider">List</span>
+                </button>
               </div>
             </div>
           </div>
 
           {/* Quick Filter Chips */}
           <div className="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1">
-            <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mr-2 whitespace-nowrap">
-              <Filter size={12} />
-              <span>Quick Filters:</span>
+            <div className="flex items-center gap-2 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mr-2 whitespace-nowrap">
+              <Filter size={10} />
+              <span>Filters:</span>
             </div>
-            {popularCategories.map(cat => (
+            
+            {(search || prefs.filterCategories.length > 0) && (
               <button
-                key={cat}
-                onClick={() => handleCategoryChange(cat)}
-                className={`px-4 py-2 rounded-xl text-[11px] font-bold transition-all whitespace-nowrap border shadow-sm ${
-                  prefs.subscribedCategories.includes(cat)
-                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800'
-                    : 'bg-white dark:bg-[#121212]/50 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:border-blue-300 dark:hover:border-blue-700 hover:bg-blue-50/50 dark:hover:bg-blue-900/10'
-                }`}
+                onClick={onClearFilters}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-bold bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-800 transition-all uppercase tracking-widest whitespace-nowrap"
               >
-                {cat}
+                <X size={10} />
+                <span>Clear All</span>
               </button>
-            ))}
+            )}
+
+            {search && (
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-bold bg-blue-600 text-white border border-blue-500 shadow-sm whitespace-nowrap uppercase tracking-widest">
+                <Search size={10} />
+                <span>Search: {search}</span>
+              </div>
+            )}
+
+            {popularCategories.map(({ name, count }) => {
+              const isActive = prefs.filterCategories.includes(name);
+              const color = getCategoryColor(name);
+              return (
+                <button
+                  key={name}
+                  onClick={() => handleCategoryChange(name)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all whitespace-nowrap border ${
+                    isActive
+                      ? `bg-blue-600 text-white border-blue-600 shadow-sm`
+                      : `bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800/50`
+                  }`}
+                >
+                  <span className="uppercase tracking-widest">{name}</span>
+                  <span className={`text-[8px] px-1 py-0.5 rounded ${
+                    isActive
+                      ? `bg-white/20 text-white`
+                      : `bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500`
+                  }`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </motion.div>
@@ -231,7 +289,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
       {/* Featured Section */}
       {!loading && featuredItems.length > 0 && viewMode === 'grid' && (
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+          <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
             <TrendingUp size={18} />
             <h2 className="text-lg font-bold tracking-tight">Featured Updates</h2>
           </div>
@@ -255,7 +313,7 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
               />
             ))}
           </div>
-          <div className="h-px bg-zinc-200 dark:bg-zinc-800 my-8" />
+          <div className="h-px bg-slate-200 dark:bg-slate-800 my-8" />
         </div>
       )}
 

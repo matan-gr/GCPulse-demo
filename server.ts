@@ -375,19 +375,12 @@ app.get("/api/gke-feed", async (req, res) => {
   }
 });
 
-const server = app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
-
 // Vite middleware for development
 if (!isProduction) {
   const { createServer: createViteServer } = await import('vite');
   const vite = await createViteServer({
     server: { 
-      middlewareMode: true,
-      hmr: {
-        server
-      }
+      middlewareMode: true
     },
     appType: "spa",
   });
@@ -415,3 +408,7 @@ if (!isProduction) {
     });
   });
 }
+
+const server = app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});

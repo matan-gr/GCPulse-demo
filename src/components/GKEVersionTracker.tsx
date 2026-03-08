@@ -35,12 +35,12 @@ const ChannelCard: React.FC<{ channel: GKEChannelInfo; index: number }> = ({ cha
       <div className={`p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center relative overflow-hidden`}>
         <div className={`absolute inset-0 opacity-10 ${
           channel.name === 'Stable' ? 'bg-emerald-500' :
-          channel.name === 'Rapid' ? 'bg-purple-500' : 'bg-blue-500'
+          channel.name === 'Rapid' ? 'bg-blue-500' : 'bg-blue-500'
         }`} />
         <div className="relative z-10 flex items-center space-x-3">
            <div className={`p-2 rounded-lg ${
              channel.name === 'Stable' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400' :
-             channel.name === 'Rapid' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400' : 
+             channel.name === 'Rapid' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400' : 
              'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
            }`}>
              <Activity size={20} />
@@ -152,7 +152,7 @@ const GKEVersionTrackerContent: React.FC = () => {
     <div className="max-w-6xl mx-auto">
       <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-700 to-indigo-700 p-8 text-white relative overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-700 to-blue-700 p-8 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 p-8 opacity-10">
              <Server size={120} />
           </div>

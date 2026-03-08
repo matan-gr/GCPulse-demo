@@ -8,10 +8,9 @@ import { FeedItem } from './types';
 import { GoogleGenAI } from "@google/genai";
 import { useDebounce } from './hooks/useDebounce';
 import { useUserPreferences } from './hooks/useUserPreferences';
-import { Loader2, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'motion/react';
-import { useInView } from 'react-intersection-observer';
 import { useSummarizer } from './hooks/useSummarizer';
 import { ErrorDisplay } from './components/ErrorDisplay';
 import { SummaryModal } from './components/SummaryModal';
@@ -482,6 +481,7 @@ function AppContent() {
                 }}
                 onUpdateColumnOrder={(order) => updatePrefs({ columnOrder: order })}
                 onClearFilters={clearAllFilters}
+                search={search}
               />
             ) : (
               <StandardFeedView

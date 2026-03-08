@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Copy, Check, Globe, Server, Shield, Database, Cloud, Download, ArrowDown } from 'lucide-react';
+import { Search, Copy, Check, Globe, Server, Shield, Database, Cloud, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -159,12 +159,12 @@ const IPRangeFinderContent: React.FC = () => {
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.ipv4}</p>
                   </div>
                 </div>
-                <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl border border-purple-100 dark:border-purple-800 flex items-center space-x-3">
-                  <div className="p-3 bg-purple-100 dark:bg-purple-800/50 rounded-lg text-purple-600 dark:text-purple-300">
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl border border-blue-100 dark:border-blue-800 flex items-center space-x-3">
+                  <div className="p-3 bg-blue-100 dark:bg-blue-800/50 rounded-lg text-blue-600 dark:text-blue-300">
                     <Database size={24} />
                   </div>
                   <div>
-                    <p className="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider">IPv6 Ranges</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider">IPv6 Ranges</p>
                     <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.ipv6}</p>
                   </div>
                 </div>
@@ -208,7 +208,7 @@ const IPRangeFinderContent: React.FC = () => {
                               <div className="flex items-center">
                                 <span className="font-mono text-sm font-medium text-gray-900 dark:text-gray-200">{ip}</span>
                                 {prefix.ipv6Prefix && (
-                                  <span className="ml-2 text-[10px] bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded font-bold">IPv6</span>
+                                  <span className="ml-2 text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded font-bold">IPv6</span>
                                 )}
                               </div>
                             </td>

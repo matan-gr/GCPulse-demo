@@ -1,5 +1,5 @@
 import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { AreaChart, Area, Tooltip, ResponsiveContainer } from 'recharts';
 import { FeedItem } from '../../types';
 
 interface ActivityChartProps {
@@ -31,22 +31,30 @@ export const ActivityChart: React.FC<ActivityChartProps> = ({ items }) => {
         <AreaChart data={data}>
           <defs>
             <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.2}/>
+              <stop offset="95%" stopColor="#4f46e5" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <Tooltip 
-            contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-            itemStyle={{ color: '#1e293b', fontSize: '12px', fontWeight: 'bold' }}
-            labelStyle={{ color: '#64748b', fontSize: '10px', marginBottom: '4px' }}
+            contentStyle={{ 
+              backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+              backdropFilter: 'blur(8px)',
+              borderRadius: '12px', 
+              border: '1px solid rgba(228, 228, 231, 0.5)', 
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+              padding: '8px 12px'
+            }}
+            itemStyle={{ color: '#18181b', fontSize: '11px', fontWeight: '700' }}
+            labelStyle={{ color: '#71717a', fontSize: '9px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}
           />
           <Area 
             type="monotone" 
             dataKey="count" 
-            stroke="#3b82f6" 
-            strokeWidth={2}
+            stroke="#4f46e5" 
+            strokeWidth={2.5}
             fillOpacity={1} 
             fill="url(#colorCount)" 
+            animationDuration={1500}
           />
         </AreaChart>
       </ResponsiveContainer>
