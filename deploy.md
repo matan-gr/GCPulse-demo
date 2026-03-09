@@ -45,7 +45,7 @@ The `Dockerfile` uses a **multi-stage build**:
 
 ---
 
-## 🚀 Deploying to Google Cloud Run (Manual)
+## 🚀 Deploying to Google Cloud Run
 
 ### Prerequisites
 
@@ -54,13 +54,32 @@ The `Dockerfile` uses a **multi-stage build**:
 3.  **Google Cloud SDK (gcloud)**: Installed and authenticated.
     *   Run `gcloud auth login`
     *   Run `gcloud config set project YOUR_PROJECT_ID`
-4.  **Rename Docker Files**:
+4.  **Rename Docker Files (MANDATORY)**:
     *   Rename `Dockerfile.txt` to `Dockerfile`
     *   Rename `dockerignore.txt` to `.dockerignore`
 
-### Step 1: Build and Push the Image
+---
 
-Use **Cloud Build** to build and store the image in Google Artifact Registry.
+### Method 1: One-Step Deployment (Recommended)
+
+This is the simplest way to deploy. It builds the container and deploys it in a single command.
+
+```bash
+gcloud run deploy gcp-pulse \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --port 3000 \
+  --set-env-vars GEMINI_API_KEY="your_gemini_api_key",YOUTUBE_API_KEY="your_youtube_api_key"
+```
+
+---
+
+### Method 2: Manual Build and Push (Advanced)
+
+Use this if you need to store the image in a registry for versioning or CI/CD.
+
+#### Step 1: Build and Push the Image
 
 ```bash
 # 1. Create an Artifact Registry repository (if not already created)
@@ -72,9 +91,7 @@ gcloud artifacts repositories create gcp-pulse-repo \
 gcloud builds submit --tag us-central1-docker.pkg.dev/YOUR_PROJECT_ID/gcp-pulse-repo/gcp-pulse:latest
 ```
 
-### Step 2: Deploy Service
-
-Deploy the container to Cloud Run.
+#### Step 2: Deploy Service
 
 ```bash
 gcloud run deploy gcp-pulse-service \
@@ -83,12 +100,13 @@ gcloud run deploy gcp-pulse-service \
   --region us-central1 \
   --allow-unauthenticated \
   --port 3000 \
-  --set-env-vars GEMINI_API_KEY="your_gemini_api_key"
+  --set-env-vars GEMINI_API_KEY="your_gemini_api_key",YOUTUBE_API_KEY="your_youtube_api_key"
 ```
 
 **Configuration Flags:**
 *   `--allow-unauthenticated`: Makes the app public. Remove for internal-only apps.
-*   `--set-env-vars`: **Required**. The app needs `GEMINI_API_KEY` for AI features.
+*   `--set-env-vars`: **Required**. The app needs `GEMINI_API_KEY` and `YOUTUBE_API_KEY` for AI and enrichment features.
+*   `--port 3000`: Tells Cloud Run to route traffic to port 3000 inside your container.
 
 ### Step 3: Verify
 

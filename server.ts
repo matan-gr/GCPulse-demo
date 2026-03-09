@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === 'production' || fs.existsSync(path.resolve('dist', 'index.html'));
 
 // Trust Proxy for Cloud Run / Nginx
 app.set('trust proxy', 1);
