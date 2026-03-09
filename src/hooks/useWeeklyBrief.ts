@@ -72,8 +72,12 @@ export const useWeeklyBrief = (items: FeedItem[]) => {
       })));
 
       const prompt = `
-        You are an expert Principal Cloud Architect and Site Reliability Engineer.
+        You are an expert Principal Cloud Architect and Site Reliability Engineer, AND a strategic Leadership Stakeholder.
         Your goal is to produce a **highly accurate, executive-level Weekly Cloud Briefing** for Google Cloud Platform (GCP).
+
+        **Your briefing must be structured to provide insights from two distinct perspectives:**
+        1.  **Principal Cloud Architect / SRE**: Focus on technical implications, reliability, architectural patterns, deprecations, and security.
+        2.  **Leadership Stakeholder**: Focus on business value, strategic impact, cost implications, and high-level roadmap alignment.
 
         **Input Data (${timeWindow}):**
         ${contextData}
@@ -96,6 +100,12 @@ export const useWeeklyBrief = (items: FeedItem[]) => {
         ## 🚀 Executive Summary
         [3-4 sentences on the most impactful changes this week. Focus on "What do I need to do now?"]
 
+        ## 🏗️ Perspective: Principal Cloud Architect / SRE
+        [Technical analysis: Reliability, architectural patterns, deprecations, security implications, and technical debt management.]
+
+        ## 📈 Perspective: Leadership Stakeholder
+        [Strategic analysis: Business value, roadmap alignment, cost implications, and competitive advantage.]
+
         ## ⚠️ Critical Deprecations & Breaking Changes (High Priority)
         *   **[Product Name]**: [Description of change]. **Action Required by:** [Date].
         *   ...
@@ -104,17 +114,8 @@ export const useWeeklyBrief = (items: FeedItem[]) => {
         ## 🛡️ Security & Reliability
         [Bulletins, Incidents, and Security Feature launches]
 
-        ## 🏗️ Infrastructure & Modernization
-        [Compute, GKE, Networking. Highlight *new options* and features.]
-
-        ## 🧠 Data, AI & Analytics
-        [Gemini, BigQuery, Looker. Focus on new capabilities.]
-
         ## 📺 Recommended Watch (YouTube)
         [Highlight 1-2 key video updates if available. Include the title and a direct link.]
-
-        ## 💡 Architect's Corner (Strategic Recommendations)
-        [1-2 actionable pieces of advice based on this week's changes. e.g., "With the new X feature, consider refactoring Y..."]
       `;
 
       const ai = getAiInstance();
