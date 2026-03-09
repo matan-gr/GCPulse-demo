@@ -3,10 +3,14 @@ import express from "express";
 import Parser from "rss-parser";
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import 'dotenv/config';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
@@ -413,7 +417,7 @@ app.get("/api/gke-feed", async (req, res) => {
 if (!isProduction) {
   const { createServer: createViteServer } = await import('vite');
   const vite = await createViteServer({
-    configFile: path.resolve(__dirname, 'vite.config.ts'),
+    configFile: path.resolve(__dirname, '../../vite.config.ts'),
     server: { 
       middlewareMode: true
     },
