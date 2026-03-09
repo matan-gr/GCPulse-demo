@@ -11,7 +11,7 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
     server: {
-      allowedHosts: true,
+      allowedHosts: ['.run.app'],
     },
     plugins: [react(), tailwindcss()],
     define: {
