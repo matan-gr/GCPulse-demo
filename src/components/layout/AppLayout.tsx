@@ -107,11 +107,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       <div className={`flex-1 transition-all duration-300 ${!isPresentationMode && isDesktopSidebarOpen ? 'lg:ml-72' : ''}`}>
         
         {/* Top Header / Controls */}
-        <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 h-16 flex items-center">
-          <div className="max-w-[1600px] mx-auto w-full px-6 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-40 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 h-14 flex items-center">
+          <div className="max-w-[1600px] mx-auto w-full px-4 sm:px-6 flex items-center justify-between gap-4">
             
             {/* Left: Menu & Title */}
-            <div className="flex items-center gap-4 min-w-0">
+            <div className="flex items-center gap-3 min-w-0">
               {/* Mobile Menu Trigger */}
               <button 
                 onClick={() => setIsSidebarOpen(true)}
@@ -133,7 +133,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
               {isPresentationMode && (
                 <div className="flex items-center space-x-2 mr-4 group cursor-pointer">
-                  <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                     <Zap size={16} className="text-white" />
                   </div>
                   <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">GCP Pulse</span>
@@ -144,31 +144,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
               <div className="hidden lg:block">
                 <Breadcrumbs activeTab={activeTab} setActiveTab={setActiveTab} />
               </div>
-
-              <h1 className="text-lg font-bold text-slate-900 dark:text-white capitalize truncate tracking-tight sm:hidden">
-                {(() => {
-                  if (isPresentationMode) return 'Executive Briefing';
-                  const titles: Record<string, string> = {
-                    'all': 'Discover Feed',
-                    'updates': 'Updates & Innovation',
-                    'cloud-blog': 'Cloud Blog',
-                    'release-notes': 'Release Notes',
-                    'deprecations': 'Product Deprecations',
-                    'youtube': 'GCP YouTube Channel',
-                    'incidents': 'Cloud Incidents',
-                    'security': 'Security Bulletins',
-                    'architecture': 'Architecture',
-                    'saved': 'Read Later',
-                    'tools': 'Tools',
-                    'weekly-brief': 'Weekly Brief'
-                  };
-                  return titles[activeTab] || activeTab;
-                })()}
-              </h1>
             </div>
 
             {/* Center: Global Search */}
-            <div className="flex-1 max-w-2xl mx-4 hidden md:block">
+            <div className="flex-1 max-w-xl mx-4 hidden md:block">
                {!isPresentationMode && activeTab !== 'tools' && (
                   <GlobalSearch 
                     value={search} 
@@ -194,7 +173,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
             </div>
 
             {/* Right: Controls */}
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3">
                {/* Author Link */}
                <Tooltip content="Contact Author" position="bottom">
                  <a 
@@ -214,7 +193,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
                   onClick={toggleTheme}
                   className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
                 >
-                  {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+                  {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
                 </button>
                </Tooltip>
             </div>
@@ -222,7 +201,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         </header>
 
         {/* Mobile Search (visible only on small screens) */}
-        <div className="md:hidden px-4 py-3 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl">
+        <div className="md:hidden px-4 py-2 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl">
            {!isPresentationMode && activeTab !== 'tools' && (
               <GlobalSearch 
                 value={search} 
@@ -247,24 +226,24 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
            )}
         </div>
 
-        <div className="p-4 sm:p-8 pb-32 max-w-[1600px] mx-auto min-h-[calc(100vh-200px)]">
+        <div className="p-4 sm:p-6 pb-24 max-w-[1600px] mx-auto min-h-[calc(100vh-200px)]">
           {isAnyFilterActive && onClearFilters && (
-            <div className="mb-8 flex items-center justify-between p-4 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-3xl animate-in fade-in slide-in-from-top-2 duration-300 glass-card">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                  <Filter size={20} />
+            <div className="mb-6 flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-900/30 rounded-2xl animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-sm">
+                  <Filter size={16} />
                 </div>
                 <div>
-                  <p className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">Active Search & Filters</p>
-                  <p className="text-xs font-medium text-slate-500 dark:text-slate-400">You are currently viewing a filtered subset of the intelligence feed.</p>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-tight">Active Search & Filters</p>
+                  <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400">Viewing a filtered subset of the feed.</p>
                 </div>
               </div>
               <button
                 onClick={onClearFilters}
-                className="flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-black rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all shadow-sm active:scale-95 uppercase tracking-widest"
+                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[10px] font-bold rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all shadow-sm active:scale-95 uppercase tracking-widest"
               >
-                <X size={14} />
-                <span>Clear All</span>
+                <X size={12} />
+                <span>Clear</span>
               </button>
             </div>
           )}
@@ -272,19 +251,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
         </div>
 
         {/* Minimal Footer */}
-        <footer className={`fixed bottom-0 right-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 py-3 px-8 z-40 transition-all duration-300 ${!isPresentationMode && isDesktopSidebarOpen ? 'left-72' : 'left-0'}`}>
-          <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center space-x-2 text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                <Cpu size={12} />
-                <span>v2.6.0</span>
-              </div>
-              <div className="w-px h-3 bg-slate-200 dark:bg-slate-800" />
-              <div className="flex items-center space-x-2 text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-                <Database size={12} />
-                <span>{currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-              </div>
+        <footer className={`fixed bottom-0 right-0 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border-t border-slate-200/50 dark:border-slate-800/50 py-2 px-6 z-40 transition-all duration-300 ${!isPresentationMode && isDesktopSidebarOpen ? 'left-72' : 'left-0'}`}>
+          <div className="max-w-[1600px] mx-auto flex justify-between items-center text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+            <div className="flex items-center gap-4">
+              <span className="flex items-center gap-1.5"><Cpu size={12} /> v2.6.0</span>
+              <span className="flex items-center gap-1.5"><Database size={12} /> {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
             </div>
+            <span className="hidden sm:block">GCP Pulse Intelligence</span>
           </div>
         </footer>
         

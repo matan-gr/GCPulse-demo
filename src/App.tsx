@@ -14,6 +14,7 @@ import { useSummarizer } from './hooks/useSummarizer';
 import { ErrorDisplay } from './components/ErrorDisplay';
 import { SummaryModal } from './components/SummaryModal';
 import { PageLoader } from './components/ui/PageLoader';
+import { getAiInstance } from './services/geminiService';
 
 // Layout & Navigation
 import { AppLayout } from './components/layout/AppLayout';
@@ -190,18 +191,14 @@ function AppContent() {
           Return a JSON array of the indices (integers) of the posts that are most relevant to the user's query.
         `;
 
-        const response = await fetch('/api/smart-filter', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt }),
+        const ai = getAiInstance();
+        const response = await ai.models.generateContent({
+          model: 'gemini-3-flash-preview',
+          contents: prompt,
+          config: { responseMimeType: 'application/json' }
         });
 
-        if (!response.ok) {
-          throw new Error(`AI filtering failed: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        const indices = JSON.parse(data.text || '[]');
+        const indices = JSON.parse(response.text || '[]');
         
         setSmartIndices(indices);
         indices.length === 0 ? toast.info("No AI matches found.") : toast.success(`AI found ${indices.length} articles.`);

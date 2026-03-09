@@ -324,8 +324,8 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
       )}
       
         <div className={`${isCompact ? 'p-3' : 'p-4'} flex-1 flex flex-col ${isListView ? 'justify-between' : ''}`}>
-        <div>
-          <div className={`flex items-center justify-between ${isCompact ? 'mb-2' : 'mb-2'}`}>
+        <div className="w-full">
+          <div className={`flex items-center justify-between w-full ${isCompact ? 'mb-2' : 'mb-2'}`}>
              <div className="flex items-center space-x-2">
                 {isNew && !isPresentationMode && (
                   <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-50/50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 border border-blue-100/50 dark:border-blue-800/20">
@@ -444,7 +444,7 @@ const FeedCardContent: React.FC<FeedCardProps> = ({
         </div>
         
         <div className={`mt-auto ${!isListView ? `pt-2 border-t border-slate-100 dark:border-slate-800/50 ${isCompact ? 'pt-1.5' : 'pt-2'}` : ''}`}>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between w-full">
                 <a 
                     href={item.link} 
                     target="_blank" 

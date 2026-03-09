@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { FeedItem, AnalysisResult } from '../types';
 import { extractGCPProducts } from '../utils';
+import { getAiInstance } from '../services/geminiService';
 
 export const useSummarizer = () => {
   const [summarizingId, setSummarizingId] = useState<string | null>(null);
@@ -100,34 +101,24 @@ export const useSummarizer = () => {
         Content: ${contentToSummarize.slice(0, 8000)}
       `;
 
-      const response = await fetch('/api/summarize', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+      const ai = getAiInstance();
+      const result = await ai.models.generateContentStream({
+        model: 'gemini-3-flash-preview',
+        contents: prompt,
       });
 
-      if (!response.ok) {
-        throw new Error(`Summarization failed: ${response.statusText}`);
-      }
-
-      if (!response.body) {
-        throw new Error('No response body');
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
+      const reader = result;
       let fullText = '';
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunkText = decoder.decode(value, { stream: true });
-        fullText += chunkText;
-        
-        // Only show the markdown part in the stream (hide the JSON block if it starts appearing)
-        const cleanText = fullText.split('```json')[0];
-        setSummaryModal(prev => prev ? { ...prev, streamContent: cleanText } : null);
+      for await (const chunk of reader) {
+        const text = chunk.text;
+        if (text) {
+          fullText += text;
+          
+          // Only show the markdown part in the stream (hide the JSON block if it starts appearing)
+          const cleanText = fullText.split('```json')[0];
+          setSummaryModal(prev => prev ? { ...prev, streamContent: cleanText } : null);
+        }
       }
 
       // Parse the final result to extract JSON

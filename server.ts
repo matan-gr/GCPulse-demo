@@ -3,7 +3,6 @@ import express from "express";
 import Parser from "rss-parser";
 import fs from 'fs';
 import path from 'path';
-import { GoogleGenAI } from "@google/genai";
 import 'dotenv/config';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
@@ -17,22 +16,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 app.set('trust proxy', 1);
 
 // Initialize Gemini AI client lazily
-let aiInstance: GoogleGenAI | null = null;
-
-function getAiInstance() {
-  if (!aiInstance) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error('GEMINI_API_KEY environment variable is required');
-    }
-    aiInstance = new GoogleGenAI({ apiKey });
-  }
-  return aiInstance;
-}
-
-console.log(`Starting server in ${isProduction ? 'PRODUCTION' : 'DEVELOPMENT'} mode`);
-console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
-console.log(`GEMINI_API_KEY present: ${!!process.env.GEMINI_API_KEY}`);
+// REMOVED: AI endpoints have been moved to the frontend to comply with security guidelines.
 
 const FEEDS = [
   { url: "https://cloudblog.withgoogle.com/rss/", name: "Cloud Blog" },
@@ -423,84 +407,7 @@ app.get("/api/gke-feed", async (req, res) => {
 
 // --- AI Endpoints ---
 
-app.post("/api/smart-filter", async (req, res) => {
-  try {
-    const { prompt } = req.body;
-    if (!prompt) {
-      return res.status(400).json({ error: "Prompt is required" });
-    }
-
-    const ai = getAiInstance();
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.1-flash-lite-preview',
-      contents: prompt,
-      config: { responseMimeType: 'application/json' }
-    });
-
-    res.json({ text: response.text });
-  } catch (error: any) {
-    console.error("AI Smart Filter Error:", error);
-    res.status(500).json({ error: error.message || "AI processing failed" });
-  }
-});
-
-app.post("/api/summarize", async (req, res) => {
-  try {
-    const { prompt } = req.body;
-    if (!prompt) {
-      return res.status(400).json({ error: "Prompt is required" });
-    }
-
-    const ai = getAiInstance();
-    const result = await ai.models.generateContentStream({
-      model: 'gemini-3.1-flash-lite-preview',
-      contents: prompt,
-    });
-
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.setHeader('Transfer-Encoding', 'chunked');
-
-    for await (const chunk of result) {
-      const text = chunk.text;
-      if (text) {
-        res.write(text);
-      }
-    }
-    res.end();
-  } catch (error: any) {
-    console.error("AI Summarize Error:", error);
-    // If headers haven't been sent, send JSON error
-    if (!res.headersSent) {
-      res.status(500).json({ error: error.message || "AI processing failed" });
-    } else {
-      // If stream started, we can't send JSON, just end it
-      res.end();
-    }
-  }
-});
-
-app.post("/api/weekly-brief", async (req, res) => {
-  try {
-    const { prompt } = req.body;
-    if (!prompt) {
-      return res.status(400).json({ error: "Prompt is required" });
-    }
-
-    const ai = getAiInstance();
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.1-flash-lite-preview',
-      contents: prompt,
-      config: {
-        tools: [{ googleSearch: {} }],
-      }
-    });
-
-    res.json({ text: response.text });
-  } catch (error: any) {
-    console.error("AI Weekly Brief Error:", error);
-    res.status(500).json({ error: error.message || "AI processing failed" });
-  }
-});
+// REMOVED: AI endpoints have been moved to the frontend to comply with security guidelines.
 
 // Vite middleware for development
 if (!isProduction) {

@@ -87,9 +87,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className={`fixed top-0 left-0 h-full w-72 bg-[var(--color-bg-sidebar)] dark:bg-[var(--color-bg-sidebar-dark)] border-r border-slate-200 dark:border-slate-800 z-[50] flex flex-col`}
           >
             {/* Logo Area */}
-            <div className="h-16 flex items-center px-8 border-b border-slate-100 dark:border-slate-900">
+            <div className="h-16 flex items-center px-8 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center space-x-2 group cursor-pointer">
-                <div className="w-8 h-8 bg-blue-600 dark:bg-blue-500 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-brand-primary rounded-lg flex items-center justify-center">
                   <Zap size={18} className="text-white" />
                 </div>
                 <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">GCP Pulse</span>
@@ -102,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* Main Menu */}
               <div>
                 <div className="flex items-center px-4 mb-2">
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Platform</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-widest">Platform</span>
                 </div>
                 <div className="space-y-0.5">
                   {menuItems.map((item) => {
@@ -116,15 +116,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           setActiveTab(item.id as any);
                           if (!isDesktop) setIsOpen(false);
                         }}
-                        className={`sidebar-link ${isActive ? 'sidebar-link-active' : ''} group`}
+                        className={`sidebar-link ${isActive ? 'sidebar-link-active' : ''}`}
                       >
                         <div className="flex items-center justify-between w-full">
                           <div className="flex items-center space-x-3">
-                            <Icon size={16} className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-100'} />
+                            <Icon size={16} className={isActive ? 'text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 group-hover:text-blue-700 dark:group-hover:text-blue-300'} />
                             <span>{item.label}</span>
                           </div>
                           {item.badge && (
-                            <span className={`text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded ml-2 ${isActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'}`}>
+                            <span className={`text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded ml-2 ${isActive ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
                               {item.badge}
                             </span>
                           )}
@@ -138,7 +138,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* Personal Section */}
               <div>
                 <div className="flex items-center px-4 mb-2">
-                  <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Workspace</span>
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-widest">Workspace</span>
                 </div>
                 <div className="space-y-0.5">
                   {personalItems.map((item) => {
@@ -152,10 +152,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           setActiveTab(item.id as any);
                           if (!isDesktop) setIsOpen(false);
                         }}
-                        className={`sidebar-link ${isActive ? 'sidebar-link-active' : ''} group`}
+                        className={`sidebar-link ${isActive ? 'sidebar-link-active' : ''}`}
                       >
                         <div className="flex items-center space-x-3">
-                          <Icon size={16} className={isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-100'} />
+                          <Icon size={16} className={isActive ? 'text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 group-hover:text-blue-700 dark:group-hover:text-blue-300'} />
                           <span>{item.label}</span>
                         </div>
                       </button>
@@ -167,13 +167,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </nav>
             
             {/* Sidebar Footer */}
-            <div className="p-4 border-t border-slate-100 dark:border-slate-900">
+            <div className="p-4 border-t border-slate-200 dark:border-slate-800">
                <div className="flex items-center justify-between px-2">
-                  <div className="flex items-center space-x-2 text-[10px] font-medium text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                  <div className="flex items-center space-x-2 text-[10px] font-medium text-slate-500 dark:text-slate-500 uppercase tracking-widest">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span>Live</span>
                   </div>
-                  <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">v2.6.0</span>
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-500">v2.6.0</span>
                </div>
             </div>
 

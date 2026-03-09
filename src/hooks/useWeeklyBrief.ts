@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { FeedItem } from '../types';
 import { toast } from 'sonner';
+import { getAiInstance } from '../services/geminiService';
 
 export const useWeeklyBrief = (items: FeedItem[]) => {
   const [brief, setBrief] = useState<string | null>(null);
@@ -116,18 +117,16 @@ export const useWeeklyBrief = (items: FeedItem[]) => {
         [1-2 actionable pieces of advice based on this week's changes. e.g., "With the new X feature, consider refactoring Y..."]
       `;
 
-      const response = await fetch('/api/weekly-brief', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+      const ai = getAiInstance();
+      const response = await ai.models.generateContent({
+        model: 'gemini-3-flash-preview',
+        contents: prompt,
+        config: {
+          tools: [{ googleSearch: {} }],
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to generate brief: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const text = data.text;
+      const text = response.text;
 
       if (text) {
         setBrief(text);
