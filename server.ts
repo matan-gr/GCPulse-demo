@@ -10,7 +10,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 
 const app = express();
-const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const PORT = 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 
 // Trust Proxy for Cloud Run / Nginx
@@ -518,7 +518,7 @@ if (!isProduction) {
   
   // SPA fallback with runtime env injection
   // FIXED: Use standard wildcard route instead of path-to-regexp syntax
-  app.get('*', (req, res) => {
+  app.get('(.*)', (req, res) => {
     const indexPath = path.resolve('dist', 'index.html');
     fs.readFile(indexPath, 'utf8', (err, html) => {
       if (err) {
