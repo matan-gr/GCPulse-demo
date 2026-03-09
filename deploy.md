@@ -36,7 +36,7 @@ This guide provides step-by-step instructions for deploying the GCP Pulse applic
 
 The application uses a **Node.js runtime** container:
 
-1.  **Node.js Server (Port 3000)**: Runs the Express application which serves both the API endpoints and the static frontend files.
+1.  **Node.js Server (Port 8080)**: Runs the Express application which serves both the API endpoints and the static frontend files.
 2.  **No Nginx Required**: The Express server handles static file serving in production, simplifying the architecture.
 
 The `Dockerfile` uses a **multi-stage build**:
@@ -69,7 +69,7 @@ gcloud run deploy gcp-pulse \
   --source . \
   --region us-central1 \
   --allow-unauthenticated \
-  --port 3000 \
+  --port 8080 \
   --set-env-vars GEMINI_API_KEY="your_gemini_api_key",YOUTUBE_API_KEY="your_youtube_api_key"
 ```
 
@@ -99,14 +99,14 @@ gcloud run deploy gcp-pulse-service \
   --platform managed \
   --region us-central1 \
   --allow-unauthenticated \
-  --port 3000 \
+  --port 8080 \
   --set-env-vars GEMINI_API_KEY="your_gemini_api_key",YOUTUBE_API_KEY="your_youtube_api_key"
 ```
 
 **Configuration Flags:**
 *   `--allow-unauthenticated`: Makes the app public. Remove for internal-only apps.
 *   `--set-env-vars`: **Required**. The app needs `GEMINI_API_KEY` and `YOUTUBE_API_KEY` for AI and enrichment features.
-*   `--port 3000`: Tells Cloud Run to route traffic to port 3000 inside your container.
+*   `--port 8080`: Tells Cloud Run to route traffic to port 8080 inside your container.
 
 ### Step 3: Verify
 
@@ -137,5 +137,5 @@ You will see a URL like: `https://gcp-pulse-service-uc.a.run.app`. Click it to v
     GEMINI_API_KEY=your_key
     YOUTUBE_API_KEY=your_key
     ```
-3.  **Run**: `npm run dev` (Access at `http://localhost:3000`)
+3.  **Run**: `npm run dev` (Access at `http://localhost:8080`)
 

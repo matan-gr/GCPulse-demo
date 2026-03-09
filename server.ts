@@ -430,18 +430,15 @@ if (!isProduction) {
   
   // SPA fallback with runtime env injection
   // FIXED: Use standard wildcard route instead of path-to-regexp syntax
-  app.get('*', (req, res) => {
+  app.use((req, res) => {
     const indexPath = path.resolve('dist', 'index.html');
-    fs.readFile(indexPath, 'utf8', (err, html) => {
+    res.sendFile(indexPath, (err) => {
       if (err) {
-        console.error('Error reading index.html:', err);
-        return res.status(500).send('Internal Server Error');
+        console.error('Error sending index.html:', err);
+        if (!res.headersSent) {
+          res.status(500).send('Internal Server Error');
+        }
       }
-      
-      // REMOVED: Insecure injection of GEMINI_API_KEY
-      // The client now uses server-side endpoints for AI operations.
-      
-      res.send(html);
     });
   });
 }
