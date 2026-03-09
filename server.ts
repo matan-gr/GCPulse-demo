@@ -425,7 +425,7 @@ if (!isProduction) {
   
   // SPA fallback with runtime env injection
   // FIXED: Use standard wildcard route instead of path-to-regexp syntax
-  app.get('(.*)', (req, res) => {
+  app.get('*', (req, res) => {
     const indexPath = path.resolve('dist', 'index.html');
     fs.readFile(indexPath, 'utf8', (err, html) => {
       if (err) {
