@@ -82,6 +82,7 @@ gcloud run deploy gcp-pulse-service \
   --platform managed \
   --region us-central1 \
   --allow-unauthenticated \
+  --port 3000 \
   --set-env-vars GEMINI_API_KEY="your_gemini_api_key"
 ```
 
