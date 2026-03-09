@@ -413,6 +413,7 @@ app.get("/api/gke-feed", async (req, res) => {
 if (!isProduction) {
   const { createServer: createViteServer } = await import('vite');
   const vite = await createViteServer({
+    configFile: './vite.config.ts',
     server: { 
       middlewareMode: true
     },
