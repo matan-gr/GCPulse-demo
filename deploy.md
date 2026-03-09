@@ -39,9 +39,9 @@ The application uses a **Node.js runtime** container:
 1.  **Node.js Server (Port 3000)**: Runs the Express application which serves both the API endpoints and the static frontend files.
 2.  **No Nginx Required**: The Express server handles static file serving in production, simplifying the architecture.
 
-The `Dockerfile.txt` uses a **multi-stage build**:
-*   **Builder Stage**: Compiles the React frontend using Vite.
-*   **Runner Stage**: A lightweight Node.js Alpine image that runs the server.
+The `Dockerfile` uses a **multi-stage build**:
+*   **Builder Stage**: Runs `npm run build`, which executes both `vite build` (for the frontend) and `tsc -p tsconfig.server.json` (to compile the server).
+*   **Runner Stage**: A lightweight Node.js Alpine image that runs the compiled server (`node dist/server.js`).
 
 ---
 
