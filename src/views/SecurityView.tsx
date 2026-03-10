@@ -4,6 +4,7 @@ import { ShieldAlert, ShieldCheck, Search, Filter, AlertTriangle, CheckCircle, E
 import { motion, AnimatePresence } from 'motion/react';
 import { useSecurityView } from '../hooks/useSecurityView';
 import DOMPurify from 'dompurify';
+import { getCategoryStyles, cn } from '../utils';
 
 // Configure DOMPurify to open links in new tab
 DOMPurify.addHook('afterSanitizeAttributes', function (node) {
@@ -237,12 +238,15 @@ const SecurityItemCard = ({ item, index, onSummarize, summarizingId }: { item: F
             </span>
             <div className="flex flex-wrap gap-2">
               {item.products.slice(0, 6).map(prod => (
-                <span key={prod} className="px-2.5 py-1 bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 text-xs rounded-md font-medium border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-colors cursor-default">
+                <span key={prod} className={cn(
+                  "px-2.5 py-1 text-[10px] rounded-md font-black uppercase tracking-widest border transition-all duration-300",
+                  getCategoryStyles(prod)
+                )}>
                   {prod}
                 </span>
               ))}
               {item.products.length > 6 && (
-                <span className="px-2 py-1 bg-slate-50 dark:bg-slate-800/50 text-slate-400 text-xs rounded-md font-medium border border-transparent">
+                <span className="px-2 py-1 bg-slate-50 dark:bg-slate-800/50 text-slate-400 text-[10px] rounded-md font-bold border border-transparent">
                   +{item.products.length - 6} more
                 </span>
               )}

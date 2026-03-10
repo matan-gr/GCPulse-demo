@@ -3,6 +3,7 @@ import { FeedItem } from '../types';
 import { motion } from 'motion/react';
 import { Youtube, ExternalLink, Calendar, Play, Clock, Eye, ThumbsUp } from 'lucide-react';
 import { EmptyState } from '../components/EmptyState';
+import { getCategoryStyles, cn } from '../utils';
 
 interface YouTubeViewProps {
   items: FeedItem[];
@@ -55,7 +56,7 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading, onClea
           href="https://www.youtube.com/@googlecloud" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-full text-sm font-medium transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-lg text-sm font-black uppercase tracking-widest transition-all shadow-sm active:scale-95 border border-red-100 dark:border-red-500/20"
         >
           Visit Channel
           <ExternalLink className="w-4 h-4" />
@@ -127,45 +128,49 @@ export const YouTubeView: React.FC<YouTubeViewProps> = ({ items, loading, onClea
               
               <div className="mt-auto flex flex-col gap-3">
                 {item.categories && item.categories.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-1.5">
                     {item.categories.slice(0, 3).map(cat => (
-                      <span key={cat} className="px-1.5 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[9px] font-bold rounded uppercase tracking-wider">
+                      <span key={cat} className={cn(
+                        "px-2 py-0.5 text-[9px] font-black rounded-lg uppercase tracking-widest border transition-all duration-300",
+                        getCategoryStyles(cat)
+                      )}>
                         {cat}
                       </span>
                     ))}
                   </div>
                 )}
-                <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-semibold">
+                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-[#5f6368] dark:text-[#9aa0a6]">
+                  <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center gap-2 text-[#202124] dark:text-[#e8eaed] font-black">
+                       <Youtube size={12} className="text-[#ea4335]" />
                        {(item as any).channelTitle}
                     </div>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-1.5">
+                        <Calendar className="w-3 h-3 opacity-70" />
                         {new Date(item.isoDate).toLocaleDateString(undefined, {
                           month: 'short',
                           day: 'numeric'
                         })}
                       </div>
                       {(item as any).duration && (
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-3 h-3 opacity-70" />
                           {(item as any).duration}
                         </div>
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-1">
+                  <div className="flex flex-col items-end gap-1.5">
                     {(item as any).viewCount && (
-                      <div className="flex items-center gap-1">
-                        {Intl.NumberFormat('en-US', { notation: 'compact' }).format((item as any).viewCount)} views
-                        <Eye className="w-3 h-3" />
+                      <div className="flex items-center gap-1.5 bg-[#f1f3f4] dark:bg-[#3c4043] px-2 py-0.5 rounded-md">
+                        {Intl.NumberFormat('en-US', { notation: 'compact' }).format((item as any).viewCount)}
+                        <Eye className="w-3 h-3 opacity-70" />
                       </div>
                     )}
                     {(item as any).likeCount && (
-                      <div className="flex items-center gap-1 text-red-500">
-                        {Intl.NumberFormat('en-US', { notation: 'compact' }).format((item as any).likeCount)} likes
+                      <div className="flex items-center gap-1.5 text-[#d93025] bg-[#fce8e6] dark:bg-[#d93025]/10 px-2 py-0.5 rounded-md">
+                        {Intl.NumberFormat('en-US', { notation: 'compact' }).format((item as any).likeCount)}
                         <ThumbsUp className="w-3 h-3" />
                       </div>
                     )}

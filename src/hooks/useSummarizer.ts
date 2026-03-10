@@ -36,7 +36,7 @@ export const useSummarizer = () => {
       isStreaming: true
     });
 
-    toast.info("Analyzing content...");
+    toast.info("Analyzing content...", { description: "AI is generating insights for this article." });
 
     try {
       const contentToSummarize = item.content || item.contentSnippet || item.title;
@@ -157,14 +157,14 @@ export const useSummarizer = () => {
         streamContent: undefined 
       } : null);
       
-      toast.success("Analysis complete!");
+      toast.success("Analysis complete!", { description: "Insights are ready to view." });
     } catch (e: any) {
       console.error("Summarization failed:", e);
       
       if (e.message?.includes('429') || e.message?.includes('RESOURCE_EXHAUSTED')) {
-        toast.error("Daily AI quota exceeded. Please try again later.");
+        toast.error("Daily AI quota exceeded", { description: "Please try again later when your quota resets." });
       } else {
-        toast.error("Failed to analyze article. Please try again.");
+        toast.error("Failed to analyze article", { description: "An unexpected error occurred during analysis." });
       }
       
       setSummaryModal(null);

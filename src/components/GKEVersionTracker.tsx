@@ -3,6 +3,7 @@ import { Server, AlertTriangle, CheckCircle, Clock, ExternalLink, ShieldAlert, C
 import { motion, AnimatePresence } from 'motion/react';
 import { ErrorBoundary } from './ErrorBoundary';
 import { useGKEVersions, GKEChannelInfo } from '../hooks/useGKEVersions';
+import { cn } from '../utils';
 
 export const GKEVersionTracker: React.FC = () => {
   return (
@@ -30,63 +31,71 @@ const ChannelCard: React.FC<{ channel: GKEChannelInfo; index: number }> = ({ cha
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="flex flex-col h-full rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hover:shadow-xl transition-all duration-300 bg-white dark:bg-slate-900 group"
+      className="flex flex-col h-full rounded-[28px] border border-[#dadce0] dark:border-[#3c4043] overflow-hidden hover:shadow-xl transition-all duration-500 bg-white dark:bg-[#202124] group shadow-sm"
     >
-      <div className={`p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center relative overflow-hidden`}>
-        <div className={`absolute inset-0 opacity-10 ${
-          channel.name === 'Stable' ? 'bg-emerald-500' :
-          channel.name === 'Rapid' ? 'bg-blue-500' : 'bg-blue-500'
+      <div className={`p-6 border-b border-[#f1f3f4] dark:border-[#3c4043] flex justify-between items-center relative overflow-hidden`}>
+        <div className={`absolute inset-0 opacity-5 ${
+          channel.name === 'Stable' ? 'bg-[#1e8e3e]' :
+          channel.name === 'Rapid' ? 'bg-[#1a73e8]' : 'bg-[#1a73e8]'
         }`} />
-        <div className="relative z-10 flex items-center space-x-3">
-           <div className={`p-2 rounded-lg ${
-             channel.name === 'Stable' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400' :
-             channel.name === 'Rapid' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400' : 
-             'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
+        <div className="relative z-10 flex items-center space-x-4">
+           <div className={`p-2.5 rounded-2xl ${
+             channel.name === 'Stable' ? 'bg-[#e6f4ea] text-[#1e8e3e]' :
+             channel.name === 'Rapid' ? 'bg-[#e8f0fe] text-[#1a73e8]' : 
+             'bg-[#e8f0fe] text-[#1a73e8]'
            }`}>
-             <Activity size={20} />
+             <Activity size={22} />
            </div>
-           <h3 className="font-bold text-lg text-slate-900 dark:text-white">{channel.name}</h3>
+           <h3 className="font-black text-xl text-[#202124] dark:text-[#e8eaed] tracking-tight">{channel.name}</h3>
         </div>
         {channel.current.status === 'Security Patch' && (
-          <div className="relative z-10 animate-pulse">
-             <ShieldAlert size={20} className="text-red-500" />
+          <div className="relative z-10">
+             <motion.div
+               animate={{ scale: [1, 1.2, 1] }}
+               transition={{ duration: 2, repeat: Infinity }}
+             >
+                <ShieldAlert size={24} className="text-[#c5221f]" />
+             </motion.div>
           </div>
         )}
       </div>
 
-      <div className="p-6 flex-1 flex flex-col">
-        <div className="mb-6">
-          <div className="flex justify-between items-end mb-2">
-             <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Current Version</span>
-             <span className="text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full flex items-center">
-                <Clock size={10} className="mr-1" /> {channel.current.date}
+      <div className="p-8 flex-1 flex flex-col">
+        <div className="mb-8">
+          <div className="flex justify-between items-end mb-3">
+             <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-[0.2em] font-black">Current Release</span>
+             <span className="text-[10px] text-[#5f6368] dark:text-[#9aa0a6] bg-[#f1f3f4] dark:bg-[#3c4043] px-3 py-1 rounded-lg flex items-center font-black uppercase tracking-widest border border-[#dadce0] dark:border-[#3c4043]">
+                <Clock size={12} className="mr-1.5" /> {channel.current.date}
              </span>
           </div>
-          <div className="text-3xl font-mono font-bold text-slate-900 dark:text-white tracking-tight">
+          <div className="text-4xl font-mono font-black text-[#202124] dark:text-[#e8eaed] tracking-tighter">
             {channel.current.version}
           </div>
         </div>
 
-        <div className={`mb-6 px-3 py-2 rounded-lg text-xs font-bold border flex items-center justify-center ${statusStyles}`}>
-            {channel.current.status === 'Healthy' && <CheckCircle size={14} className="mr-1.5" />}
-            {channel.current.status === 'Security Patch' && <ShieldAlert size={14} className="mr-1.5" />}
-            {channel.current.status === 'Deprecated' && <AlertTriangle size={14} className="mr-1.5" />}
-            {channel.current.status.toUpperCase()}
+        <div className={cn(
+          "mb-8 px-4 py-2.5 rounded-xl text-[11px] font-black border flex items-center justify-center uppercase tracking-[0.2em] shadow-sm transition-all duration-300",
+          statusStyles
+        )}>
+            {channel.current.status === 'Healthy' && <CheckCircle size={16} className="mr-2" />}
+            {channel.current.status === 'Security Patch' && <ShieldAlert size={16} className="mr-2" />}
+            {channel.current.status === 'Deprecated' && <AlertTriangle size={16} className="mr-2" />}
+            {channel.current.status}
         </div>
 
-        <p className="text-sm text-slate-600 dark:text-slate-300 mb-6 line-clamp-3 leading-relaxed">
+        <p className="text-[14px] text-[#5f6368] dark:text-[#9aa0a6] mb-8 line-clamp-3 leading-relaxed font-medium">
           {channel.current.description}
         </p>
 
         {/* Collapsible History Section */}
         {channel.history.length > 0 && (
-          <div className="mb-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="mb-6 pt-6 border-t border-[#f1f3f4] dark:border-[#3c4043]">
             <button 
               onClick={() => setIsHistoryOpen(!isHistoryOpen)}
-              className="w-full flex justify-between items-center text-xs text-slate-500 uppercase tracking-wider font-bold mb-2 hover:text-blue-600 transition-colors group/history"
+              className="w-full flex justify-between items-center text-[10px] text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-[0.2em] font-black mb-3 hover:text-[#1a73e8] transition-colors group/history"
             >
               <span>Recent History</span>
-              {isHistoryOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} className="group-hover/history:translate-y-0.5 transition-transform" />}
+              {isHistoryOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} className="group-hover/history:translate-y-0.5 transition-transform" />}
             </button>
             
             <AnimatePresence>
@@ -97,11 +106,11 @@ const ChannelCard: React.FC<{ channel: GKEChannelInfo; index: number }> = ({ cha
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="space-y-2 pb-2">
+                  <div className="space-y-2 pb-4">
                     {channel.history.map((hist, hIdx) => (
-                      <div key={hIdx} className="flex justify-between items-center text-xs p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <span className="font-mono font-medium text-slate-700 dark:text-slate-300">{hist.version}</span>
-                        <span className="text-slate-400">{hist.date}</span>
+                      <div key={hIdx} className="flex justify-between items-center text-[12px] p-3 rounded-2xl hover:bg-[#f8f9fa] dark:hover:bg-[#303134] transition-colors border border-transparent hover:border-[#dadce0] dark:hover:border-[#3c4043]">
+                        <span className="font-mono font-bold text-[#202124] dark:text-[#e8eaed]">{hist.version}</span>
+                        <span className="text-[#5f6368] dark:text-[#9aa0a6] font-medium">{hist.date}</span>
                       </div>
                     ))}
                   </div>
@@ -111,14 +120,14 @@ const ChannelCard: React.FC<{ channel: GKEChannelInfo; index: number }> = ({ cha
           </div>
         )}
 
-        <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+        <div className="mt-auto pt-6 border-t border-[#f1f3f4] dark:border-[#3c4043]">
           <a 
             href={channel.current.link}
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center justify-center w-full py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+            className="text-[13px] font-black text-[#1a73e8] hover:text-[#174ea6] dark:text-[#8ab4f8] dark:hover:text-[#aecbfa] flex items-center justify-center w-full py-3 rounded-2xl hover:bg-[#e8f0fe] dark:hover:bg-[#8ab4f8]/10 transition-all active:scale-95 uppercase tracking-widest"
           >
-            Read Release Notes <ExternalLink size={14} className="ml-1.5" />
+            Read Release Notes <ExternalLink size={16} className="ml-2" />
           </a>
         </div>
       </div>
@@ -131,39 +140,57 @@ const GKEVersionTrackerContent: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-12 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-        <p className="text-slate-500 font-medium">Syncing with Google Cloud Release Feeds...</p>
+      <div className="bg-white dark:bg-[#202124] rounded-[32px] p-16 shadow-sm border border-[#dadce0] dark:border-[#3c4043] flex flex-col items-center justify-center min-h-[500px]">
+        <div className="relative mb-8">
+          <motion.div
+            className="absolute inset-0 bg-[#1a73e8] blur-3xl opacity-20 rounded-full"
+            animate={{ scale: [1, 1.4, 1] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="relative z-10 w-16 h-16 border-4 border-[#f1f3f4] dark:border-[#3c4043] border-t-[#1a73e8] rounded-full"
+          />
+        </div>
+        <p className="text-[#5f6368] dark:text-[#9aa0a6] font-black uppercase tracking-[0.2em] text-xs">Syncing GKE Release Feeds...</p>
       </div>
     );
   }
 
   if (error || !channels) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-12 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center min-h-[400px] text-slate-400">
-        <AlertTriangle size={48} className="mb-4 text-red-500 opacity-50" />
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Failed to load GKE data</h3>
-        <p className="text-sm">Could not retrieve the latest GKE channel information.</p>
+      <div className="bg-white dark:bg-[#202124] rounded-[32px] p-16 shadow-sm border border-[#dadce0] dark:border-[#3c4043] flex flex-col items-center justify-center min-h-[500px] text-center">
+        <div className="bg-[#fce8e6] p-6 rounded-[32px] mb-8">
+          <AlertTriangle size={48} className="text-[#c5221f]" />
+        </div>
+        <h3 className="text-2xl font-black text-[#202124] dark:text-[#e8eaed] mb-3 tracking-tight">Sync Failed</h3>
+        <p className="text-[#5f6368] dark:text-[#9aa0a6] max-w-xs font-medium">Could not retrieve the latest GKE channel information from Google Cloud.</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <div className="max-w-7xl mx-auto px-4">
+      <div className="bg-white dark:bg-[#202124] rounded-[40px] shadow-2xl border border-[#dadce0] dark:border-[#3c4043] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-700 to-blue-700 p-8 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-10">
-             <Server size={120} />
+        <div className="bg-gradient-to-br from-[#1a73e8] via-[#174ea6] to-[#1a73e8] p-12 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-12 opacity-10">
+             <Server size={180} />
           </div>
+          
+          {/* Decorative circles */}
+          <div className="absolute -top-24 -left-24 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
+
           <div className="relative z-10">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="p-2 bg-white/10 rounded-lg backdrop-blur-sm">
-                <Server className="text-blue-100" size={32} />
+            <div className="flex items-center space-x-5 mb-6">
+              <div className="p-3 bg-white/15 rounded-2xl backdrop-blur-xl border border-white/20 shadow-lg">
+                <Server className="text-white" size={36} />
               </div>
-              <h2 className="text-2xl font-bold">GKE Release Channels</h2>
+              <h2 className="text-4xl font-black tracking-tighter">GKE Release Channels</h2>
             </div>
-            <p className="text-blue-100 max-w-2xl text-lg leading-relaxed">
+            <p className="text-blue-50 max-w-2xl text-xl leading-relaxed font-medium opacity-90">
               Official release status tracked directly from Google Cloud feeds. 
               Monitor the latest versions across Stable, Regular, and Rapid channels.
             </p>
@@ -171,17 +198,22 @@ const GKEVersionTrackerContent: React.FC = () => {
         </div>
 
         {/* Content */}
-        <div className="p-8 bg-slate-50 dark:bg-slate-950/50">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="p-12 bg-[#f8f9fa] dark:bg-[#202124]/50">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             {channels.map((channel, index) => (
               <ChannelCard key={channel.name} channel={channel} index={index} />
             ))}
           </div>
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Source: <a href="https://cloud.google.com/kubernetes-engine/docs/release-notes" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">Google Cloud GKE Release Notes</a>
-            </p>
+          <div className="mt-16 text-center">
+            <div className="inline-flex items-center space-x-2 px-6 py-3 bg-white dark:bg-[#303134] rounded-full border border-[#dadce0] dark:border-[#3c4043] shadow-sm">
+              <span className="text-[11px] font-black text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-widest">Source</span>
+              <div className="w-1 h-1 rounded-full bg-[#dadce0] mx-2" />
+              <a href="https://cloud.google.com/kubernetes-engine/docs/release-notes" target="_blank" rel="noopener noreferrer" className="text-[12px] text-[#1a73e8] dark:text-[#8ab4f8] hover:underline font-black uppercase tracking-widest transition-all">
+                Google Cloud GKE Release Notes
+              </a>
+              <ExternalLink size={12} className="text-[#1a73e8] dark:text-[#8ab4f8] ml-1" />
+            </div>
           </div>
         </div>
       </div>

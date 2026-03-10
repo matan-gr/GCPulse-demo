@@ -17,6 +17,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { cn } from '../utils';
 
 interface SidebarProps {
   activeTab: string;
@@ -84,27 +85,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -280, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`fixed top-0 left-0 h-full w-72 bg-[var(--color-bg-sidebar)] dark:bg-[var(--color-bg-sidebar-dark)] border-r border-slate-200 dark:border-slate-800 z-[50] flex flex-col`}
+            className={`fixed top-0 left-0 h-full w-72 bg-[var(--color-bg-sidebar)] dark:bg-[var(--color-bg-sidebar-dark)] border-r border-[#dadce0] dark:border-[#3c4043] z-[50] flex flex-col`}
           >
             {/* Logo Area */}
-            <div className="h-16 flex items-center px-8 border-b border-slate-200 dark:border-slate-800">
+            <div className="h-16 flex items-center px-8 border-b border-[#dadce0] dark:border-[#3c4043]">
               <div className="flex items-center space-x-2 group cursor-pointer">
-                <div className="w-8 h-8 bg-brand-primary rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-[#1a73e8] rounded-full flex items-center justify-center">
                   <Zap size={18} className="text-white" />
                 </div>
-                <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">GCP Pulse</span>
+                <span className="text-lg font-medium text-[#202124] dark:text-[#e8eaed] tracking-tight">GCP Pulse</span>
               </div>
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 px-4 py-2 space-y-8 overflow-y-auto custom-scrollbar">
+            <nav className="flex-1 px-4 py-4 space-y-8 overflow-y-auto custom-scrollbar">
               
               {/* Main Menu */}
               <div>
                 <div className="flex items-center px-4 mb-2">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-widest">Platform</span>
+                  <span className="text-[11px] font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">Platform</span>
                 </div>
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {menuItems.map((item) => {
                     const isActive = activeTab === item.id;
                     const Icon = item.icon;
@@ -120,11 +121,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       >
                         <div className="flex items-center justify-between w-full">
                           <div className="flex items-center space-x-3">
-                            <Icon size={16} className={isActive ? 'text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 group-hover:text-blue-700 dark:group-hover:text-blue-300'} />
+                            <Icon size={18} className={isActive ? 'text-[#1a73e8] dark:text-[#8ab4f8]' : 'text-[#5f6368] dark:text-[#9aa0a6] group-hover:text-[#1a73e8] dark:group-hover:text-[#8ab4f8]'} />
                             <span>{item.label}</span>
                           </div>
                           {item.badge && (
-                            <span className={`text-[8px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded ml-2 ${isActive ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
+                            <span className={cn(
+                              "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-lg ml-2 border transition-all duration-300",
+                              isActive 
+                                ? "bg-[#d2e3fc] dark:bg-[#8ab4f8]/30 text-[#1a73e8] dark:text-[#8ab4f8] border-[#1a73e8]/20" 
+                                : "bg-[#f1f3f4] dark:bg-[#3c4043] text-[#5f6368] dark:text-[#9aa0a6] border-[#dadce0] dark:border-[#3c4043]"
+                            )}>
                               {item.badge}
                             </span>
                           )}
@@ -138,9 +144,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* Personal Section */}
               <div>
                 <div className="flex items-center px-4 mb-2">
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-widest">Workspace</span>
+                  <span className="text-[11px] font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">Workspace</span>
                 </div>
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {personalItems.map((item) => {
                     const isActive = activeTab === item.id;
                     const Icon = item.icon;
@@ -155,7 +161,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         className={`sidebar-link ${isActive ? 'sidebar-link-active' : ''}`}
                       >
                         <div className="flex items-center space-x-3">
-                          <Icon size={16} className={isActive ? 'text-blue-700 dark:text-blue-300' : 'text-slate-500 dark:text-slate-400 group-hover:text-blue-700 dark:group-hover:text-blue-300'} />
+                          <Icon size={18} className={isActive ? 'text-[#1a73e8] dark:text-[#8ab4f8]' : 'text-[#5f6368] dark:text-[#9aa0a6] group-hover:text-[#1a73e8] dark:group-hover:text-[#8ab4f8]'} />
                           <span>{item.label}</span>
                         </div>
                       </button>
@@ -167,13 +173,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </nav>
             
             {/* Sidebar Footer */}
-            <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+            <div className="p-4 border-t border-[#dadce0] dark:border-[#3c4043]">
                <div className="flex items-center justify-between px-2">
-                  <div className="flex items-center space-x-2 text-[10px] font-medium text-slate-500 dark:text-slate-500 uppercase tracking-widest">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <div className="flex items-center space-x-2 text-[11px] font-semibold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-wider">
+                    <div className="w-2 h-2 rounded-full bg-[#188038] animate-pulse" />
                     <span>Live</span>
                   </div>
-                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-500">v2.6.0</span>
+                  <span className="text-[11px] font-semibold text-[#5f6368] dark:text-[#9aa0a6]">v2.6.0</span>
                </div>
             </div>
 

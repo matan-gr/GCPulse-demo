@@ -429,16 +429,22 @@ if (!isProduction) {
   app.use(express.static('dist', { index: false }));
   
   // SPA fallback with runtime env injection
-  // FIXED: Use standard wildcard route instead of path-to-regexp syntax
   app.use((req, res) => {
     const indexPath = path.resolve('dist', 'index.html');
-    res.sendFile(indexPath, (err) => {
+    fs.readFile(indexPath, 'utf8', (err, htmlData) => {
       if (err) {
-        console.error('Error sending index.html:', err);
+        console.error('Error reading index.html:', err);
         if (!res.headersSent) {
           res.status(500).send('Internal Server Error');
         }
+        return;
       }
+      
+      const apiKey = process.env.GEMINI_API_KEY || '';
+      const envScript = `<script>window.process = { env: { GEMINI_API_KEY: ${JSON.stringify(apiKey)} } };</script>`;
+      const injectedHtml = htmlData.replace('<head>', `<head>${envScript}`);
+      
+      res.send(injectedHtml);
     });
   });
 }

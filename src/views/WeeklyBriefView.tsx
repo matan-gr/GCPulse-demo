@@ -32,23 +32,23 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weekly Cloud Brief - ${new Date().toLocaleDateString()}</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
     
     :root {
       --color-primary: #1a73e8;
-      --color-primary-dark: #0d47a1;
+      --color-primary-dark: #1557b0;
       --color-bg: #ffffff;
-      --color-text: #1e293b;
-      --color-text-muted: #64748b;
-      --color-border: #e2e8f0;
-      --color-accent-bg: #eff6ff;
+      --color-text: #202124;
+      --color-text-muted: #5f6368;
+      --color-border: #dadce0;
+      --color-accent-bg: #e8f0fe;
     }
 
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-family: 'Outfit', system-ui, -apple-system, sans-serif;
       line-height: 1.6;
       color: var(--color-text);
-      background-color: #f8fafc;
+      background-color: #f8f9fa;
       margin: 0;
       padding: 0;
     }
@@ -57,14 +57,14 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
       max-width: 800px;
       margin: 40px auto;
       background: var(--color-bg);
-      border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      border-radius: 24px;
+      box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
       overflow: hidden;
       border: 1px solid var(--color-border);
     }
 
     header {
-      background: linear-gradient(135deg, #6366f1 0%, #9333ea 100%);
+      background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
       color: white;
       padding: 40px;
       text-align: center;
@@ -81,7 +81,7 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
       width: 40px;
       height: 40px;
       background: rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -91,20 +91,20 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
 
     .logo-text {
       font-size: 24px;
-      font-weight: 900;
-      letter-spacing: -1px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
     }
 
     h1 {
       margin: 0;
       font-size: 32px;
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: -0.5px;
     }
 
     .meta {
       font-size: 14px;
-      opacity: 0.8;
+      opacity: 0.9;
       margin-top: 8px;
     }
 
@@ -113,9 +113,9 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
     }
 
     /* Markdown Styles */
-    .prose h1 { color: var(--color-text); font-size: 28px; border-bottom: 2px solid var(--color-border); padding-bottom: 12px; margin-top: 0; }
-    .prose h2 { color: var(--color-text); font-size: 22px; margin-top: 32px; margin-bottom: 16px; }
-    .prose h3 { color: var(--color-text); font-size: 18px; margin-top: 24px; margin-bottom: 12px; }
+    .prose h1 { color: var(--color-text); font-size: 28px; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-top: 0; font-weight: 600; }
+    .prose h2 { color: var(--color-text); font-size: 22px; margin-top: 32px; margin-bottom: 16px; font-weight: 600; }
+    .prose h3 { color: var(--color-text); font-size: 18px; margin-top: 24px; margin-bottom: 12px; font-weight: 600; }
     .prose p { margin-bottom: 16px; }
     .prose ul, .prose ol { margin-bottom: 16px; padding-left: 24px; }
     .prose li { margin-bottom: 8px; }
@@ -124,19 +124,19 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
       background: var(--color-accent-bg);
       padding: 16px 24px;
       margin: 24px 0;
-      border-radius: 0 8px 8px 0;
+      border-radius: 0 12px 12px 0;
       font-style: italic;
     }
     .prose a { color: var(--color-primary); text-decoration: none; font-weight: 500; }
     .prose a:hover { text-decoration: underline; }
-    .prose strong { font-weight: 600; color: #0f172a; }
+    .prose strong { font-weight: 600; color: #202124; }
 
     footer {
       padding: 24px 40px;
-      background: #f1f5f9;
+      background: #f8f9fa;
       border-top: 1px solid var(--color-border);
       text-align: center;
-      font-size: 12px;
+      font-size: 13px;
       color: var(--color-text-muted);
     }
 
@@ -150,7 +150,7 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
 </head>
 <body>
   <div class="container">
-    <header style="background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);">
+    <header style="background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);">
       <div class="logo">
         <div class="logo-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: white;"><path d="m13 2-2 2.5h3L12 13h2l-4 9 1-9h-3z"/></svg>
@@ -180,39 +180,39 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success("Brief exported as rich HTML");
+    toast.success("Brief exported as rich HTML", { description: "Your download should begin shortly." });
   };
 
   const MarkdownComponents = {
     h1: ({...props}: any) => (
-      <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 pb-4 border-b border-slate-200 dark:border-slate-700" {...props} />
+      <h1 className="text-3xl font-bold text-[#202124] dark:text-[#e8eaed] mb-6 pb-4 border-b border-[#dadce0] dark:border-[#3c4043]" {...props} />
     ),
     h2: ({...props}: any) => (
-      <h2 className="text-2xl font-semibold text-slate-800 dark:text-slate-100 mt-8 mb-4 flex items-center" {...props} />
+      <h2 className="text-2xl font-semibold text-[#202124] dark:text-[#e8eaed] mt-8 mb-4 flex items-center" {...props} />
     ),
     h3: ({...props}: any) => (
-      <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-200 mt-6 mb-3" {...props} />
+      <h3 className="text-xl font-semibold text-[#3c4043] dark:text-[#bdc1c6] mt-6 mb-3" {...props} />
     ),
     strong: ({...props}: any) => (
-      <strong className="font-semibold text-slate-900 dark:text-white" {...props} />
+      <strong className="font-semibold text-[#202124] dark:text-[#e8eaed]" {...props} />
     ),
     ul: ({...props}: any) => (
-      <ul className="space-y-2 my-4 list-disc list-outside ml-5 text-slate-700 dark:text-slate-300" {...props} />
+      <ul className="space-y-2 my-4 list-disc list-outside ml-5 text-[#3c4043] dark:text-[#bdc1c6]" {...props} />
     ),
     ol: ({...props}: any) => (
-      <ol className="space-y-2 my-4 list-decimal list-outside ml-5 text-slate-700 dark:text-slate-300" {...props} />
+      <ol className="space-y-2 my-4 list-decimal list-outside ml-5 text-[#3c4043] dark:text-[#bdc1c6]" {...props} />
     ),
     li: ({...props}: any) => (
       <li className="leading-relaxed pl-1">{props.children}</li>
     ),
     blockquote: ({...props}: any) => (
-      <blockquote className="pl-4 border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 py-3 pr-4 rounded-r my-6 text-slate-700 dark:text-slate-300 italic" {...props} />
+      <blockquote className="pl-4 border-l-4 border-[#1a73e8] bg-[#e8f0fe] dark:bg-[#8ab4f8]/20 py-3 pr-4 rounded-r-xl my-6 text-[#3c4043] dark:text-[#bdc1c6] italic" {...props} />
     ),
     p: ({...props}: any) => (
-      <p className="mb-4 leading-7 text-slate-700 dark:text-slate-300" {...props} />
+      <p className="mb-4 leading-7 text-[#3c4043] dark:text-[#bdc1c6]" {...props} />
     ),
     a: ({...props}: any) => (
-      <a className="text-blue-600 dark:text-blue-400 hover:underline font-medium break-all transition-colors" target="_blank" rel="noopener noreferrer" {...props} />
+      <a className="text-[#1a73e8] dark:text-[#8ab4f8] hover:underline font-medium break-all transition-colors" target="_blank" rel="noopener noreferrer" {...props} />
     ),
   };
 
@@ -221,12 +221,12 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center">
-            <Sparkles className="mr-3 text-blue-600 dark:text-blue-400" size={32} />
+          <h1 className="text-3xl font-bold text-[#202124] dark:text-[#e8eaed] flex items-center tracking-tight">
+            <Sparkles className="mr-3 text-[#1a73e8] dark:text-[#8ab4f8]" size={32} />
             Weekly Brief
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 flex items-center">
-            <Calendar size={14} className="mr-2" />
+          <p className="text-[#5f6368] dark:text-[#9aa0a6] mt-1 flex items-center text-[15px]">
+            <Calendar size={16} className="mr-2" />
             {lastUpdated 
               ? `Generated ${lastUpdated.toLocaleDateString()} at ${lastUpdated.toLocaleTimeString()}` 
               : loading 
@@ -240,7 +240,7 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center disabled:opacity-50"
+              className="px-4 py-2 bg-white dark:bg-[#303134] border border-[#dadce0] dark:border-[#3c4043] rounded-lg text-sm font-black uppercase tracking-widest text-[#3c4043] dark:text-[#e8eaed] hover:bg-[#f8f9fa] dark:hover:bg-[#3c4043] transition-all flex items-center disabled:opacity-50 shadow-sm active:scale-95"
             >
               <RefreshCw size={16} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
               Regenerate
@@ -249,7 +249,7 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
           <button
             onClick={handleExport}
             disabled={!brief || loading}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center disabled:opacity-50 shadow-sm hover:shadow"
+            className="px-4 py-2 bg-[#1a73e8] text-white rounded-lg text-sm font-black uppercase tracking-widest hover:bg-[#1557b0] transition-all flex items-center disabled:opacity-50 shadow-sm active:scale-95"
           >
             <Download size={16} className="mr-2" />
             Export
@@ -258,28 +258,28 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
       </div>
 
       {/* Content */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden min-h-[600px] relative">
+      <div className="bg-white dark:bg-[#202124] rounded-[24px] border border-[#dadce0] dark:border-[#3c4043] shadow-sm overflow-hidden min-h-[600px] relative">
         {!loading && !brief && !error ? (
           <div className="flex flex-col items-center justify-center h-full p-12 text-center min-h-[600px]">
-             <div className="bg-blue-50 dark:bg-blue-900/20 p-8 rounded-full mb-8 ring-1 ring-blue-100 dark:ring-blue-800">
-               <Sparkles size={64} className="text-blue-600 dark:text-blue-400" />
+             <div className="bg-[#e8f0fe] dark:bg-[#8ab4f8]/20 p-8 rounded-2xl mb-8 ring-1 ring-[#d2e3fc] dark:ring-[#8ab4f8]/30">
+               <Sparkles size={64} className="text-[#1a73e8] dark:text-[#8ab4f8]" />
              </div>
-             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+             <h2 className="text-3xl font-bold text-[#202124] dark:text-[#e8eaed] mb-4 tracking-tight">
                Generate Your Weekly Brief
              </h2>
-             <p className="text-slate-500 dark:text-slate-400 max-w-lg mb-10 text-lg leading-relaxed">
+             <p className="text-[#5f6368] dark:text-[#9aa0a6] max-w-lg mb-10 text-lg leading-relaxed">
                Get a comprehensive AI-generated summary of the most important Google Cloud updates, security bulletins, and architectural changes from the last 7 days.
              </p>
              <button
                onClick={() => generateBrief(true)}
-               className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg shadow-xl hover:shadow-blue-500/25 transition-all transform hover:-translate-y-1 flex items-center"
+               className="px-8 py-4 bg-[#1a73e8] hover:bg-[#1557b0] text-white rounded-xl font-black uppercase tracking-widest text-lg shadow-sm hover:shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center active:scale-95"
              >
                <Sparkles size={24} className="mr-3" />
                Generate Brief
              </button>
           </div>
         ) : loading && !brief ? (
-          <div className="absolute inset-0 z-10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm flex items-center justify-center">
+          <div className="absolute inset-0 z-10 bg-white/90 dark:bg-[#202124]/90 backdrop-blur-sm flex items-center justify-center">
             <AILoading 
               variant="card" 
               title="Generating Weekly Brief" 
@@ -289,14 +289,14 @@ export const WeeklyBriefView: React.FC<WeeklyBriefViewProps> = ({ items }) => {
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full p-12 text-center">
-            <div className="bg-red-100 dark:bg-red-900/30 p-4 rounded-full mb-4">
-              <FileText size={32} className="text-red-600 dark:text-red-400" />
+            <div className="bg-[#fce8e6] dark:bg-[#ea4335]/20 p-4 rounded-xl mb-4">
+              <FileText size={32} className="text-[#ea4335] dark:text-[#f28b82]" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Failed to Generate Brief</h3>
-            <p className="text-slate-500 dark:text-slate-400 mb-6">{error}</p>
+            <h3 className="text-xl font-bold text-[#202124] dark:text-[#e8eaed] mb-2">Failed to Generate Brief</h3>
+            <p className="text-[#5f6368] dark:text-[#9aa0a6] mb-6">{error}</p>
             <button
               onClick={handleRefresh}
-              className="px-6 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg font-medium hover:opacity-90 transition-opacity"
+              className="px-6 py-2 bg-[#1a73e8] text-white rounded-lg font-black uppercase tracking-widest hover:bg-[#1557b0] transition-all active:scale-95 shadow-sm"
             >
               Try Again
             </button>

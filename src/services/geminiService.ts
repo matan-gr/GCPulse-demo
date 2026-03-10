@@ -4,7 +4,8 @@ let aiInstance: GoogleGenAI | null = null;
 
 export function getAiInstance() {
   if (!aiInstance) {
-    const apiKey = process.env.GEMINI_API_KEY;
+    // Check window.process.env first (injected by server in production), then fallback to process.env (Vite dev)
+    const apiKey = (typeof window !== 'undefined' && window.process?.env?.GEMINI_API_KEY) || process.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error('GEMINI_API_KEY environment variable is required');
     }

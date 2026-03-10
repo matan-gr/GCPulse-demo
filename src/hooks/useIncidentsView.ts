@@ -42,7 +42,7 @@ export const useIncidentsView = (items: FeedItem[]) => {
     const template = `Status Update: We are tracking an active incident with ${item.serviceName || 'Google Cloud'}. Severity: ${item.severity || 'Unknown'}. Impact began at ${new Date(item.begin || '').toLocaleTimeString()}. Google Engineering is investigating.`;
     
     navigator.clipboard.writeText(template);
-    toast.success("Update copied to clipboard");
+    toast.success("Update copied to clipboard", { description: "You can now paste the status update." });
   };
 
   return {

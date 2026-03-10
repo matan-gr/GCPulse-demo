@@ -62,7 +62,9 @@ The `Dockerfile` uses a **multi-stage build**:
 
 ### Method 1: One-Step Deployment (Recommended)
 
-This is the simplest way to deploy. It builds the container and deploys it in a single command.
+This is the simplest way to deploy. It builds the container and deploys it in a single command. 
+
+*Note: The application has been updated to support runtime environment variable injection. This means the API keys you provide in this command will be correctly passed to the frontend without needing to be hardcoded during the build step.*
 
 ```bash
 gcloud run deploy gcp-pulse \

@@ -64,19 +64,21 @@ function AppContent() {
   const prevRefetching = useRef(false);
   useEffect(() => {
     if (prevRefetching.current && !feedRefetching && !queryError) {
-      toast.success("Feed updated");
+      toast.success("Feed updated", {
+        description: "Latest intelligence and updates have been loaded.",
+      });
     }
     prevRefetching.current = feedRefetching;
   }, [feedRefetching, queryError]);
 
   // Error Handling
   useEffect(() => {
-    if (queryError) toast.error("Failed to load feed updates.");
-    if (deprecationsError) toast.error("Failed to load product deprecations.");
-    if (architectureError) toast.error("Failed to load architecture updates.");
-    if (incidentsError) toast.error("Failed to load incidents.");
+    if (queryError) toast.error("Failed to load feed updates", { description: "Please check your connection and try again." });
+    if (deprecationsError) toast.error("Failed to load product deprecations", { description: "Please check your connection and try again." });
+    if (architectureError) toast.error("Failed to load architecture updates", { description: "Please check your connection and try again." });
+    if (incidentsError) toast.error("Failed to load incidents", { description: "Please check your connection and try again." });
     if (deprecations && !deprecationsLoading && activeTab === 'deprecations') {
-      toast.success("Product deprecations updated", { icon: <Check size={16} />, duration: 3000 });
+      toast.success("Product deprecations updated", { duration: 3000 });
     }
   }, [queryError, deprecationsError, architectureError, incidentsError, deprecations, deprecationsLoading, activeTab]);
 
@@ -109,8 +111,8 @@ function AppContent() {
 
   const handleDateRangeChange = useCallback((range: { start: string; end: string } | null) => {
     updatePrefs({ filterDateRange: range });
-    if (range) toast.success("Date filter applied");
-    else toast.info("Date filter cleared");
+    if (range) toast.success("Date filter applied", { description: `Showing items from ${range.start} to ${range.end}.` });
+    else toast.info("Date filter cleared", { description: "Showing items from all dates." });
   }, [updatePrefs]);
 
   const handleSortChange = useCallback((sortBy: 'date' | 'category', sortDirection: 'asc' | 'desc') => {
@@ -124,7 +126,7 @@ function AppContent() {
       filterCategories: [], 
       filterDateRange: null 
     });
-    toast.info("All filters cleared");
+    toast.info("All filters cleared", { description: "Showing all available items." });
   }, [updatePrefs, activeTab]);
 
   const isAnyFilterActive = useMemo(() => {
@@ -201,10 +203,12 @@ function AppContent() {
         const indices = JSON.parse(response.text || '[]');
         
         setSmartIndices(indices);
-        indices.length === 0 ? toast.info("No AI matches found.") : toast.success(`AI found ${indices.length} articles.`);
+        indices.length === 0 
+          ? toast.info("No AI matches found", { description: "Try adjusting your search query." }) 
+          : toast.success(`AI found ${indices.length} articles`, { description: "Showing the most relevant results." });
       } catch (e) {
         console.error("AI Filter Error:", e);
-        toast.error("AI filtering failed.");
+        toast.error("AI filtering failed", { description: "An error occurred while analyzing the articles." });
       } finally {
         setIsAiLoading(false);
       }
@@ -283,7 +287,7 @@ function AppContent() {
 
   const handleExportCSV = useCallback(() => {
     if (filteredItems.length === 0) {
-      toast.error("No items to export.");
+      toast.error("No items to export", { description: "Please adjust your filters and try again." });
       return;
     }
 
@@ -308,7 +312,7 @@ function AppContent() {
     link.click();
     document.body.removeChild(link);
     
-    toast.success(`Exported ${filteredItems.length} items to CSV`);
+    toast.success(`Exported ${filteredItems.length} items to CSV`, { description: "Your download should begin shortly." });
   }, [filteredItems]);
 
   const handleSave = useCallback((item: FeedItem) => {

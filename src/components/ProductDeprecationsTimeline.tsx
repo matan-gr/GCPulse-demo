@@ -5,6 +5,7 @@ import { Calendar, AlertTriangle, ArrowRight, CheckCircle2, AlertOctagon, Clock,
 import { motion } from 'motion/react';
 import { ErrorBoundary } from './ErrorBoundary';
 import { toast } from 'sonner';
+import { getCategoryStyles, cn } from '../utils';
 
 interface ProductDeprecationsTimelineProps {
   items: FeedItem[];
@@ -83,7 +84,7 @@ const ProductDeprecationsTimelineContent: React.FC<ProductDeprecationsTimelinePr
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success("Calendar (.ics) downloaded");
+    toast.success("Calendar (.ics) downloaded", { description: "You can now import this into your calendar app." });
   };
 
   if (sortedItems.length === 0) {
@@ -205,7 +206,7 @@ const TimelineSection = ({ title, color, items }: { title: string, color: string
   return (
     <div className="relative">
       <div className="sticky top-20 z-10 flex justify-center mb-8">
-        <span className={`px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide border shadow-sm ${badgeColors[color as keyof typeof badgeColors]}`}>
+        <span className={`px-4 py-1.5 rounded-lg text-sm font-black uppercase tracking-widest border shadow-sm ${badgeColors[color as keyof typeof badgeColors]}`}>
           {title}
         </span>
       </div>
@@ -243,7 +244,7 @@ const TimelineCard = ({ item, color, index }: { item: TimelineItem, color: strin
       {/* Card */}
       <div className={`w-full md:w-[calc(50%-2.5rem)] ml-12 md:ml-0 p-6 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-all duration-300 ${borderColors[color as keyof typeof borderColors]}`}>
         <div className="flex justify-between items-start mb-3">
-          <span className={`text-xs font-bold px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400`}>
+          <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700`}>
             {item.eolDate ? item.eolDate.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'Date TBD'}
           </span>
           {item.daysUntil !== null && item.daysUntil > 0 && (
@@ -266,7 +267,10 @@ const TimelineCard = ({ item, color, index }: { item: TimelineItem, color: strin
         <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
            <div className="flex gap-2">
              {item.categories?.slice(0, 2).map(cat => (
-               <span key={cat} className="text-[10px] uppercase font-bold text-slate-400">
+               <span key={cat} className={cn(
+                 "px-2 py-0.5 text-[9px] font-black rounded-lg uppercase tracking-widest border transition-all duration-300",
+                 getCategoryStyles(cat)
+               )}>
                  {cat}
                </span>
              ))}

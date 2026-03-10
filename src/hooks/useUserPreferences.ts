@@ -66,13 +66,13 @@ export function useUserPreferences() {
     setPrefs(prev => {
       const exists = prev.subscribedCategories.includes(category);
       if (exists) {
-        toast.success(`Unsubscribed from ${category}`);
+        toast.success(`Unsubscribed from ${category}`, { description: "You will no longer receive updates for this category." });
         return {
           ...prev,
           subscribedCategories: prev.subscribedCategories.filter(c => c !== category)
         };
       } else {
-        toast.success(`Subscribed to ${category}`);
+        toast.success(`Subscribed to ${category}`, { description: "You will now receive updates for this category." });
         return {
           ...prev,
           subscribedCategories: [...prev.subscribedCategories, category]
@@ -85,13 +85,13 @@ export function useUserPreferences() {
     setPrefs(prev => {
       const exists = prev.savedPosts.includes(link);
       if (exists) {
-        toast.success("Removed from Read Later");
+        toast.success("Removed from Read Later", { description: "Item removed from your reading list." });
         return {
           ...prev,
           savedPosts: prev.savedPosts.filter(l => l !== link)
         };
       } else {
-        toast.success("Added to Read Later");
+        toast.success("Added to Read Later", { description: "Item saved to your reading list." });
         return {
           ...prev,
           savedPosts: [...prev.savedPosts, link]
@@ -102,13 +102,13 @@ export function useUserPreferences() {
 
   const clearSavedPosts = () => {
     setPrefs(prev => ({ ...prev, savedPosts: [] }));
-    toast.success("Reading list cleared");
+    toast.success("Reading list cleared", { description: "All saved items have been removed." });
   };
 
   const resetPrefs = () => {
     localStorage.removeItem('user_prefs');
     setPrefs(DEFAULT_PREFS);
-    toast.success("Preferences reset to default");
+    toast.success("Preferences reset to default", { description: "Your settings have been restored to their original state." });
   };
 
   return {

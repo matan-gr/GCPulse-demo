@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { FeedItem } from '../types';
 import { Layers, ArrowRight, Star, Zap, Box, Grid, ExternalLink, Filter } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { getCategoryStyles, cn } from '../utils';
 
 interface ArchitectureViewProps {
   items: FeedItem[];
@@ -118,12 +119,12 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({
 
             <div className="relative p-8 md:p-12 flex flex-col md:flex-row gap-8 items-start">
               <div className="flex-1 space-y-6">
-                <div className="flex items-center space-x-3">
-                  <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-xs font-mono font-bold uppercase tracking-wider">
+                <div className="flex items-center space-x-4">
+                  <span className="px-3.5 py-1.5 rounded-lg bg-[#e8f0fe] text-[#1a73e8] border border-[#d2e3fc] dark:bg-[#1a73e8]/10 dark:text-[#8ab4f8] dark:border-[#8ab4f8]/20 text-[10px] font-black uppercase tracking-widest">
                     Featured Pattern
                   </span>
-                  <span className="text-slate-400 text-sm font-mono">
-                    {new Date(featuredItem.isoDate).toLocaleDateString()}
+                  <span className="text-slate-400 text-[11px] font-black uppercase tracking-widest tabular-nums">
+                    {new Date(featuredItem.isoDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                   </span>
                 </div>
 
@@ -137,7 +138,10 @@ export const ArchitectureView: React.FC<ArchitectureViewProps> = ({
 
                 <div className="flex flex-wrap gap-2">
                   {featuredItem.categories?.map(cat => (
-                    <span key={cat} className="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium">
+                    <span key={cat} className={cn(
+                      "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest backdrop-blur-sm border transition-all duration-300",
+                      getCategoryStyles(cat)
+                    )}>
                       {cat}
                     </span>
                   ))}
@@ -242,7 +246,10 @@ const ArchitectureCard = ({ item, index, onSummarize, isSummarizing, onSave, isS
 
         <div className="flex flex-wrap gap-2 mb-6">
           {item.categories?.slice(0, 3).map((cat: string) => (
-            <span key={cat} className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+            <span key={cat} className={cn(
+              "px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border transition-all duration-300",
+              getCategoryStyles(cat)
+            )}>
               {cat}
             </span>
           ))}

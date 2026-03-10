@@ -4,6 +4,7 @@ import { Search, Copy, Check, Globe, Server, Shield, Database, Cloud, Download }
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { ErrorBoundary } from './ErrorBoundary';
+import { getCategoryStyles, cn } from '../utils';
 
 interface Prefix {
   ipv4Prefix?: string;
@@ -64,7 +65,7 @@ const IPRangeFinderContent: React.FC = () => {
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard');
+    toast.success('Copied to clipboard', { description: "You can now paste the IP range." });
   };
 
   const handleExportCSV = () => {
@@ -88,7 +89,7 @@ const IPRangeFinderContent: React.FC = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success(`Exported ${filteredPrefixes.length} ranges to CSV`);
+    toast.success(`Exported ${filteredPrefixes.length} ranges to CSV`, { description: "Your download should begin shortly." });
   };
 
   return (
@@ -208,7 +209,10 @@ const IPRangeFinderContent: React.FC = () => {
                               <div className="flex items-center">
                                 <span className="font-mono text-sm font-medium text-gray-900 dark:text-gray-200">{ip}</span>
                                 {prefix.ipv6Prefix && (
-                                  <span className="ml-2 text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded font-bold">IPv6</span>
+                                  <span className={cn(
+                                    "ml-2 text-[9px] px-1.5 py-0.5 rounded-md font-black uppercase tracking-widest border",
+                                    getCategoryStyles('compute')
+                                  )}>IPv6</span>
                                 )}
                               </div>
                             </td>
@@ -216,7 +220,10 @@ const IPRangeFinderContent: React.FC = () => {
                               {prefix.scope}
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                              <span className={cn(
+                                "inline-flex items-center px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                                getCategoryStyles(prefix.service)
+                              )}>
                                 {prefix.service}
                               </span>
                             </td>

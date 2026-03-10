@@ -4,6 +4,7 @@ import { CheckCircle2, AlertTriangle, Copy, ChevronDown, ChevronUp, ExternalLink
 import { motion, AnimatePresence } from 'motion/react';
 import { useIncidentsView } from '../hooks/useIncidentsView';
 import ReactMarkdown from 'react-markdown';
+import { getCategoryStyles, cn } from '../utils';
 
 interface IncidentsViewProps {
   items: FeedItem[];
@@ -158,7 +159,10 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="px-3 py-1 bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 text-xs font-bold uppercase rounded-full border border-rose-200 dark:border-rose-800 flex items-center">
+                        <span className={cn(
+                          "px-3 py-1 text-[10px] font-black uppercase rounded-lg border flex items-center shadow-sm",
+                          getCategoryStyles('security')
+                        )}>
                           <AlertTriangle size={12} className="mr-1.5" />
                           {item.severity || "High Severity"}
                         </span>
@@ -314,7 +318,10 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ items, loading }) 
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                          <span className={cn(
+                            "inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-widest border",
+                            getCategoryStyles('ops')
+                          )}>
                             {getDuration(item.begin || '', item.end)}
                           </span>
                         </td>

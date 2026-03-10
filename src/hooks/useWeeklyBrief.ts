@@ -152,7 +152,7 @@ export const useWeeklyBrief = (items: FeedItem[]) => {
     } catch (err: any) {
       console.error("Failed to generate brief:", err);
       setError(err.message || "Failed to generate briefing");
-      toast.error("Failed to generate weekly brief");
+      toast.error("Failed to generate weekly brief", { description: "An error occurred while analyzing the latest updates." });
     } finally {
       setLoading(false);
     }

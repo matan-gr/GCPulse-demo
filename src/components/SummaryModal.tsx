@@ -33,73 +33,73 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, tit
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-[#121212] rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[85vh] border border-slate-200 dark:border-white/10"
+              className="bg-white dark:bg-[#202124] rounded-[24px] shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[85vh] border border-[#dadce0] dark:border-[#3c4043]"
             >
               {/* Header */}
-              <div className="bg-white dark:bg-[#121212] p-6 border-b border-slate-100 dark:border-white/5 flex justify-between items-start shrink-0 sticky top-0 z-10">
+              <div className="bg-white dark:bg-[#202124] p-6 border-b border-[#dadce0] dark:border-[#3c4043] flex justify-between items-start shrink-0 sticky top-0 z-10">
                 <div className="flex items-start space-x-4 pr-8">
-                  <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-                    <Sparkles className="text-blue-600 dark:text-blue-400" size={24} />
+                  <div className="p-3 bg-[#e8f0fe] dark:bg-[#8ab4f8]/20 rounded-2xl">
+                    <Sparkles className="text-[#1a73e8] dark:text-[#8ab4f8]" size={24} />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight line-clamp-2">{title}</h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 flex items-center">
-                      <FileText size={12} className="mr-1" /> AI-Generated Analysis
+                    <h2 className="text-xl font-bold text-[#202124] dark:text-[#e8eaed] leading-tight line-clamp-2">{title}</h2>
+                    <p className="text-sm text-[#5f6368] dark:text-[#9aa0a6] mt-1 flex items-center">
+                      <FileText size={12} className="mr-1.5" /> AI-Generated Analysis
                     </p>
                   </div>
                 </div>
                 <button 
                   onClick={onClose}
-                  className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"
+                  className="text-[#5f6368] hover:text-[#202124] dark:text-[#9aa0a6] dark:hover:text-[#e8eaed] transition-colors p-2 hover:bg-[#f1f3f4] dark:hover:bg-[#3c4043] rounded-full"
                 >
                   <X size={24} />
                 </button>
               </div>
               
               {/* Content */}
-              <div className="p-8 overflow-y-auto custom-scrollbar bg-slate-50/50 dark:bg-[#0a0a0a]">
+              <div className="p-8 overflow-y-auto custom-scrollbar bg-[#f8f9fa] dark:bg-[#303134]">
                 {streamContent ? (
                    <div className="prose prose-lg prose-blue dark:prose-invert max-w-none">
                       <ReactMarkdown
                         components={{
-                          h2: ({node, ...props}) => <h2 className="text-xl font-bold text-blue-700 dark:text-blue-400 mt-6 mb-4 flex items-center border-b border-blue-100 dark:border-blue-900/50 pb-2" {...props} />,
-                          h3: ({node, ...props}) => <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mt-4 mb-2" {...props} />,
-                          ul: ({node, ...props}) => <ul className="list-none space-y-2 pl-0 my-4" {...props} />,
+                          h2: ({node, ...props}) => <h2 className="text-xl font-bold text-[#1a73e8] dark:text-[#8ab4f8] mt-8 mb-4 flex items-center border-b border-[#d2e3fc] dark:border-[#8ab4f8]/30 pb-2 tracking-tight" {...props} />,
+                          h3: ({node, ...props}) => <h3 className="text-lg font-semibold text-[#202124] dark:text-[#e8eaed] mt-6 mb-3 tracking-tight" {...props} />,
+                          ul: ({node, ...props}) => <ul className="list-none space-y-3 pl-0 my-5" {...props} />,
                           li: ({node, ...props}) => (
-                            <li className="flex items-start text-slate-700 dark:text-slate-300">
-                              <span className="mr-2 mt-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full shrink-0" />
+                            <li className="flex items-start text-[#5f6368] dark:text-[#9aa0a6] text-[15px] leading-relaxed">
+                              <span className="mr-3 mt-2 w-1.5 h-1.5 bg-[#1a73e8] dark:bg-[#8ab4f8] rounded-full shrink-0 shadow-[0_0_4px_rgba(26,115,232,0.4)]" />
                               <span className="flex-1">{props.children}</span>
                             </li>
                           ),
                           blockquote: ({node, ...props}) => (
-                            <blockquote className="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900/20 pl-4 py-3 pr-4 my-4 rounded-r-lg italic text-slate-700 dark:text-slate-300 shadow-sm" {...props} />
+                            <blockquote className="border-l-4 border-[#1a73e8] bg-[#e8f0fe] dark:bg-[#8ab4f8]/10 pl-5 py-4 pr-5 my-6 rounded-r-[24px] italic text-[#5f6368] dark:text-[#9aa0a6] shadow-sm text-[15px] leading-relaxed" {...props} />
                           ),
-                          strong: ({node, ...props}) => <strong className="font-bold text-blue-900 dark:text-blue-300" {...props} />,
-                          code: ({node, ...props}) => <code className="bg-slate-100 dark:bg-slate-800 text-pink-600 dark:text-pink-400 px-1.5 py-0.5 rounded text-sm font-mono border border-slate-200 dark:border-slate-700" {...props} />,
+                          strong: ({node, ...props}) => <strong className="font-bold text-[#1557b0] dark:text-[#aecbfa]" {...props} />,
+                          code: ({node, ...props}) => <code className="bg-[#f1f3f4] dark:bg-[#3c4043] text-[#d93025] dark:text-[#f28b82] px-1.5 py-0.5 rounded-md text-sm font-mono border border-[#dadce0] dark:border-[#5f6368]" {...props} />,
                         }}
                       >
                         {streamContent}
                       </ReactMarkdown>
                       {isStreaming && (
-                        <div className="flex items-center mt-6 text-blue-600 dark:text-blue-400 animate-pulse font-medium">
-                          <Loader2 size={20} className="animate-spin mr-2" />
-                          Analyzing content...
+                        <div className="flex items-center mt-8 text-[#1a73e8] dark:text-[#8ab4f8] animate-pulse font-semibold text-sm tracking-wide">
+                          <Loader2 size={18} className="animate-spin mr-2.5" />
+                          GENERATING INSIGHTS...
                         </div>
                       )}
                    </div>
                 ) : analysis ? (
-                  <div className="space-y-8">
+                  <div className="space-y-10">
                     {/* Executive Summary */}
-                    <section className="bg-white dark:bg-[#121212] p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-white/5">
-                      <h3 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-4 flex items-center">
+                    <section className="bg-white dark:bg-[#202124] p-8 rounded-[24px] shadow-sm border border-[#dadce0] dark:border-[#3c4043]">
+                      <h3 className="text-[11px] font-bold text-[#1a73e8] dark:text-[#8ab4f8] uppercase tracking-widest mb-5 flex items-center">
                         <Sparkles size={14} className="mr-2" /> Executive Summary
                       </h3>
                       <div className="prose prose-blue dark:prose-invert max-w-none">
-                        <div className="text-slate-700 dark:text-slate-300 leading-relaxed text-lg">
+                        <div className="text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed text-[16px]">
                           <ReactMarkdown
                             components={{
-                              strong: ({node, ...props}) => <strong className="font-bold text-blue-900 dark:text-blue-300" {...props} />,
-                              code: ({node, ...props}) => <code className="bg-gray-100 dark:bg-gray-800 text-pink-600 dark:text-pink-400 px-1.5 py-0.5 rounded text-sm font-mono" {...props} />,
+                              strong: ({node, ...props}) => <strong className="font-bold text-[#1557b0] dark:text-[#aecbfa]" {...props} />,
+                              code: ({node, ...props}) => <code className="bg-[#f1f3f4] dark:bg-[#3c4043] text-[#d93025] dark:text-[#f28b82] px-1.5 py-0.5 rounded-md text-sm font-mono" {...props} />,
                             }}
                           >
                             {analysis.summary}
@@ -108,17 +108,17 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, tit
                       </div>
                     </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {/* Impact Analysis */}
-                      <section className="bg-orange-50 dark:bg-orange-900/10 p-6 rounded-2xl border border-orange-100 dark:border-orange-900/30">
-                        <h3 className="text-xs font-bold text-orange-700 dark:text-orange-400 uppercase tracking-widest mb-4 flex items-center">
+                      <section className="bg-[#fef7e0] dark:bg-[#f9ab00]/10 p-8 rounded-[24px] border border-[#fce8b2] dark:border-[#f9ab00]/30 shadow-sm">
+                        <h3 className="text-[11px] font-bold text-[#e37400] dark:text-[#fdd663] uppercase tracking-widest mb-5 flex items-center">
                           <Zap size={14} className="mr-2" /> Business Impact
                         </h3>
-                        <div className="text-slate-800 dark:text-slate-200 leading-relaxed">
+                        <div className="text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed text-[15px]">
                           <ReactMarkdown
                             components={{
                               blockquote: ({node, ...props}) => (
-                                <blockquote className="border-l-4 border-orange-400 pl-4 italic my-2 text-orange-900 dark:text-orange-200" {...props} />
+                                <blockquote className="border-l-4 border-[#f9ab00] pl-4 italic my-3 text-[#b06000] dark:text-[#fde293]" {...props} />
                               ),
                             }}
                           >
@@ -128,18 +128,23 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, tit
                       </section>
 
                       {/* Role-Based Insights */}
-                      <section className="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-2xl border border-blue-100 dark:border-blue-900/30">
-                        <h3 className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-widest mb-4 flex items-center">
+                      <section className="bg-[#e8f0fe] dark:bg-[#8ab4f8]/10 p-8 rounded-[24px] border border-[#d2e3fc] dark:border-[#8ab4f8]/30 shadow-sm">
+                        <h3 className="text-[11px] font-bold text-[#1a73e8] dark:text-[#8ab4f8] uppercase tracking-widest mb-5 flex items-center">
                           <Target size={14} className="mr-2" /> Role-Based Insights
                         </h3>
-                        <div className="text-slate-800 dark:text-slate-200 leading-relaxed">
+                        <div className="text-[#5f6368] dark:text-[#9aa0a6] leading-relaxed text-[15px]">
                           <ReactMarkdown
                             components={{
-                              strong: ({node, ...props}) => <strong className="font-bold text-blue-900 dark:text-blue-300 block mt-3 mb-1 text-sm uppercase tracking-wide" {...props} />,
-                              ul: ({node, ...props}) => <ul className="list-none space-y-1 pl-0" {...props} />,
-                              li: ({node, ...props}) => <li className="text-sm" {...props} />,
-                              p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
-                              code: ({node, ...props}) => <code className="bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-400 px-1.5 py-0.5 rounded text-xs font-mono" {...props} />,
+                              strong: ({node, ...props}) => <strong className="font-bold text-[#1557b0] dark:text-[#aecbfa] block mt-4 mb-2 text-[11px] uppercase tracking-widest" {...props} />,
+                              ul: ({node, ...props}) => <ul className="list-none space-y-2 pl-0" {...props} />,
+                              li: ({node, ...props}) => (
+                                <li className="flex items-start text-[14px]">
+                                  <span className="mr-2 mt-1.5 w-1 h-1 bg-[#1a73e8] dark:bg-[#8ab4f8] rounded-full shrink-0" />
+                                  <span>{props.children}</span>
+                                </li>
+                              ),
+                              p: ({node, ...props}) => <p className="mb-3 last:mb-0" {...props} />,
+                              code: ({node, ...props}) => <code className="bg-white dark:bg-[#202124] text-[#d93025] dark:text-[#f28b82] px-1.5 py-0.5 rounded-md text-xs font-mono" {...props} />,
                             }}
                           >
                             {analysis.targetAudience}
@@ -151,20 +156,20 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, tit
                     {/* Related Products */}
                     {analysis.relatedProducts.length > 0 && (
                       <section>
-                        <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center">
+                        <h3 className="text-[11px] font-bold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-widest mb-5 flex items-center">
                           <Box size={14} className="mr-2" /> Related Products
                         </h3>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-3">
                           {analysis.relatedProducts.map((prod, idx) => (
                             <a 
                               key={idx} 
                               href={`https://cloud.google.com/search?q=${encodeURIComponent(prod)}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-4 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-medium border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500 hover:text-blue-700 dark:hover:text-blue-400 hover:shadow-md transition-all flex items-center group"
+                              className="px-5 py-2.5 bg-white dark:bg-[#202124] text-[#5f6368] dark:text-[#9aa0a6] rounded-full text-[13px] font-semibold border border-[#dadce0] dark:border-[#3c4043] hover:border-[#8ab4f8] dark:hover:border-[#8ab4f8] hover:text-[#1a73e8] dark:hover:text-[#8ab4f8] hover:shadow-md transition-all flex items-center group active:scale-95"
                             >
                               {prod}
-                              <ExternalLink size={12} className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity text-blue-500" />
+                              <ExternalLink size={12} className="ml-2.5 opacity-0 group-hover:opacity-100 transition-opacity text-[#1a73e8] dark:text-[#8ab4f8]" />
                             </a>
                           ))}
                         </div>
@@ -174,7 +179,7 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, tit
                     {/* Interactive Charts */}
                     {analysis.chartData && (
                       <section>
-                         <h3 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2 flex items-center">
+                         <h3 className="text-[11px] font-bold text-[#5f6368] dark:text-[#9aa0a6] uppercase tracking-widest mb-3 flex items-center">
                           <Sparkles size={14} className="mr-2" /> AI Insights & Metrics
                         </h3>
                         <InsightCharts data={analysis.chartData} />
@@ -182,7 +187,7 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, tit
                     )}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-20 text-slate-400 dark:text-slate-600">
+                  <div className="flex flex-col items-center justify-center py-24 text-[#5f6368] dark:text-[#9aa0a6]">
                     {isStreaming ? (
                         <AILoading 
                           variant="inline" 
@@ -192,21 +197,22 @@ export const SummaryModal: React.FC<SummaryModalProps> = ({ isOpen, onClose, tit
                         />
                     ) : (
                         <div className="text-center">
-                            <Sparkles size={48} className="mx-auto mb-4 opacity-20" />
-                            <p>Analysis not available.</p>
+                            <Sparkles size={64} className="mx-auto mb-6 opacity-10" />
+                            <p className="text-lg font-medium opacity-50">Analysis not available.</p>
                         </div>
                     )}
                   </div>
                 )}
               </div>
               
-              <div className="bg-white dark:bg-[#121212] px-8 py-4 border-t border-slate-100 dark:border-white/5 flex justify-between items-center shrink-0">
-                <div className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+              <div className="bg-white dark:bg-[#202124] px-8 py-6 border-t border-[#dadce0] dark:border-[#3c4043] flex justify-between items-center shrink-0">
+                <div className="flex items-center gap-2 text-[11px] text-[#5f6368] dark:text-[#9aa0a6] font-bold uppercase tracking-widest">
+                    <div className="w-2 h-2 rounded-full bg-[#188038] animate-pulse" />
                     Powered by Google Gemini
                 </div>
                 <button
                   onClick={onClose}
-                  className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors font-bold text-sm shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all"
+                  className="px-8 py-3 bg-[#1a73e8] dark:bg-[#8ab4f8] text-white dark:text-[#202124] rounded-full hover:bg-[#1557b0] dark:hover:bg-[#aecbfa] transition-colors font-bold text-[14px] shadow-sm hover:shadow-lg transform hover:-translate-y-0.5 transition-all active:scale-95"
                 >
                   Close Analysis
                 </button>

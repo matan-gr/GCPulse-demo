@@ -119,7 +119,7 @@ export const GKESkewValidator: React.FC = () => {
             </div>
           </div>
           {availableVersions.length > 0 && (
-             <div className="text-xs text-slate-400 flex items-center bg-slate-50 dark:bg-slate-800 px-3 py-1 rounded-full">
+             <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center bg-slate-50 dark:bg-slate-800 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
                <RefreshCw size={12} className="mr-1.5" />
                Synced with official feeds
              </div>

@@ -50,3 +50,13 @@ export interface AnalysisResult {
   chartData?: ChartData;
 }
 
+declare global {
+  interface Window {
+    process?: {
+      env?: {
+        GEMINI_API_KEY?: string;
+      };
+    };
+  }
+}
+
